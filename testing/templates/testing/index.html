@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Subdomains</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'testing/font-awesome.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'testing/util.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'testing/main.css' %}">
+<!--===============================================================================================-->
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-table100">
+			<div class="wrap-table100">
+				<div class="table100">
+					<table>
+						<thead>
+							<tr class="table100-head">
+								<th class="column1">Subdomain</th>
+								<th class="column2">Order ID</th>
+								<th class="column3">Name</th>
+								<th class="column4">Price</th>
+								<th class="column5">Quantity</th>
+								<th class="column6">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+                            {% for subs in subdom %}
+								<tr>
+									<td class="column1"><a>{{ subs }}</a></td>
+									<td class="column2">200398</td>
+									<td class="column3">iPhone X 64Gb Grey</td>
+									<td class="column4">$999.00</td>
+									<td class="column5">1</td>
+									<td class="column6">$999.00</td>
+								</tr>
+                            {% endfor %}
+                            {% for link in links %}
+								<tr>
+									<td class="column1"><a>{{ link }}</a></td>
+									<td class="column2">200398</td>
+									<td class="column3">iPhone X 64Gb Grey</td>
+									<td class="column4">$999.00</td>
+									<td class="column5">1</td>
+									<td class="column6">$999.00</td>
+								</tr>
+                            {% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	
+
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>

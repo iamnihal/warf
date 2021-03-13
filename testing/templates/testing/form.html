@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post" onsubmit="myDomain()">
+        {% csrf_token %}
+        <label>Domain: </label>
+        <input type="text" name="subdomains" id="sub-id">
+        <input type="submit" value="Find Subdomains">
+    </form>
+
+    <hr/>
+
+    <form action="directory/" method="post" onsubmit="myDirectory()">
+        {% csrf_token %}
+        <label>URL: </label>
+        <input type="text" name="directory" id="directory-id">
+        <input type="submit" value="Directory Brute Force">
+    </form>
+
+    <script>
+        function myDomain(){
+            mySub = document.getElementById('sub-id').value;
+            txt = document.createElement("TEXT");
+            txt.innerHTML = "Finding subdomains for  "+mySub;
+            document.body.appendChild(txt);
+        }
+
+        function myDirectory(){
+            mySub = document.getElementById('directory-id').value;
+            txt = document.createElement("TEXT");
+            txt.innerHTML = "Directory Brute Force for  "+mySub;
+            document.body.appendChild(txt);
+        }
+    </script>
+    <div>
+        <hr>
+        {% for subs in subdom %}
+        <div style="font-size:large; font-family:'Times New Roman', Times, serif; font-size: larger;">{{ subs }}</div>
+        {% endfor %}
+    </div>
+    
+</body>
+</html>
