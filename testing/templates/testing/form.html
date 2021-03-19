@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <form method="post" onsubmit="myDomain()">
+    <form action="subs/" method="post" onsubmit="myDomain()">
         {% csrf_token %}
         <label>Domain: </label>
         <input type="text" name="subdomains" id="sub-id">
@@ -21,6 +21,42 @@
         <label>URL: </label>
         <input type="text" name="directory" id="directory-id">
         <input type="submit" value="Directory Brute Force">
+    </form>
+
+    <hr/>
+
+    <form action="wayback/" method="post" onsubmit="myUrl()">
+        {% csrf_token %}
+        <label>Domain: </label>
+        <input type="text" name="waybackurl" id="waybackurl-id">
+        <input type="submit" value="Find Waybackurls">
+    </form>
+
+    <hr/>
+    
+    <form action='jsfiles/' method="post" onsubmit="myJsFiles()">
+        {% csrf_token %}
+        <label>Domain: </label>
+        <input type="text" name="jsfile" id="jsfile-id">
+        <input type="submit" value="Find Javascript Files">
+    </form>
+    
+    <hr/>
+
+    <form action='jsecret/' method="post" onsubmit="myJsecret()">
+        {% csrf_token %}
+        <label>Domain: </label>
+        <input type="text" name="jsecret" id="jsecret-id">
+        <input type="submit" value="Find Secret Keys from JS files">
+    </form>
+
+    <hr/>
+
+    <form action='jslinks/' method="post" onsubmit="myJsLinks()">
+        {% csrf_token %}
+        <label>Domain: </label>
+        <input type="text" name="jslinks" id="jslink-id">
+        <input type="submit" value="Find links from JS files">
     </form>
 
     <script>
@@ -37,6 +73,35 @@
             txt.innerHTML = "Directory Brute Force for  "+mySub;
             document.body.appendChild(txt);
         }
+
+        function myUrl(){
+            mySub = document.getElementById('waybackurl-id').value;
+            txt = document.createElement("TEXT");
+            txt.innerHTML = "Fetching WaybackUrls for  "+mySub;
+            document.body.appendChild(txt);
+        }
+
+        function myJsFiles(){
+            mySub = document.getElementById('jsecret-id').value;
+            txt = document.createElement("TEXT");
+            txt.innerHTML = "Fetching Secret Keys for  "+mySub;
+            document.body.appendChild(txt);
+        }
+
+        function myJsecret(){
+            mySub = document.getElementById('jslink-id').value;
+            txt = document.createElement("TEXT");
+            txt.innerHTML = "Extracting links from Javascript files for  "+mySub;
+            document.body.appendChild(txt);
+        }
+
+        function myJsLinks(){
+            mySub = document.getElementById('jslink-id').value;
+            txt = document.createElement("TEXT");
+            txt.innerHTML = "Extracting links from Javascript files for  "+mySub;
+            document.body.appendChild(txt);
+        }
+
     </script>
     <div>
         <hr>

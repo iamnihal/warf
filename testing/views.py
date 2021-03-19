@@ -1,34 +1,42 @@
 from django.shortcuts import render
-from .forms import SubdomainForm, DirectoryBruteForce
+from .forms import SubdomainForm, DirectoryBruteForce, Waybackurls, JsFiles, JsLinks, JsSecrets
 from django.http import HttpResponse
 from . import sublist3r
 from .subbrute import subbrute
 import subprocess
 import os
-import json
+import sys
 import re
+import requests
+import time
 
-def testing(request):
+timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
+
+#Subdomain Finder
+def subdomain_finder(request):
     if request.method == 'POST':
         form = SubdomainForm()
         subdomain = str(request.POST.get('subdomains'))
-        subdom = sublist3r.main(subdomain, 40, '{}.txt'.format(subdomain), ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
+        subdom = sublist3r.main(subdomain, 40, '{}_{}.txt'.format(subdomain,timestr), ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
         return render(request, 'testing/index.html', {'subdom': subdom})
     else:
         form = SubdomainForm()
     return render(request, 'testing/form.html')
 
-
+#Directory Brute Force
 def directory_brute_force(request):
     if request.method == 'POST':
         form = DirectoryBruteForce()
         directory = str(request.POST.get('directory'))
         print(directory)
-        testdir = os.chdir('testing/dirsearch/')
-        directory_search = subprocess.run(["python","dirsearch.py","-u",directory,"-w","common.txt", "--plain-text-report", "report.txt"], capture_output=True)
+        
+        os.chdir('testing/dirsearch/')
 
-        with open('report.txt', 'r') as report_file:
-            data = report_file.readlines()[2:]
+        dirtimestr = time.strftime("%Y-%m-%d")
+        directory_search = subprocess.run(["python","dirsearch.py","-u",directory,"-t","60","-w","robotsdis.txt","--plain-text-report","report_{}.txt".format(dirtimestr)], capture_output=True)
+
+        with open('report_{}.txt'.format(dirtimestr), 'r') as write_directory_file:
+            data = write_directory_file.readlines()[2:]
 
         status = []
         size = []
@@ -40,12 +48,141 @@ def directory_brute_force(request):
             size.append(row[1])
             directory_link.append(row[2])
         
-        print(status)
-        print(size)
-        print(directory_link)
         context = zip(directory_link, size, status)
         
-
         return render(request, 'testing/directory.html', {'context': context})
     else:
         return render(request, 'testing/directory.html')
+
+#Wayback URLs
+def waybackurls(request):
+    if request.method == 'POST':
+        form = Waybackurls()
+        domain = str(request.POST.get('waybackurl'))
+        wayback_urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
+
+        wayback_urls_list = []
+        for link in wayback_urls:
+            wayback_urls_list.append(link[0])
+
+        unique_wayback_urls = set(wayback_urls_list)
+
+        with open('{}_Wayback_URLs_{}.txt'.format(domain, timestr), 'a+') as write_wayback_urls:
+            for url in unique_wayback_urls:
+                write_wayback_urls.write(url + '\n')
+
+        return render(request, 'testing/wayback.html', {'context': unique_wayback_urls})
+    else:
+        return render(request, 'testing/wayback.html')
+
+#JavaScript File URLs
+def js_files(request):
+    if request.method == 'POST':
+        form = JsFiles()
+        domain = str(request.POST.get('jsfile'))
+        urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
+
+        js_file_urls = []
+        for link in urls:
+            if re.search(r'\.js$', link[0]):
+                js_file_urls.append(link[0])
+
+        unique_js_file_urls = set(js_file_urls)
+        with open('{}_JS_URLs_{}.txt'.format(domain, timestr), 'a+') as write_js_file:
+            for url in unique_js_file_urls:
+                write_js_file.write(url + '\n')
+
+        return render(request, 'testing/jsfiles.html', {'context': unique_js_file_urls})
+    else:
+        return render(request, 'testing/jsfiles.html')
+
+
+def js_secrets(request):
+    if request.method == 'POST':
+        form = JsSecrets()
+        domain = str(request.POST.get('jsecret'))
+        print(domain)
+        urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
+
+        js_file_urls = []
+        for link in urls:
+            if re.search(r'\.js$', link[0]):
+                js_file_urls.append(link[0])
+
+        unique_js_file_urls = set(js_file_urls)
+
+        # js_urls = '{}_JS_URLs_{}.txt'.format(domain, timestr)
+
+        # with open(js_urls, 'a+') as write_js_file:
+        #     for url in unique_js_file_urls:
+        #         write_js_file.write(url + '\n')
+
+        try:
+            os.chdir('testing/')
+        except:
+            print("Directory is already Testing")
+
+        for url in unique_js_file_urls:
+            js_secrets = subprocess.run([sys.executable,"SecretFinder.py","-i",url,"-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
+            if js_secrets.stdout:
+                with open('../jsSecrets.txt', 'a+') as write_js_secret_file:
+                    write_js_secret_file.write(js_secrets.stdout)
+                    print(js_secrets.stdout)
+
+        return render(request, 'testing/jsecret.html')
+    else:
+        return render(request, 'testing/jsecret.html')
+
+
+
+def js_links(request):
+    if request.method == 'POST':
+        form = JsLinks()
+        domain = str(request.POST.get('jslinks'))
+
+        urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
+
+        js_file_urls = []
+        for link in urls:
+            if re.search(r'\.js$', link[0]):
+                js_file_urls.append(link[0])
+
+        unique_js_file_urls = set(js_file_urls)
+
+        print(len(unique_js_file_urls))
+
+        try:
+            os.chdir('testing/')
+        except:
+            print("Directory is already Testing")
+
+        js_urls = []
+        for js_link in unique_js_file_urls:
+            print(js_link)
+            try:
+                result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
+            except:
+                print("SSL Error")
+            if result.stdout:
+
+                #This is not efficient. Need to store the result.stdout in list and then write it to the file.
+                with open('../jslinks.txt', 'w') as file:
+                    if "Usage" in result.stdout:
+                        pass
+                    else:
+                        file.write(result.stdout)
+
+            js_links = []
+            with open('../jslinks.txt', 'r') as read_file:
+                content = read_file.read().splitlines()
+                for link in content:
+                    # if re.search(r'\.png$ | \.jpg$ | \.svg$ | \.woff$ | \.woff2$ | \.gif$ | \.jpeg$', link):
+                    #     pass
+                    # else:
+                    js_links.append(link)
+                
+            unique_js_links = set(js_links)
+
+        return render(request, 'testing/jslinks.html', {'context': unique_js_links})
+    else:
+        return render(request, 'testing/jslinks.html')

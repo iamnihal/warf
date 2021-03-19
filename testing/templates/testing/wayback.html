@@ -20,16 +20,13 @@
 					<table>
 						<thead>
 							<tr class="table100-head">
-								<th class="column1">Subdomain</th>
-								<!-- <th class="column4">Price</th>
-								<th class="column5">Quantity</th>
-								<th class="column6">Total</th> -->
+								<th class="column1">Wayback Urls</th>
 							</tr>
 						</thead>
 						<tbody>
-                            {% for subdomain in subdom %}
+                            {% for url in context %}
 								<tr>
-									<td class="column1"><a>{{ subdomain }}</a></td>
+									<td class="column1"><a>{{ url }}</a></td>
 									<!-- <td class="column4">$999.00</td>
 									<td class="column5">1</td>
 									<td class="column6">$999.00</td> -->
