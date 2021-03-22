@@ -135,12 +135,6 @@ def js_secrets(request):
             for secrets in js_secrets_list:
                 secret_file.write(secrets + '\n')
 
-        # context = []
-        # for secret in js_secrets_list:
-        #     if "possible_Creds" not in secret or "URL" not in secret:
-        #         context.append(secret)
-
-        # return render(request, 'testing/jsecret.html', {'context':context})
         return render(request, 'testing/jsecret.html', {'context':js_secrets_list})
     else:
         return render(request, 'testing/jsecret.html')
