@@ -18,6 +18,7 @@ def subdomain_finder(request):
         form = SubdomainForm()
         subdomain = str(request.POST.get('subdomains'))
         subdom = sublist3r.main(subdomain, 40, '{}_{}.txt'.format(subdomain,timestr), ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
+        
         return render(request, 'testing/index.html', {'subdom': subdom})
     else:
         form = SubdomainForm()
@@ -30,10 +31,14 @@ def directory_brute_force(request):
         directory = str(request.POST.get('directory'))
         print(directory)
         
-        os.chdir('testing/dirsearch/')
+        try:
+            os.chdir('testing/dirsearch/')
+        except:
+            pass
 
         dirtimestr = time.strftime("%Y-%m-%d")
-        directory_search = subprocess.run(["python","dirsearch.py","-u",directory,"-t","60","-w","robotsdis.txt","--plain-text-report","report_{}.txt".format(dirtimestr)], capture_output=True)
+        report = 'report_{}.txt'.format(dirtimestr)
+        directory_search = subprocess.run(["python","dirsearch.py","-u",directory,"-t","60","-w","robotsdis.txt","--plain-text-report",report], capture_output=True)
 
         with open('report_{}.txt'.format(dirtimestr), 'r') as write_directory_file:
             data = write_directory_file.readlines()[2:]
@@ -110,29 +115,35 @@ def js_secrets(request):
                 js_file_urls.append(link[0])
 
         unique_js_file_urls = set(js_file_urls)
-
-        # js_urls = '{}_JS_URLs_{}.txt'.format(domain, timestr)
-
-        # with open(js_urls, 'a+') as write_js_file:
-        #     for url in unique_js_file_urls:
-        #         write_js_file.write(url + '\n')
+        print(len(unique_js_file_urls))
 
         try:
             os.chdir('testing/')
         except:
             print("Directory is already Testing")
 
+        js_secrets_list = []
+
         for url in unique_js_file_urls:
             js_secrets = subprocess.run([sys.executable,"SecretFinder.py","-i",url,"-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
-            if js_secrets.stdout:
-                with open('../jsSecrets.txt', 'a+') as write_js_secret_file:
-                    write_js_secret_file.write(js_secrets.stdout)
-                    print(js_secrets.stdout)
+            if "->" in js_secrets.stdout:
+                for item in js_secrets.stdout.splitlines():
+                    js_secrets_list.append(item)
 
-        return render(request, 'testing/jsecret.html')
+        js_secret_filename = '{}_JS_Secret_{}.txt'.format(domain,timestr)
+        with open(js_secret_filename, 'a+') as secret_file:
+            for secrets in js_secrets_list:
+                secret_file.write(secrets + '\n')
+
+        # context = []
+        # for secret in js_secrets_list:
+        #     if "possible_Creds" not in secret or "URL" not in secret:
+        #         context.append(secret)
+
+        # return render(request, 'testing/jsecret.html', {'context':context})
+        return render(request, 'testing/jsecret.html', {'context':js_secrets_list})
     else:
         return render(request, 'testing/jsecret.html')
-
 
 
 def js_links(request):
@@ -159,10 +170,7 @@ def js_links(request):
         js_urls = []
         for js_link in unique_js_file_urls:
             print(js_link)
-            try:
-                result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
-            except:
-                print("SSL Error")
+            result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
             if result.stdout:
 
                 #This is not efficient. Need to store the result.stdout in list and then write it to the file.

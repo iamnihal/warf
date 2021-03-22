@@ -10,7 +10,7 @@
     <form action="subs/" method="post" onsubmit="myDomain()">
         {% csrf_token %}
         <label>Domain: </label>
-        <input type="text" name="subdomains" id="sub-id">
+        <input type="text" name="subdomains" id="sub-id" required>
         <input type="submit" value="Find Subdomains">
     </form>
 
@@ -19,7 +19,7 @@
     <form action="directory/" method="post" onsubmit="myDirectory()">
         {% csrf_token %}
         <label>URL: </label>
-        <input type="text" name="directory" id="directory-id">
+        <input type="text" name="directory" id="directory-id" required>
         <input type="submit" value="Directory Brute Force">
     </form>
 
@@ -28,7 +28,7 @@
     <form action="wayback/" method="post" onsubmit="myUrl()">
         {% csrf_token %}
         <label>Domain: </label>
-        <input type="text" name="waybackurl" id="waybackurl-id">
+        <input type="text" name="waybackurl" id="waybackurl-id" required>
         <input type="submit" value="Find Waybackurls">
     </form>
 
@@ -37,7 +37,7 @@
     <form action='jsfiles/' method="post" onsubmit="myJsFiles()">
         {% csrf_token %}
         <label>Domain: </label>
-        <input type="text" name="jsfile" id="jsfile-id">
+        <input type="text" name="jsfile" id="jsfile-id" required>
         <input type="submit" value="Find Javascript Files">
     </form>
     
@@ -46,7 +46,7 @@
     <form action='jsecret/' method="post" onsubmit="myJsecret()">
         {% csrf_token %}
         <label>Domain: </label>
-        <input type="text" name="jsecret" id="jsecret-id">
+        <input type="text" name="jsecret" id="jsecret-id" required>
         <input type="submit" value="Find Secret Keys from JS files">
     </form>
 
@@ -55,7 +55,7 @@
     <form action='jslinks/' method="post" onsubmit="myJsLinks()">
         {% csrf_token %}
         <label>Domain: </label>
-        <input type="text" name="jslinks" id="jslink-id">
+        <input type="text" name="jslinks" id="jslink-id" required>
         <input type="submit" value="Find links from JS files">
     </form>
 
@@ -84,14 +84,14 @@
         function myJsFiles(){
             mySub = document.getElementById('jsecret-id').value;
             txt = document.createElement("TEXT");
-            txt.innerHTML = "Fetching Secret Keys for  "+mySub;
+            txt.innerHTML = "Finding JS Files for  "+mySub;
             document.body.appendChild(txt);
         }
 
         function myJsecret(){
-            mySub = document.getElementById('jslink-id').value;
+            mySub = document.getElementById('jsecret-id').value;
             txt = document.createElement("TEXT");
-            txt.innerHTML = "Extracting links from Javascript files for  "+mySub;
+            txt.innerHTML = "Extracting Secret Keys from Javascript files for  "+mySub;
             document.body.appendChild(txt);
         }
 
