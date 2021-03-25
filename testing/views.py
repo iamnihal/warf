@@ -42,7 +42,7 @@ def directory_brute_force(request):
         report = 'report_{}.txt'.format(dirtimestr)
         directory_search = subprocess.run(["python","dirsearch.py","-u",directory,"-t","60","-w","robotsdis.txt","--plain-text-report",report], capture_output=True)
 
-        with open('report_{}.txt'.format(dirtimestr), 'r') as write_directory_file:
+        with open(report, 'r') as write_directory_file:
             data = write_directory_file.readlines()[2:]
 
         status = []
