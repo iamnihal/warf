@@ -1,7 +1,7 @@
 {% extends 'testing/base-tools.html' %}
 
 {% block title %}
-	<title>Wayback URLs</title>
+	<title>JavaScript URLs</title>
 {% endblock %}
 	
 {% block content %}
@@ -11,7 +11,7 @@
     
 
     <div class="input-group mb-2 float-right" style="width: 300px">
-        <input type="text" id="subs" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+        <input type="text" id="js" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
         <div class="input-group-append">
           <button class="btn btn-primary float-right" type="button">Search</button>
         </div>
@@ -21,7 +21,7 @@
 					<table>
 						<thead>
 							<tr class="table100-head">
-								<th class="column1">Wayback URLs</th>
+								<th class="column1">JavaScript URLs</th>
 								<!-- <th class="column2">Order ID</th>
 								<th class="column3">Name</th>
 								<th class="column4">Price</th>
@@ -29,7 +29,7 @@
 								<th class="column6">Total</th> -->
 							</tr>
 						</thead>
-						<tbody id="subdomains">
+						<tbody id="jsfiles">
                             {% for url in context %}
 								<tr>
 									<td class="column1">{{ url }}</td>
@@ -49,9 +49,9 @@
 
     <script>
         $(document).ready(function() {
-            $("#subs").on("keyup", function() {
+            $("#js").on("keyup", function() {
                 var value = $(this).val().toLowerCase();
-                $("#subdomains tr").filter(function() {
+                $("#jsfiles tr").filter(function() {
                     $(this).toggle($(this).text()
                     .toLowerCase().indexOf(value) > -1)
                 });

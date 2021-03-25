@@ -1,21 +1,22 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>Subdomains</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->
-    <link rel="stylesheet" type="text/css" href="{% static 'testing/font-awesome.min.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'testing/util.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'testing/main.css' %}">
-<!--===============================================================================================-->
-</head>
-<body>
+{% extends 'testing/base-tools.html' %}
+
+{% block title %}
+	<title>Directories</title>
+{% endblock %}
 	
+{% block content %}
 	<div class="limiter">
 		<div class="container-table100">
 			<div class="wrap-table100">
+    
+
+    <div class="input-group mb-2 float-right" style="width: 300px">
+        <input type="text" id="dirs" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <button class="btn btn-primary float-right" type="button">Search</button>
+        </div>
+      </div>
+
 				<div class="table100">
 					<table>
 						<thead>
@@ -28,12 +29,12 @@
 								<th class="column6">Total</th> -->
 							</tr>
 						</thead>
-						<tbody>
-                            {% for directory, size, code in context %}
+						<tbody id="directories">
+                            {% for directory, size, status in context %}
 								<tr>
-									<td class="column1"><a>{{ directory }}</a></td>
+									<td class="column1">{{ directory }}</td>
 									<td class="column2">{{ size }}</td>
-									<td class="column3">{{ code }}</td>
+									<td class="column3">{{ status }}</td>
 									<!-- <td class="column4">$999.00</td>
 									<td class="column5">1</td>
 									<td class="column6">$999.00</td> -->
@@ -46,18 +47,15 @@
 		</div>
 	</div>
 
-
-	
-
-<!--===============================================================================================-->	
-	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-	<script src="vendor/select2/select2.min.js"></script>
-<!--===============================================================================================-->
-	<script src="js/main.js"></script>
-
-</body>
-</html>
+    <script>
+        $(document).ready(function() {
+            $("#dirs").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#directories tr").filter(function() {
+                    $(this).toggle($(this).text()
+                    .toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+{% endblock %}

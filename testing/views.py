@@ -12,17 +12,19 @@ import time
 
 timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
 
+def index(request):
+    return render(request, 'testing/index.html')
+
 #Subdomain Finder
 def subdomain_finder(request):
     if request.method == 'POST':
         form = SubdomainForm()
-        subdomain = str(request.POST.get('subdomains'))
+        subdomain = str(request.POST.get('subdomain'))
         subdom = sublist3r.main(subdomain, 40, '{}_{}.txt'.format(subdomain,timestr), ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
-        
-        return render(request, 'testing/index.html', {'subdom': subdom})
+        return render(request, 'testing/subdomains.html', {'subdom': subdom})
     else:
         form = SubdomainForm()
-    return render(request, 'testing/form.html')
+    return render(request, 'testing/subdomain-index.html')
 
 #Directory Brute Force
 def directory_brute_force(request):
@@ -57,13 +59,14 @@ def directory_brute_force(request):
         
         return render(request, 'testing/directory.html', {'context': context})
     else:
-        return render(request, 'testing/directory.html')
+        form = DirectoryBruteForce()
+    return render(request, 'testing/directory-index.html')
 
 #Wayback URLs
 def waybackurls(request):
     if request.method == 'POST':
         form = Waybackurls()
-        domain = str(request.POST.get('waybackurl'))
+        domain = str(request.POST.get('wayback'))
         wayback_urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
 
         wayback_urls_list = []
@@ -78,14 +81,15 @@ def waybackurls(request):
 
         return render(request, 'testing/wayback.html', {'context': unique_wayback_urls})
     else:
-        return render(request, 'testing/wayback.html')
+        form = Waybackurls()
+    return render(request, 'testing/wayback-index.html')
 
 #JavaScript File URLs
 def js_files(request):
     if request.method == 'POST':
         form = JsFiles()
         domain = str(request.POST.get('jsfile'))
-        urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
+        urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey'.format(domain)).json()
 
         js_file_urls = []
         for link in urls:
@@ -97,16 +101,16 @@ def js_files(request):
             for url in unique_js_file_urls:
                 write_js_file.write(url + '\n')
 
-        return render(request, 'testing/jsfiles.html', {'context': unique_js_file_urls})
+        return render(request, 'testing/jsfile.html', {'context': unique_js_file_urls})
     else:
-        return render(request, 'testing/jsfiles.html')
+        form = JsFiles()
+    return render(request, 'testing/jsfile-index.html')
 
 
 def js_secrets(request):
     if request.method == 'POST':
         form = JsSecrets()
-        domain = str(request.POST.get('jsecret'))
-        print(domain)
+        domain = str(request.POST.get('secret'))
         urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
 
         js_file_urls = []
@@ -135,15 +139,15 @@ def js_secrets(request):
             for secrets in js_secrets_list:
                 secret_file.write(secrets + '\n')
 
-        return render(request, 'testing/jsecret.html', {'context':js_secrets_list})
+        return render(request, 'testing/secret.html', {'context':js_secrets_list})
     else:
-        return render(request, 'testing/jsecret.html')
+        return render(request, 'testing/secret-index.html')
 
 
 def js_links(request):
     if request.method == 'POST':
         form = JsLinks()
-        domain = str(request.POST.get('jslinks'))
+        domain = str(request.POST.get('endpoint'))
 
         urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
 
@@ -185,6 +189,7 @@ def js_links(request):
                 
             unique_js_links = set(js_links)
 
-        return render(request, 'testing/jslinks.html', {'context': unique_js_links})
+        return render(request, 'testing/endpoint.html', {'context': unique_js_links})
     else:
-        return render(request, 'testing/jslinks.html')
+        form = JsLinks()
+    return render(request, 'testing/endpoint-index.html')

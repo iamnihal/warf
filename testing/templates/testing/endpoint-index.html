@@ -1,0 +1,43 @@
+{% extends "testing/base.html" %}
+
+{% block title %}
+<title>Endpoints from JavaScript</title>
+{% endblock %}
+
+{% block content %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid">
+                <h1 class="mt-4">Extract Endpoints from JS Files</h1>
+                <!-- <ol class="breadcrumb mb-4"> -->
+                    <form action="{% url 'endpoint-page' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-outline">
+                            <input type="text" id="formControlLg" class="form-control form-control-lg" name="endpoint" required/>
+                            <label class="form-label" for="formControlLg">URL</label>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-danger" onclick=loadingPage()>Submit</button>
+                </form>
+
+                <div id="spinner"></div>
+                </div>
+        </main>
+    </div>
+<script>
+   function loadingPage() {
+  //Create outer div
+  let div = document.createElement("div")
+  div.id = 'spinner-box'
+  div.className = 'text-center mt-3'
+
+  //Create inner div
+  let innerdiv = document.createElement("div")
+  innerdiv.role = 'status'
+  innerdiv.className = 'spinner-border text-primary'
+  
+  div.appendChild(innerdiv);
+  document.getElementById("spinner").appendChild(div);
+   }
+</script>
+{% endblock %}

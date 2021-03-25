@@ -1,0 +1,69 @@
+{% extends "testing/base.html" %}
+
+{% block title %}
+<title>Subdomain Discovery</title>
+{% endblock %}
+
+{% block content %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid">
+                <h1 class="mt-4">Subdomain Discovery</h1>
+                <!-- <ol class="breadcrumb mb-4"> -->
+                    <form action="{% url 'subdomain-page' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-outline">
+                            <input type="text" id="formControlLg" class="form-control form-control-lg" name="subdomain" required/>
+                            <label class="form-label" for="formControlLg">Domain</label>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-danger" onclick=loadingPage()>Submit</button>
+                </form>
+
+                <div id="spinner"></div>
+
+                {% if subdom %}
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Subdomain</th>
+                      </tr>
+                    </thead>
+                {% endif %}
+                <div id="data-box">
+                    <tbody>
+                        {% for subdomain in subdom %}
+                      <tr>
+                        <th scope="row">1</th>
+                        <td>{{ subdomain }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                </div>
+                  </table>
+                </div>
+
+                
+
+                <div style="height: 100vh"></div>
+                <div class="card mb-4"><div class="card-body">When scrolling, the navigation stays at the top of the page. This is the end of the static navigation demo.</div></div>
+            </div>
+        </main>
+    </div>
+<script>
+   function loadingPage() {
+  //Create outer div
+  let div = document.createElement("div")
+  div.id = 'spinner-box'
+  div.className = 'text-center mt-3'
+
+  //Create inner div
+  let innerdiv = document.createElement("div")
+  innerdiv.role = 'status'
+  innerdiv.className = 'spinner-border text-primary'
+  
+  div.appendChild(innerdiv);
+  document.getElementById("spinner").appendChild(div);
+   }
+</script>
+{% endblock %}

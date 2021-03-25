@@ -20,13 +20,20 @@
 					<table>
 						<thead>
 							<tr class="table100-head">
-								<th class="column1">Secret Keys from JS Files</th>
+								<th class="column1">Directory</th>
+								<th class="column2">Response Size</th>
+								<th class="column3">Status Code</th>
+								<!-- <th class="column4">Price</th>
+								<th class="column5">Quantity</th>
+								<th class="column6">Total</th> -->
 							</tr>
 						</thead>
 						<tbody>
-                            {% for secret in context %}
+                            {% for directory, size, code in context %}
 								<tr>
-									<td class="column1"><a>{{ secret|truncatechars:100 }}</a></td>
+									<td class="column1"><a>{{ directory }}</a></td>
+									<td class="column2">{{ size }}</td>
+									<td class="column3">{{ code }}</td>
 									<!-- <td class="column4">$999.00</td>
 									<td class="column5">1</td>
 									<td class="column6">$999.00</td> -->
