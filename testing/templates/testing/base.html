@@ -9,11 +9,9 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <link href="{% static 'testing/styles.css' %}" rel="stylesheet" />
-        fb
-        facefbface
         <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
-        <script src="{% static 'testing/main.js' %}" defer></script>
+        <script src="{% static 'testing/scripts.js' %}"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     </head>
     <body class="sb-nav-fixed">
@@ -64,8 +62,8 @@
                                     <a class="nav-link" href="{% url 'directory-page' %}">Directory</a>
                                     <a class="nav-link" href="{% url 'wayback-page' %}">Wayback URLs</a>
                                     <a class="nav-link" href="{% url 'jsfile-page' %}">JS File Discovery</a>
-                                    <a class="nav-link" href="{% url 'secret-page' %}">Secrets from JS File</a>
-                                    <a class="nav-link" href="{% url 'endpoint-page' %}">Endpoints from JS File</a>
+                                    <a class="nav-link" href="{% url 'secret-page' %}">Secrets from JS</a>
+                                    <a class="nav-link" href="{% url 'endpoint-page' %}">Endpoints from JS</a>
                                 </nav>
                             </div>
                             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">

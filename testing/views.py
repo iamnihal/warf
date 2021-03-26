@@ -21,7 +21,7 @@ def subdomain_finder(request):
         form = SubdomainForm()
         subdomain = str(request.POST.get('subdomain'))
         subdom = sublist3r.main(subdomain, 40, '{}_{}.txt'.format(subdomain,timestr), ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
-        return render(request, 'testing/subdomains.html', {'subdom': subdom})
+        return render(request, 'testing/subdomain.html', {'subdom': subdom})
     else:
         form = SubdomainForm()
     return render(request, 'testing/subdomain-index.html')

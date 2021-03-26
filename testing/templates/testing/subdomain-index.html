@@ -10,40 +10,18 @@
             <div class="container-fluid">
                 <h1 class="mt-4">Subdomain Discovery</h1>
                 <!-- <ol class="breadcrumb mb-4"> -->
-                    <form action="{% url 'subdomain-page' %}" method="POST">
+                    <form action="{% url 'subdomain-page' %}" id="subFormId" method="POST">
                     {% csrf_token %}
                     <div class="form-outline">
                             <input type="text" id="formControlLg" class="form-control form-control-lg" name="subdomain" required/>
                             <label class="form-label" for="formControlLg">Domain</label>
                     </div>
                     <br>
-                    <button type="submit" class="btn btn-danger" onclick=loadingPage()>Submit</button>
+                    <button type="submit" id="btnSubmit" class="btn btn-danger" onclick="loadingPage()">Submit</button>
                 </form>
 
                 <div id="spinner"></div>
-
-                {% if subdom %}
-                <table class="table">
-                    <thead>
-                      <tr>
-                        <th scope="col">Subdomain</th>
-                      </tr>
-                    </thead>
-                {% endif %}
-                <div id="data-box">
-                    <tbody>
-                        {% for subdomain in subdom %}
-                      <tr>
-                        <th scope="row">1</th>
-                        <td>{{ subdomain }}</td>
-                      </tr>
-                      {% endfor %}
-                    </tbody>
                 </div>
-                  </table>
-                </div>
-
-                
 
                 <div style="height: 100vh"></div>
                 <div class="card mb-4"><div class="card-body">When scrolling, the navigation stays at the top of the page. This is the end of the static navigation demo.</div></div>
@@ -51,7 +29,10 @@
         </main>
     </div>
 <script>
-   function loadingPage() {
+function loadingPage() {
+
+if(document.getElementById("formControlLg").value.length !== 0)
+{
   //Create outer div
   let div = document.createElement("div")
   div.id = 'spinner-box'
@@ -65,5 +46,15 @@
   div.appendChild(innerdiv);
   document.getElementById("spinner").appendChild(div);
    }
+   }
+</script>
+
+<script>
+    $(document).ready(function () {
+    $("#subFormId").submit(function () {
+        $(".btn").attr("disabled", true);
+        return true;
+    });
+});
 </script>
 {% endblock %}

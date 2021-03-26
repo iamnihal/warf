@@ -10,7 +10,7 @@
             <div class="container-fluid">
                 <h1 class="mt-4">JavaScript URLs Discovery</h1>
                 <!-- <ol class="breadcrumb mb-4"> -->
-                    <form action="{% url 'jsfile-page' %}" method="POST">
+                    <form action="{% url 'jsfile-page' %}" id="subFormId" method="POST">
                     {% csrf_token %}
                     <div class="form-outline">
                             <input type="text" id="formControlLg" class="form-control form-control-lg" name="jsfile" required/>
@@ -22,10 +22,16 @@
 
                 <div id="spinner"></div>
                 </div>
+                <div style="height: 100vh"></div>
+                <div class="card mb-4"><div class="card-body"></div></div>
+                </div>
         </main>
     </div>
 <script>
    function loadingPage() {
+
+if(document.getElementById("formControlLg").value.length !== 0)
+{
   //Create outer div
   let div = document.createElement("div")
   div.id = 'spinner-box'
@@ -39,5 +45,14 @@
   div.appendChild(innerdiv);
   document.getElementById("spinner").appendChild(div);
    }
+   }
 </script>
+
+<script>
+    $(document).ready(function () {
+    $("#subFormId").submit(function () {
+        $(".btn").attr("disabled", true);
+        return true;
+    });
+});
 {% endblock %}
