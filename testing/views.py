@@ -14,7 +14,7 @@ timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
 global fullscanContext
 
 def index(request):
-    return render(request, 'testing/fullscan.html')
+    return render(request, 'testing/index.html')
 
 #Subdomain Finder
 def subdomain_finder(request):
