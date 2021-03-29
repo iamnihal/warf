@@ -17,3 +17,7 @@ class JsLinks(forms.Form):
 
 class JsSecrets(forms.Form):
     target_domain = forms.CharField(max_length=100)
+
+class GithubSubdomainForm(forms.Form):
+    target_domain = forms.CharField(max_length=100)
+    token = forms.CharField(max_length=30)

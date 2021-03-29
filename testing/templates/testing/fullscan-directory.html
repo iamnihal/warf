@@ -1,0 +1,54 @@
+{% extends 'testing/base-tools.html' %}
+
+{% block title %}
+	<title>Fullscan Results</title>
+{% endblock %}
+	
+{% block content %}
+	<div class="limiter">
+		<div class="container-table100">
+			<div class="wrap-table100">
+    
+
+    <div class="input-group mb-2 float-right" style="width: 300px">
+        <input type="text" id="dir" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <button class="btn btn-primary float-right" type="button">Search</button>
+        </div>
+      </div>
+				<div class="table100">
+					<table>
+						<thead>
+							<tr class="table100-head">
+								<th class="column1">Directory</th>
+								<th class="column2">Response Size</th>
+								<th class="column3">Status Code</th>
+							</tr>
+						</thead>
+						<tbody id="directory">
+                            {% for dir_link, size, status in context %}
+								<tr>
+									<td class="column1">{{ dir_link }}</td>
+									<td class="column2">{{ size }}</td>
+									<td class="column3">{{ status }}</td>
+								</tr>
+                            {% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <script>
+        $(document).ready(function() {
+            $("#dir").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#directory tr").filter(function() {
+                    $(this).toggle($(this).text()
+                    .toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+{% endblock %}

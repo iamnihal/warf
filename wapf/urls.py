@@ -15,15 +15,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from testing.views import subdomain_finder, index, directory_brute_force, waybackurls, js_files, js_secrets, js_links
+from testing.views import subdomain_finder, index, directory_brute_force, waybackurls, js_files, js_secrets, js_links, full_scan, fullscan_result
 
 urlpatterns = [
+
+    #Scan URLs
     path('admin/', admin.site.urls),
     path('', index, name="index-page"),
-    path('scan/subdomain', subdomain_finder, name="subdomain-page" ),
+    path('scan/subdomain', subdomain_finder, name="subdomain-page"),
     path('scan/directory', directory_brute_force, name="directory-page"),
     path('scan/wayback', waybackurls, name="wayback-page"),
     path('scan/jsfile', js_files, name="jsfile-page" ),
     path('scan/secret', js_secrets, name="secret-page"),
     path('scan/endpoint', js_links, name="endpoint-page"),
+
+    #Fullscan URLs
+    path('scan/fullscan', full_scan, name="fullscan-page"),
+    path('fullscan/', fullscan_result, name="fullscan-subdomain"),
+    path('fullscan/', fullscan_result, name="fullscan-directory"),
+    path('fullscan/', fullscan_result, name="fullscan-wayback"),
+    path('fullscan/', fullscan_result, name="fullscan-jsurl"),
+    path('fullscan/', fullscan_result, name="fullscan-secrets"),
+    path('fullscan/', fullscan_result, name="fullscan-linkfinder"),
 ]

@@ -23,6 +23,26 @@
                 <div id="spinner"></div>
                 </div>
 
+                <div class="container-fluid">
+                    <h1 class="mt-4">Subdomain Discovery from Github</h1>
+                        <form action="{% url 'subdomain-page' %}" id="gitsubFormId" method="POST">
+                        {% csrf_token %}
+                        <!-- Domain -->
+                        <div class="form-outline">
+                                <input type="text" id="formControlLg" class="form-control form-control-lg" name="github-subdomain" required/>
+                                <label class="form-label" for="formControlLg">Domain</label>
+                        </div>
+                        <br>
+                        <!-- Token -->
+                        <div class="form-outline">
+                        <input type="text" id="formControlLg" class="form-control form-control-lg" name="github-token" required/>
+                        <label class="form-label" for="formControlLg">Github Token</label>
+                        </div>
+                        <br>
+                        <button type="submit" id="btnSubmit" class="btn btn-danger" onclick="loadingPage()">Submit</button>
+                    </form>
+                    </div>
+
                 <div style="height: 100vh"></div>
                 <div class="card mb-4"><div class="card-body">When scrolling, the navigation stays at the top of the page. This is the end of the static navigation demo.</div></div>
             </div>
@@ -52,6 +72,15 @@ if(document.getElementById("formControlLg").value.length !== 0)
 <script>
     $(document).ready(function () {
     $("#subFormId").submit(function () {
+        $(".btn").attr("disabled", true);
+        return true;
+    });
+});
+</script>
+
+<script>
+    $(document).ready(function () {
+    $("#gitsubFormId").submit(function () {
         $(".btn").attr("disabled", true);
         return true;
     });
