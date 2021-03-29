@@ -11,34 +11,91 @@
     
 
     <div class="input-group mb-2 float-right" style="width: 300px">
-        <input type="text" id="endpoint" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+        <input type="text" id="id_search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
         <div class="input-group-append">
           <button class="btn btn-primary float-right" type="button">Search</button>
         </div>
       </div>
+
 				<div class="table100">
 					<table>
 						<thead>
 							<tr class="table100-head">
+                                {% if subdomain_context %}
 								<th class="column1">Subdomains</th>
-								<th class="column2">Order ID</th>
-								<th class="column3">Name</th>
-								<th class="column4">Price</th>
-								<th class="column5">Quantity</th>
-								<th class="column6">Total</th>
 							</tr>
 						</thead>
-						<tbody id="jsfiles">
-                            {% for subdomain, directory, wayback, jsurl, secret, jslink in fullscanContext %}
+						<tbody id="id_tbody">
+                            {% for subdomain in subdomain_context %}
 								<tr>
 									<td class="column1">{{ subdomain }}</td>
-									<td class="column2">{{ directory.directory_link }}</td>
-									<td class="column3">iPhone X 64Gb Grey</td>
-									<td class="column4">$999.00</td>
-									<td class="column5">1</td>
-									<td class="column6">$999.00</td>
 								</tr>
                             {% endfor %}
+                            {% endif %}
+
+                            {% if directory_context %}
+								<th class="column1">Directory</th>
+								<th class="column2">Response Size</th>
+								<th class="column3">Status Code</th>
+							</tr>
+						</thead>
+						<tbody id="id_tbody">
+                            {% for dir_link, size, status in directory_context %}
+								<tr>
+									<td class="column1">{{ dir_link }}</td>
+									<td class="column2">{{ size }}</td>
+									<td class="column3">{{ status }}</td>
+								</tr>
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if wayback_context %}
+								<th class="column1">Wayback URLs</th>
+							</tr>
+						</thead>
+						<tbody id="id_tbody">
+                            {% for url in wayback_context %}
+								<tr>
+									<td class="column1">{{ url }}</td>
+								</tr>
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if jsurl_context %}
+								<th class="column1">JavaScript URLs</th>
+							</tr>
+						</thead>
+						<tbody id="id_tbody">
+                            {% for jsurl in jsurl_context %}
+								<tr>
+									<td class="column1">{{ jsurl }}</td>
+								</tr>
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if secret_context %}
+								<th class="column1">Secret/API Keys</th>
+							</tr>
+						</thead>
+						<tbody id="id_tbody">
+                            {% for key in secret_context %}
+								<tr>
+									<td class="column1">{{ key|truncatechars:100 }}</td>
+								</tr>
+                            {% endfor %}
+                            {% endif %}
+
+                            {% if linkfinder_context %}
+								<th class="column1">Linkfinder Link</th>
+							</tr>
+						</thead>
+						<tbody id="id_tbody">
+                            {% for link in linkfinder_context %}
+								<tr>
+									<td class="column1">{{ link }}</td>
+								</tr>
+                            {% endfor %}
+                            {% endif %}
 						</tbody>
 					</table>
 				</div>
@@ -48,9 +105,9 @@
 
     <script>
         $(document).ready(function() {
-            $("#js").on("keyup", function() {
+            $("#id_search").on("keyup", function() {
                 var value = $(this).val().toLowerCase();
-                $("#jsfiles tr").filter(function() {
+                $("#id_tbody tr").filter(function() {
                     $(this).toggle($(this).text()
                     .toLowerCase().indexOf(value) > -1)
                 });

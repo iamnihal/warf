@@ -377,7 +377,7 @@ def full_scan(request):
         }
         
         print(fullscanContext)
-        return render(request, 'testing/fullscan.html', {'context':fullscanContext})
+        return render(request, 'testing/fullscan-overview.html', {'context':fullscanContext})
     else:
         return render(request, 'testing/fullscan-index.html')
 
@@ -393,33 +393,35 @@ def fullscan_result(request):
         if subdomain == "subdomain":
             print("Show subdomain page")
             sub_context = fullscanContext['subdom']
-            return render(request, 'testing/fullscan-subdomain.html', {'context':sub_context})
+            return render(request, 'testing/fullscan-result.html', {'subdomain_context':sub_context})
 
         if directory == "directory":
             print("Show directory page")
             dir_context = fullscanContext['directory_size_status']
-            return render(request, 'testing/fullscan-directory.html', {'context':dir_context})
+            return render(request, 'testing/fullscan-result.html', {'directory_context':dir_context})
 
         if wayback == "wayback":
             print("Show wayback page")
             wayback_context = fullscanContext['wayback_url']
-            return render(request, 'testing/fullscan-wayback.html', {'context':wayback_context})
+            return render(request, 'testing/fullscan-result.html', {'wayback_context':wayback_context})
 
         if jsurl == "jsurl":
             print("Show JS url page")
             jsurl_context = fullscanContext['js_url']
-            return render(request, 'testing/fullscan-jsurl.html', {'context':jsurl_context})
+            return render(request, 'testing/fullscan-result.html', {'jsurl_context':jsurl_context})
 
         if secret == "secrets":
             print("Show Secret page")
             secret_context = fullscanContext['js_secrets']
-            return render(request, 'testing/fullscan-secret.html', {'context':secret_context})
+            print(secret_context)
+            return render(request, 'testing/fullscan-result.html', {'secret_context':secret_context})
 
         if link_finder == "linkfinder":
             print("Show Linkfinder page")
             linkfinder_context = fullscanContext['js_link']
-            return render(request, 'testing/fullscan-jsurl.html', {'context':linkfinder_context})
+            print(linkfinder_context)
+            return render(request, 'testing/fullscan-result.html', {'linkfinder_context':linkfinder_context})
         
-        return render(request, 'testing/fullscan-result.html')
+        # return render(request, 'testing/fullscan-result.html')
     else:
         return render(request, 'testing/fullscan.html')
