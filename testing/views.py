@@ -14,7 +14,7 @@ timestr = time.strftime("%Y-%m-%d-%H-%M")
 global fullscanContext
 
 def index(request):
-    return render(request, 'testing/wayback.html')
+    return render(request, 'testing/fullscan-result.html')
 
 def download_result(request):
     if request.method == 'GET':
@@ -149,13 +149,12 @@ def directory_brute_force(request):
         except:
             pass
 
-        dirtimestr = time.strftime("%Y-%m-%d")
-        report = 'report_{}.txt'.format(dirtimestr)
-        print(report)
-        directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",report], capture_output=True, text=True)
+        global directory_output_file
+        directory_output_file = 'Directory_{}.txt'.format(timestr)
+        directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file], capture_output=True, text=True)
         print(directory_search.stdout)
 
-        with open(report, 'r') as write_directory_file:
+        with open(directory_output_file, 'r') as write_directory_file:
             data = write_directory_file.readlines()[2:]
 
         status = []
@@ -328,20 +327,24 @@ def full_scan(request):
             pass
 
         #Enable port scanning
-        output_subdomain = '{}.txt'.format(domain)
-        subdom = sublist3r.main(domain, 40, output_subdomain, ports=None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
+        global subdomain_output_file
+        subdomain_output_file = '{}_{}.txt'.format(domain,timestr)
+        subdom = sublist3r.main(domain, 40, subdomain_output_file, ports=None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
         
         print("Subdomain enumeration Completed")
         # report = 'directory_report_{}.txt'.format(timestr)
         # print(report)
-        directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-l",output_subdomain,"--full-url","-q","-t","60","-w","dirsearch/robotsdis.txt"], capture_output=True, text=True)
+        directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-l",subdomain_output_file,"--full-url","-q","-t","60","-w","dirsearch/robotsdis.txt"], capture_output=True, text=True)
         # print(directory_search.stdout)
 
-        with open('bruteforce.txt', 'a') as brute_force:
-            brute_force.writelines(directory_search.stdout)
+        global directory_output_file
+        directory_output_file = 'Directory_{}.txt'.format(timestr)
+
+        with open(directory_output_file, 'a') as write_directory_output:
+            write_directory_output.writelines(directory_search.stdout)
 
         directory_list = []
-        with open('bruteforce.txt', 'r') as r:
+        with open(directory_output_file, 'r') as r:
             for line in r:
                 directory_list.append(line)
 
@@ -380,9 +383,12 @@ def full_scan(request):
 
         unique_wayback_urls = set(wayback_urls_list)
 
-        with open('{}_Wayback_URLs_{}.txt'.format(domain, timestr), 'a+') as write_wayback_urls:
+        global wayback_output_file
+        wayback_output_file = '{}_Wayback_URLs_{}.txt'.format(domain, timestr)
+
+        with open(wayback_output_file, 'a') as write_wayback_output:
             for url in unique_wayback_urls:
-                write_wayback_urls.write(url + '\n')
+                write_wayback_output.write(url + '\n')
 
 
         print("Wayback URLs Completed")
@@ -394,9 +400,12 @@ def full_scan(request):
 
         unique_js_file_urls = set(js_file_urls)
 
-        with open('{}_JS_URLs_{}.txt'.format(domain, timestr), 'a+') as write_js_file:
+        global jsurl_output_file
+        jsurl_output_file = '{}_JS_URLs_{}.txt'.format(domain, timestr)
+
+        with open(jsurl_output_file, 'a') as write_jsurl_output:
             for url in unique_js_file_urls:
-                write_js_file.write(url + '\n')
+                write_jsurl_output.write(url + '\n')
         
         print("JavaScript URLs Completed")
         #JS Secrets
@@ -408,34 +417,34 @@ def full_scan(request):
                 for item in js_secrets.stdout.splitlines():
                     js_secrets_list.append(item)
 
-        js_secret_filename = '{}_JS_Secret_{}.txt'.format(domain,timestr)
-        with open(js_secret_filename, 'a') as secret_file:
+        global secret_output_file
+        secret_output_file = '{}_JS_Secret_{}.txt'.format(domain,timestr)
+
+        with open(secret_output_file, 'a') as write_secret_output:
             for secrets in js_secrets_list:
-                secret_file.write(secrets + '\n')
+                write_secret_output.write(secrets + '\n')
 
         print("JS Secrets Completed")
 
         #LinkFinder
+        jsurls = []
         for js_link in unique_js_file_urls:
             result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
-            # print(result.stdout)
             if result.stdout:
-                #This is not efficient. Need to store the result.stdout in list and then write it to the file.
-                with open('jslinks.txt', 'w') as file:
-                    if "Usage" in result.stdout:
-                        pass
-                    else:
-                        file.write(result.stdout)
-            else:
-                continue
+                if "Usage" in result.stdout:
+                    pass
+                else:
+                    for item in result.stdout.splitlines():
+                        jsurls.append(item)
+            
+        global linkfinder_output_file
+        linkfinder_output_file = '{}_Linkfinder_{}.txt'.format(domain, timestr)
 
-            js_links = []
-            with open('jslinks.txt', 'r') as read_file:
-                content = read_file.read().splitlines()
-                for link in content:
-                    js_links.append(link)
-                
-            unique_js_links = set(js_links)
+        with open(linkfinder_output_file, 'a') as write_linkfinder_output:
+            for line in jsurls:
+                write_linkfinder_output.write(line + '\n')
+
+        unique_js_links = set(jsurls)
 
         print("LinkFinder Completed")
 
@@ -451,14 +460,13 @@ def full_scan(request):
             'js_link':list(unique_js_links)
         }
         
-        print(fullscanContext)
         return render(request, 'testing/fullscan-overview.html', {'context':fullscanContext})
     else:
         return render(request, 'testing/fullscan-index.html')
 
 def fullscan_result(request):
     if request.method == 'GET':
-        subdomain = request.GET['type']
+        subdomain = request.GET.get('type', None)
         directory = request.GET.get('type', None)
         wayback = request.GET.get('type', None)
         jsurl = request.GET.get('type', None)
@@ -467,6 +475,7 @@ def fullscan_result(request):
 
         if subdomain == "subdomain":
             print("Show subdomain page")
+            print(fullscanContext)
             sub_context = fullscanContext['subdom']
             return render(request, 'testing/fullscan-result.html', {'subdomain_context':sub_context})
 

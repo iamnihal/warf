@@ -4,9 +4,11 @@
 	<title>Fullscan Results</title>
 {% endblock %}
 	
+<!-- <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger float-right" download>Download Report</a> -->
 {% block content %}
 
                                 {% if subdomain_context %}
+                                <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger float-right" download>Download Report</a>
 								<th class="column1">Subdomains</th>
 							</tr>
 						</thead>
@@ -19,6 +21,7 @@
                             {% endif %}
 
                             {% if directory_context %}
+                            <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger float-right" download>Download Report</a>
 								<th class="column1">Directory</th>
 								<th class="column2">Response Size</th>
 								<th class="column3">Status Code</th>
@@ -35,6 +38,7 @@
                             {% endif %}
 
                             {% if wayback_context %}
+                            <a href="{% url 'download-result' %}?scan=wayback" class="btn btn-danger float-right" download>Download Report</a>
 								<th class="column1">Wayback URLs</th>
 							</tr>
 						</thead>
@@ -47,6 +51,7 @@
                             {% endif %}
 
                             {% if jsurl_context %}
+                            <a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-danger float-right" download>Download Report</a>
 								<th class="column1">JavaScript URLs</th>
 							</tr>
 						</thead>
@@ -59,6 +64,7 @@
                             {% endif %}
 
                             {% if secret_context %}
+                            <a href="{% url 'download-result' %}?scan=secret" class="btn btn-danger float-right" download>Download Report</a>
 								<th class="column1">Secret/API Keys</th>
 							</tr>
 						</thead>
@@ -71,6 +77,7 @@
                             {% endif %}
 
                             {% if linkfinder_context %}
+                            <a href="{% url 'download-result' %}?scan=linkfinder" class="btn btn-danger float-right" download>Download Report</a>
 								<th class="column1">Linkfinder Link</th>
 							</tr>
 						</thead>
