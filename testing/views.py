@@ -14,7 +14,7 @@ timestr = time.strftime("%Y-%m-%d-%H-%M")
 global fullscanContext
 
 def index(request):
-    return render(request, 'testing/fullscan-result.html')
+    return render(request, 'testing/index.html')
 
 def download_result(request):
     if request.method == 'GET':
