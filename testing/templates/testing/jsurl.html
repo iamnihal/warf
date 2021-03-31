@@ -1,14 +1,14 @@
 {% extends 'testing/base-tools.html' %}
 
 {% block title %}
-	<title>Secret Keys</title>
+	<title>JavaScript URLs</title>
 {% endblock %}
 	
 {% block content %}
 
-<a href="{% url 'download-result' %}?scan=secret" class="btn btn-danger float-right" download>Download Report</a>
+<a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-danger float-right" download>Download Report</a>
 
-								<th class="column1">Secret/API Keys</th>
+								<th class="column1">JavaScript URLs</th>
 								<!-- <th class="column2">Order ID</th>
 								<th class="column3">Name</th>
 								<th class="column4">Price</th>
@@ -17,9 +17,9 @@
 							</tr>
 						</thead>
 						<tbody id="id_tbody">
-                            {% for key in context %}
+                            {% for url in context %}
 								<tr>
-									<td class="column1">{{ key|truncatechars:100 }}</td>
+									<td class="column1">{{ url }}</td>
 									<!-- <td class="column2">200398</td>
 									<td class="column3">iPhone X 64Gb Grey</td>
 									<td class="column4">$999.00</td>
@@ -27,5 +27,5 @@
 									<td class="column6">$999.00</td> -->
 								</tr>
                             {% endfor %}
-
+						
 {% endblock %}

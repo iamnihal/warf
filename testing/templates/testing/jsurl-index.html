@@ -1,17 +1,17 @@
 {% extends "testing/base.html" %}
 
 {% block title %}
-<title>Endpoints from JavaScript</title>
+<title>JS URL Discovery</title>
 {% endblock %}
 
 {% block content %}
-   
-                <h1 class="mt-4">Extract Endpoints from JS Files</h1>
+
+                <h1 class="mt-4">JavaScript URLs Discovery</h1>
                 <!-- <ol class="breadcrumb mb-4"> -->
-                    <form action="{% url 'endpoint-page' %}" id="subFormId" method="POST">
+                    <form action="{% url 'jsurl-page' %}" id="subFormId" method="POST">
                     {% csrf_token %}
                     <div class="form-outline">
-                            <input type="text" id="formControlLg" class="form-control form-control-lg" name="endpoint" required/>
+                            <input type="text" id="formControlLg" class="form-control form-control-lg" name="jsurl" required/>
                             <label class="form-label" for="formControlLg">Domain</label>
                     </div>
                     <br>

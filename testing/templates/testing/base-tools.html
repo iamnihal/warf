@@ -17,11 +17,6 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
 <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
 <!--===============================================================================================-->
-<!-- <link rel="stylesheet" type="text/css" href="{% static 'testing/font-awesome.min.css' %}"> -->
-<link href="https://cdn.jsdelivr.net/gh/iamnihal/warf/testing/static/testing/font-awesome.min.css" rel="stylesheet" />
-    
-
-<!--===============================================================================================-->
 	<!-- <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css"> -->
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.css">
@@ -30,19 +25,59 @@
 <!--===============================================================================================-->
 	<!-- <link rel="stylesheet" type="text/css" href="vendor/perfect-scrollbar/perfect-scrollbar.css"> -->
 <!--===============================================================================================-->
-	<!-- <link rel="stylesheet" type="text/css" href="{% static 'testing/util.css' %}"> -->
-	<!-- <link rel="stylesheet" type="text/css" href="{% static 'testing/main.css' %}"> -->
-    <link href="https://cdn.jsdelivr.net/gh/iamnihal/warf/testing/static/testing/util.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/gh/iamnihal/warf/testing/static/testing/main.css" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="{% static 'testing/util.css' %}" />
+	<link rel="stylesheet" type="text/css" href="{% static 'testing/main.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'testing/font-awesome.min.css' %}" />
      
 <!--===============================================================================================-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 </head>
 <body>
-	
+
+    <div class="limiter">
+		<div class="container-table100">
+			<div class="wrap-table100">
+    
+
+    <div class="input-group mb-2 float-left" style="width: 300px">
+        <input type="text" id="id_search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+        <div class="input-group-append">
+          <button class="btn btn-primary float-left" type="button">Search</button>
+        </div>
+      </div>
+    
+      {% block download %}
+      
+      {% endblock %}
+    
+
+				<div class="table100">
+					<table>
+						<thead>
+							<tr class="table100-head">
+
     {% block content %}
 
     {% endblock %}
+
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $("#id_search").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#id_tbody tr").filter(function() {
+            $(this).toggle($(this).text()
+            .toLowerCase().indexOf(value) > -1)
+        });
+    });
+    });
+</script>
 </body>
 </html>

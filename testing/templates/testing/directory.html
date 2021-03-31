@@ -5,22 +5,9 @@
 {% endblock %}
 	
 {% block content %}
-	<div class="limiter">
-		<div class="container-table100">
-			<div class="wrap-table100">
-    
 
-    <div class="input-group mb-2 float-right" style="width: 300px">
-        <input type="text" id="dirs" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-          <button class="btn btn-primary float-right" type="button">Search</button>
-        </div>
-      </div>
+<a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger float-right" download>Download Report</a>
 
-				<div class="table100">
-					<table>
-						<thead>
-							<tr class="table100-head">
 								<th class="column1">Directory</th>
 								<th class="column2">Response Size</th>
 								<th class="column3">Status Code</th>
@@ -29,7 +16,7 @@
 								<th class="column6">Total</th> -->
 							</tr>
 						</thead>
-						<tbody id="directories">
+						<tbody id="id_tbody">
                             {% for directory, size, status in context %}
 								<tr>
 									<td class="column1">{{ directory }}</td>
@@ -40,22 +27,5 @@
 									<td class="column6">$999.00</td> -->
 								</tr>
                             {% endfor %}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
-
-    <script>
-        $(document).ready(function() {
-            $("#dirs").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $("#directories tr").filter(function() {
-                    $(this).toggle($(this).text()
-                    .toLowerCase().indexOf(value) > -1)
-                });
-            });
-        });
-    </script>
+						
 {% endblock %}

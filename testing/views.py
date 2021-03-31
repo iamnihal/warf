@@ -10,11 +10,78 @@ import re
 import requests
 import time
 
-timestr = time.strftime("%Y-%m-%d-%H-%M-%S")
+timestr = time.strftime("%Y-%m-%d-%H-%M")
 global fullscanContext
 
 def index(request):
-    return render(request, 'testing/index.html')
+    return render(request, 'testing/wayback.html')
+
+def download_result(request):
+    if request.method == 'GET':
+        subdomain = request.GET.get('scan', None)
+        directory = request.GET.get('scan', None)
+        wayback = request.GET.get('scan', None)
+        jsurl = request.GET.get('scan', None)
+        secret = request.GET.get('scan', None)
+        link_finder = request.GET.get('scan', None)
+
+        if subdomain == "subdomain":
+            output_file = f'/home/nihal/fwapf/testing/{subdomain_output_file}'
+            filename = f'{subdomain_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if directory == "directory":
+            output_file = f'/home/nihal/fwapf/testing/{directory_output_file}'
+            filename = f'{directory_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if wayback == "wayback":
+            output_file = f'/home/nihal/fwapf/testing/{wayback_output_file}'
+            filename = f'{wayback_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if jsurl == "jsurl":
+            output_file = f'/home/nihal/fwapf/testing/{jsurl_output_file}'
+            filename = f'{jsurl_output_file}.txt'
+            print(filename)
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if secret == "secret":
+            output_file = f'/home/nihal/fwapf/testing/{secret_output_file}'
+            filename = f'{secret_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if link_finder == "linkfinder":
+            output_file = f'/home/nihal/fwapf/testing/{linkfinder_output_file}'
+            print(output_file)
+            filename = f'{linkfinder_output_file}.txt'
+            print(filename)
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+                
+        # with open(file, 'r') as fh:
+        #     response = HttpResponse(fh.read(), content_type="text/html")
+        #     response['Content-Disposition'] = "attachment; filename=%s" % filename
+        #     return response
+    else:
+        return render(request, 'testing/index.html')
 
 #Subdomain Finder
 def subdomain_finder(request):
@@ -24,9 +91,6 @@ def subdomain_finder(request):
         subdomain = str(request.POST.get('subdomain', None))
         gitSubdomain = str(request.POST.get('github-subdomain', None))
         gitToken = str(request.POST.get('github-token', None))
-        print(subdomain)
-        print(gitSubdomain)
-        print(gitToken)
 
         try:
             os.chdir('testing/')
@@ -36,13 +100,16 @@ def subdomain_finder(request):
 
         if subdomain != "None":
             print("Inside Sublister")
+            global subdomain_output_file
+            subdomain_output_file = '{}_{}.txt'.format(subdomain,timestr)
             #Enable port scanning
-            subdom = sublist3r.main(subdomain, 40, '{}_{}.txt'.format(subdomain,timestr), ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
+            subdom = sublist3r.main(subdomain, 40, subdomain_output_file, ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
             return render(request, 'testing/subdomain.html', {'subdom': subdom})
  
 
         print("Sublister Skipped")
         if gitSubdomain != "None":
+            global gitsubs
             gitsubs = 'github_subs_{}.txt'.format(timestr)
             result = subprocess.run(["python","github-subdomains.py","-t",gitToken,"-d",gitSubdomain,], capture_output=True, text=True)
 
@@ -121,7 +188,14 @@ def waybackurls(request):
 
         unique_wayback_urls = set(wayback_urls_list)
 
-        with open('{}_Wayback_URLs_{}.txt'.format(domain, timestr), 'a+') as write_wayback_urls:
+        try:
+            os.chdir('testing/')
+        except:
+            pass
+
+        global wayback_output_file
+        wayback_output_file = '{}_Wayback_URLs_{}.txt'.format(domain, timestr)
+        with open(wayback_output_file, 'a+') as write_wayback_urls:
             for url in unique_wayback_urls:
                 write_wayback_urls.write(url + '\n')
 
@@ -130,11 +204,11 @@ def waybackurls(request):
         form = Waybackurls()
     return render(request, 'testing/wayback-index.html')
 
-#JavaScript File URLs
-def js_files(request):
+#JavaScript URLs
+def js_urls(request):
     if request.method == 'POST':
         form = JsFiles()
-        domain = str(request.POST.get('jsfile'))
+        domain = str(request.POST.get('jsurl'))
         urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey'.format(domain)).json()
 
         js_file_urls = []
@@ -143,14 +217,17 @@ def js_files(request):
                 js_file_urls.append(link[0])
 
         unique_js_file_urls = set(js_file_urls)
-        with open('{}_JS_URLs_{}.txt'.format(domain, timestr), 'a+') as write_js_file:
+
+        global jsurl_output_file
+        jsurl_output_file = '{}_JS_URLs_{}.txt'.format(domain, timestr)
+        with open(jsurl_output_file, 'a+') as write_js_file:
             for url in unique_js_file_urls:
                 write_js_file.write(url + '\n')
 
-        return render(request, 'testing/jsfile.html', {'context': unique_js_file_urls})
+        return render(request, 'testing/jsurl.html', {'context': unique_js_file_urls})
     else:
         form = JsFiles()
-    return render(request, 'testing/jsfile-index.html')
+    return render(request, 'testing/jsurl-index.html')
 
 #JS Secrets
 #Need to verify live js links
@@ -181,8 +258,11 @@ def js_secrets(request):
                 for item in js_secrets.stdout.splitlines():
                     js_secrets_list.append(item)
 
-        js_secret_filename = '{}_JS_Secret_{}.txt'.format(domain,timestr)
-        with open(js_secret_filename, 'a') as secret_file:
+        
+
+        global secret_output_file
+        secret_output_file = '{}_JS_Secret_{}.txt'.format(domain,timestr)
+        with open(secret_output_file, 'a') as secret_file:
             for secrets in js_secrets_list:
                 secret_file.write(secrets + '\n')
 
@@ -215,27 +295,22 @@ def js_links(request):
 
         js_urls = []
         for js_link in unique_js_file_urls:
-            print(js_link)
             result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
             if result.stdout:
+                if "Usage" in result.stdout:
+                    pass
+                else:
+                    for item in result.stdout.splitlines():
+                        js_urls.append(item)
+            
+        global linkfinder_output_file
+        linkfinder_output_file = '{}_Linkfinder_{}.txt'.format(domain, timestr)
 
-                #This is not efficient. Need to store the result.stdout in list and then write it to the file.
-                with open('../jslinks.txt', 'w') as file:
-                    if "Usage" in result.stdout:
-                        pass
-                    else:
-                        file.write(result.stdout)
+        with open(linkfinder_output_file, 'a') as write_linkfinder_output:
+            for line in js_urls:
+                write_linkfinder_output.write(line + '\n')
 
-            js_links = []
-            with open('../jslinks.txt', 'r') as read_file:
-                content = read_file.read().splitlines()
-                for link in content:
-                    # if re.search(r'\.png$ | \.jpg$ | \.svg$ | \.woff$ | \.woff2$ | \.gif$ | \.jpeg$', link):
-                    #     pass
-                    # else:
-                    js_links.append(link)
-                
-            unique_js_links = set(js_links)
+        unique_js_links = set(js_urls)
 
         return render(request, 'testing/endpoint.html', {'context': unique_js_links})
     else:
@@ -422,6 +497,6 @@ def fullscan_result(request):
             print(linkfinder_context)
             return render(request, 'testing/fullscan-result.html', {'linkfinder_context':linkfinder_context})
         
-        # return render(request, 'testing/fullscan-result.html')
+        return render(request, 'testing/fullscan-result.html')
     else:
         return render(request, 'testing/fullscan.html')
