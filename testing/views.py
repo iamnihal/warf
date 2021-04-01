@@ -11,7 +11,7 @@ import requests
 import time
 
 timestr = time.strftime("%Y-%m-%d-%H-%M")
-global fullscanContext
+# global fullscanContext
 
 def index(request):
     return render(request, 'testing/index.html')
@@ -52,7 +52,6 @@ def download_result(request):
         if jsurl == "jsurl":
             output_file = f'/home/nihal/fwapf/testing/{jsurl_output_file}'
             filename = f'{jsurl_output_file}.txt'
-            print(filename)
             with open(output_file, 'r') as fh:
                 response = HttpResponse(fh.read(), content_type="text/html")
                 response['Content-Disposition'] = "attachment; filename=%s" % filename
@@ -68,26 +67,17 @@ def download_result(request):
 
         if link_finder == "linkfinder":
             output_file = f'/home/nihal/fwapf/testing/{linkfinder_output_file}'
-            print(output_file)
             filename = f'{linkfinder_output_file}.txt'
-            print(filename)
             with open(output_file, 'r') as fh:
                 response = HttpResponse(fh.read(), content_type="text/html")
                 response['Content-Disposition'] = "attachment; filename=%s" % filename
                 return response
-                
-        # with open(file, 'r') as fh:
-        #     response = HttpResponse(fh.read(), content_type="text/html")
-        #     response['Content-Disposition'] = "attachment; filename=%s" % filename
-        #     return response
     else:
         return render(request, 'testing/index.html')
 
 #Subdomain Finder
 def subdomain_finder(request):
     if request.method == 'POST':
-        # sublisterForm = SubdomainForm()
-        # githubForm = GithubSubdomainForm()
         subdomain = str(request.POST.get('subdomain', None))
         gitSubdomain = str(request.POST.get('github-subdomain', None))
         gitToken = str(request.POST.get('github-token', None))
@@ -152,7 +142,6 @@ def directory_brute_force(request):
         global directory_output_file
         directory_output_file = 'Directory_{}.txt'.format(timestr)
         directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file], capture_output=True, text=True)
-        print(directory_search.stdout)
 
         with open(directory_output_file, 'r') as write_directory_file:
             data = write_directory_file.readlines()[2:]
@@ -332,10 +321,8 @@ def full_scan(request):
         subdom = sublist3r.main(domain, 40, subdomain_output_file, ports=None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
         
         print("Subdomain enumeration Completed")
-        # report = 'directory_report_{}.txt'.format(timestr)
-        # print(report)
+        
         directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-l",subdomain_output_file,"--full-url","-q","-t","60","-w","dirsearch/robotsdis.txt"], capture_output=True, text=True)
-        # print(directory_search.stdout)
 
         global directory_output_file
         directory_output_file = 'Directory_{}.txt'.format(timestr)
@@ -348,8 +335,6 @@ def full_scan(request):
             for line in r:
                 directory_list.append(line)
 
-
-        # print(directory_list)
         status = []
         size = []
         directory_link = []
@@ -474,36 +459,27 @@ def fullscan_result(request):
         link_finder = request.GET.get('type', None)
 
         if subdomain == "subdomain":
-            print("Show subdomain page")
-            print(fullscanContext)
             sub_context = fullscanContext['subdom']
             return render(request, 'testing/fullscan-result.html', {'subdomain_context':sub_context})
 
         if directory == "directory":
-            print("Show directory page")
             dir_context = fullscanContext['directory_size_status']
             return render(request, 'testing/fullscan-result.html', {'directory_context':dir_context})
 
         if wayback == "wayback":
-            print("Show wayback page")
             wayback_context = fullscanContext['wayback_url']
             return render(request, 'testing/fullscan-result.html', {'wayback_context':wayback_context})
 
         if jsurl == "jsurl":
-            print("Show JS url page")
             jsurl_context = fullscanContext['js_url']
             return render(request, 'testing/fullscan-result.html', {'jsurl_context':jsurl_context})
 
         if secret == "secrets":
-            print("Show Secret page")
             secret_context = fullscanContext['js_secrets']
-            print(secret_context)
             return render(request, 'testing/fullscan-result.html', {'secret_context':secret_context})
 
         if link_finder == "linkfinder":
-            print("Show Linkfinder page")
             linkfinder_context = fullscanContext['js_link']
-            print(linkfinder_context)
             return render(request, 'testing/fullscan-result.html', {'linkfinder_context':linkfinder_context})
         
         return render(request, 'testing/fullscan-result.html')
