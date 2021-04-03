@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from testing.views import subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result
+from django.conf import settings
+from django.conf.urls.static import static
+from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls,
+    js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist)
 
 urlpatterns = [
 
@@ -38,4 +41,11 @@ urlpatterns = [
     path('fullscan/', fullscan_result, name="fullscan-jsurl"),
     path('fullscan/', fullscan_result, name="fullscan-secrets"),
     path('fullscan/', fullscan_result, name="fullscan-linkfinder"),
+
+    #Settings
+    path('setting/wordlist/', setting_wordlist, name="wordlist-page"),
 ]
+
+if settings.DEBUG:
+    # urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

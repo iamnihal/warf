@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .forms import SubdomainForm, DirectoryBruteForce, Waybackurls, JsFiles, JsLinks, JsSecrets, GithubSubdomainForm
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib import messages
 from . import sublist3r
 from .subbrute import subbrute
 import subprocess
@@ -11,69 +12,27 @@ import requests
 import time
 
 timestr = time.strftime("%Y-%m-%d-%H-%M")
-# global fullscanContext
 
 def index(request):
     return render(request, 'testing/index.html')
 
-def download_result(request):
-    if request.method == 'GET':
-        subdomain = request.GET.get('scan', None)
-        directory = request.GET.get('scan', None)
-        wayback = request.GET.get('scan', None)
-        jsurl = request.GET.get('scan', None)
-        secret = request.GET.get('scan', None)
-        link_finder = request.GET.get('scan', None)
+def handle_uploaded_file(f):
+    with open('testing/'+f.name, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
 
-        if subdomain == "subdomain":
-            output_file = f'/home/nihal/fwapf/testing/{subdomain_output_file}'
-            filename = f'{subdomain_output_file}.txt'
-            with open(output_file, 'r') as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
-
-        if directory == "directory":
-            output_file = f'/home/nihal/fwapf/testing/{directory_output_file}'
-            filename = f'{directory_output_file}.txt'
-            with open(output_file, 'r') as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
-
-        if wayback == "wayback":
-            output_file = f'/home/nihal/fwapf/testing/{wayback_output_file}'
-            filename = f'{wayback_output_file}.txt'
-            with open(output_file, 'r') as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
-
-        if jsurl == "jsurl":
-            output_file = f'/home/nihal/fwapf/testing/{jsurl_output_file}'
-            filename = f'{jsurl_output_file}.txt'
-            with open(output_file, 'r') as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
-
-        if secret == "secret":
-            output_file = f'/home/nihal/fwapf/testing/{secret_output_file}'
-            filename = f'{secret_output_file}.txt'
-            with open(output_file, 'r') as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
-
-        if link_finder == "linkfinder":
-            output_file = f'/home/nihal/fwapf/testing/{linkfinder_output_file}'
-            filename = f'{linkfinder_output_file}.txt'
-            with open(output_file, 'r') as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response['Content-Disposition'] = "attachment; filename=%s" % filename
-                return response
-    else:
-        return render(request, 'testing/index.html')
+def setting_wordlist(request):
+    if request.method == 'POST':
+        filename = request.FILES['myfile'].name
+        if os.path.splitext(filename)[1] == ".txt":
+            if request.FILES['myfile'].content_type == "text/plain":
+                handle_uploaded_file(request.FILES['myfile'])
+                messages.success(request, 'File uploaded successfully')
+            else:
+                messages.success(request, 'Bad content-type!!')
+        else:
+            messages.success(request, 'File has no txt extension!!')
+    return render(request, 'testing/wordlist.html')
 
 #Subdomain Finder
 def subdomain_finder(request):
@@ -89,17 +48,13 @@ def subdomain_finder(request):
             pass
 
         if subdomain != "None":
-            print("Inside Sublister")
             global subdomain_output_file
             subdomain_output_file = '{}_{}.txt'.format(subdomain,timestr)
             #Enable port scanning
             subdom = sublist3r.main(subdomain, 40, subdomain_output_file, ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
             return render(request, 'testing/subdomain.html', {'subdom': subdom})
  
-
-        print("Sublister Skipped")
         if gitSubdomain != "None":
-            global gitsubs
             gitsubs = 'github_subs_{}.txt'.format(timestr)
             result = subprocess.run(["python","github-subdomains.py","-t",gitToken,"-d",gitSubdomain,], capture_output=True, text=True)
 
@@ -108,12 +63,12 @@ def subdomain_finder(request):
             for line in result.stdout.splitlines():
                 gitsubs_list.append(line)
 
-            for item in gitsubs_list:
-                print(item)
+            for i in gitsubs_list:
+                print(i)
             
-            # with open(gitsubs, 'a+') as write_gitsubs_file:
-            #     for line in result.stdout:
-            #         write_gitsubs_file.write(line + '\n')
+            with open(gitsubs, 'a') as write_gitsubs_file:
+                for line in result.stdout:
+                    write_gitsubs_file.write(line + '\n')
 
         return render(request, 'testing/subdomain.html', {'subdom': gitsubs_list})
     else:
@@ -127,12 +82,6 @@ def directory_brute_force(request):
         form = DirectoryBruteForce()
         directory = str(request.POST.get('directory'))
         print(directory)
-        
-        # try:
-        #     os.chdir('testing/dirsearch/')
-        # except:
-        #     pass
-
 
         try:
             os.chdir('testing/')
@@ -359,6 +308,7 @@ def full_scan(request):
         directory_brute_link = zip(directory_link, size, status)
         
         print("Directory Brute Force Completed")
+
         #Wayback URLs
         wayback_urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
 
@@ -485,3 +435,62 @@ def fullscan_result(request):
         return render(request, 'testing/fullscan-result.html')
     else:
         return render(request, 'testing/fullscan.html')
+
+def download_result(request):
+    if request.method == 'GET':
+        subdomain = request.GET.get('scan', None)
+        directory = request.GET.get('scan', None)
+        wayback = request.GET.get('scan', None)
+        jsurl = request.GET.get('scan', None)
+        secret = request.GET.get('scan', None)
+        link_finder = request.GET.get('scan', None)
+
+        if subdomain == "subdomain":
+            output_file = f'/home/nihal/fwapf/testing/{subdomain_output_file}'
+            filename = f'{subdomain_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if directory == "directory":
+            output_file = f'/home/nihal/fwapf/testing/{directory_output_file}'
+            filename = f'{directory_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if wayback == "wayback":
+            output_file = f'/home/nihal/fwapf/testing/{wayback_output_file}'
+            filename = f'{wayback_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if jsurl == "jsurl":
+            output_file = f'/home/nihal/fwapf/testing/{jsurl_output_file}'
+            filename = f'{jsurl_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if secret == "secret":
+            output_file = f'/home/nihal/fwapf/testing/{secret_output_file}'
+            filename = f'{secret_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+
+        if link_finder == "linkfinder":
+            output_file = f'/home/nihal/fwapf/testing/{linkfinder_output_file}'
+            filename = f'{linkfinder_output_file}.txt'
+            with open(output_file, 'r') as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response['Content-Disposition'] = "attachment; filename=%s" % filename
+                return response
+    else:
+        return render(request, 'testing/index.html')
