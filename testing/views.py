@@ -17,7 +17,9 @@ def index(request):
     return render(request, 'testing/index.html')
 
 def handle_uploaded_file(f):
-    with open('testing/'+f.name, 'wb+') as destination:
+    global wordlist_name
+    wordlist_name = f'{os.path.splitext(f.name)[0]}-{time.strftime("%M-%S")}.txt'
+    with open('testing/wordlist/'+wordlist_name, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
 
@@ -27,7 +29,7 @@ def setting_wordlist(request):
         if os.path.splitext(filename)[1] == ".txt":
             if request.FILES['myfile'].content_type == "text/plain":
                 handle_uploaded_file(request.FILES['myfile'])
-                messages.success(request, 'File uploaded successfully')
+                messages.success(request, f'File uploaded successfully as {wordlist_name}')
             else:
                 messages.success(request, 'Bad content-type!!')
         else:
