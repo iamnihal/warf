@@ -1,3 +1,20 @@
 venv/
 db.sqlite3
 testing/dirsearch/logs/*.log
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Environments
+# .env
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pythonenv*

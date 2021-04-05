@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .forms import SubdomainForm, DirectoryBruteForce, Waybackurls, JsFiles, JsLinks, JsSecrets, GithubSubdomainForm
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from . import sublist3r
 from .subbrute import subbrute
@@ -19,6 +19,7 @@ def index(request):
 def handle_uploaded_file(f):
     global wordlist_name
     wordlist_name = f'{os.path.splitext(f.name)[0]}-{time.strftime("%M-%S")}.txt'
+    print(wordlist_name)
     with open('testing/wordlist/'+wordlist_name, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
@@ -31,9 +32,9 @@ def setting_wordlist(request):
                 handle_uploaded_file(request.FILES['myfile'])
                 messages.success(request, f'File uploaded successfully as {wordlist_name}')
             else:
-                messages.success(request, 'Bad content-type!!')
+                messages.success(request, 'Please upload a valid TXT file!!')
         else:
-            messages.success(request, 'File has no txt extension!!')
+            messages.success(request, 'Please upload a valid TXT file!!')
     return render(request, 'testing/wordlist.html')
 
 #Subdomain Finder
@@ -64,11 +65,8 @@ def subdomain_finder(request):
 
             for line in result.stdout.splitlines():
                 gitsubs_list.append(line)
-
-            for i in gitsubs_list:
-                print(i)
             
-            with open(gitsubs, 'a') as write_gitsubs_file:
+            with open(gitsubs, 'a+') as write_gitsubs_file:
                 for line in result.stdout:
                     write_gitsubs_file.write(line + '\n')
 
@@ -81,8 +79,10 @@ def subdomain_finder(request):
 #Directory Brute Force
 def directory_brute_force(request):
     if request.method == 'POST':
-        form = DirectoryBruteForce()
+        # form = DirectoryBruteForce()
+        global directory
         directory = str(request.POST.get('directory'))
+        wordlist = request.POST.get('wordlist')
         print(directory)
 
         try:
@@ -92,7 +92,25 @@ def directory_brute_force(request):
 
         global directory_output_file
         directory_output_file = 'Directory_{}.txt'.format(timestr)
-        directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file], capture_output=True, text=True)
+
+        if wordlist == "on":
+            print("Wordlist Chosed")
+            # print(os.getcwd())
+            os.chdir('./wordlist')
+            files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
+            wordlist_file = files[-1]
+            print(wordlist_file)
+            os.chdir('../')
+            directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w",f'wordlist/{wordlist_file}',"--plain-text-report",directory_output_file], capture_output=True, text=True)
+        else:
+            print("Default Wordlist")
+            directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file], capture_output=True, text=True)
+            # cmd = ["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file]
+            # global directory_search_ajax
+            # directory_search_ajax = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+            # for line in iter(directory_search.stdout.readline, b''):
+            #     print(">>> " + line.rstrip())
 
         with open(directory_output_file, 'r') as write_directory_file:
             data = write_directory_file.readlines()[2:]
@@ -201,7 +219,7 @@ def js_secrets(request):
 
         global secret_output_file
         secret_output_file = '{}_JS_Secret_{}.txt'.format(domain,timestr)
-        with open(secret_output_file, 'a') as secret_file:
+        with open(secret_output_file, 'a+') as secret_file:
             for secrets in js_secrets_list:
                 secret_file.write(secrets + '\n')
 
@@ -245,7 +263,7 @@ def js_links(request):
         global linkfinder_output_file
         linkfinder_output_file = '{}_Linkfinder_{}.txt'.format(domain, timestr)
 
-        with open(linkfinder_output_file, 'a') as write_linkfinder_output:
+        with open(linkfinder_output_file, 'a+') as write_linkfinder_output:
             for line in js_urls:
                 write_linkfinder_output.write(line + '\n')
 
@@ -278,7 +296,7 @@ def full_scan(request):
         global directory_output_file
         directory_output_file = 'Directory_{}.txt'.format(timestr)
 
-        with open(directory_output_file, 'a') as write_directory_output:
+        with open(directory_output_file, 'a+') as write_directory_output:
             write_directory_output.writelines(directory_search.stdout)
 
         directory_list = []
@@ -323,7 +341,7 @@ def full_scan(request):
         global wayback_output_file
         wayback_output_file = '{}_Wayback_URLs_{}.txt'.format(domain, timestr)
 
-        with open(wayback_output_file, 'a') as write_wayback_output:
+        with open(wayback_output_file, 'a+') as write_wayback_output:
             for url in unique_wayback_urls:
                 write_wayback_output.write(url + '\n')
 
@@ -340,7 +358,7 @@ def full_scan(request):
         global jsurl_output_file
         jsurl_output_file = '{}_JS_URLs_{}.txt'.format(domain, timestr)
 
-        with open(jsurl_output_file, 'a') as write_jsurl_output:
+        with open(jsurl_output_file, 'a+') as write_jsurl_output:
             for url in unique_js_file_urls:
                 write_jsurl_output.write(url + '\n')
         
@@ -357,7 +375,7 @@ def full_scan(request):
         global secret_output_file
         secret_output_file = '{}_JS_Secret_{}.txt'.format(domain,timestr)
 
-        with open(secret_output_file, 'a') as write_secret_output:
+        with open(secret_output_file, 'a+') as write_secret_output:
             for secrets in js_secrets_list:
                 write_secret_output.write(secrets + '\n')
 
@@ -377,7 +395,7 @@ def full_scan(request):
         global linkfinder_output_file
         linkfinder_output_file = '{}_Linkfinder_{}.txt'.format(domain, timestr)
 
-        with open(linkfinder_output_file, 'a') as write_linkfinder_output:
+        with open(linkfinder_output_file, 'a+') as write_linkfinder_output:
             for line in jsurls:
                 write_linkfinder_output.write(line + '\n')
 

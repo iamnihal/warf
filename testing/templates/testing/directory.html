@@ -29,3 +29,16 @@
                             {% endfor %}
 						
 {% endblock %}
+
+<script>
+    $.ajax({
+        type: 'GET',
+        url: 'scan/directory/json-data/',
+        success: function(response){
+            console.log(response)
+        },
+        error: function(response){
+            console.log(error)
+        }
+    })
+</script>

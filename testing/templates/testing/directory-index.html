@@ -16,7 +16,14 @@
                     </div>
                     <br>
                     <button type="submit" class="btn btn-danger" onclick=loadingPage()>Submit</button>
+
+                    <div class="form-check form-switch" style="margin-top: 20px;">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="wordlist">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Use Wordlist</label>
+                      </div>
                 </form>
+
+                
 
                 <!-- <div style="margin-top: 40px;"> -->
                 <!-- <form method="POST" action="{% url 'directory-page' %}" enctype="multipart/form-data">
@@ -27,6 +34,6 @@
                       <button type="button" class="btn btn-danger" style="margin-top: 25px;">SUBMIT</button>
                     </div>
                   </form> -->
-                  </div>
+                  <!-- </div> -->
 
 {% endblock %}
