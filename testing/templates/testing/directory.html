@@ -27,18 +27,26 @@
 									<td class="column6">$999.00</td> -->
 								</tr>
                             {% endfor %}
-						
-{% endblock %}
+					
+                            
+<!-- <script>
 
-<script>
+    function getFile() {
     $.ajax({
-        type: 'GET',
-        url: 'scan/directory/json-data/',
-        success: function(response){
-            console.log(response)
-        },
-        error: function(response){
-            console.log(error)
+                type: 'GET',
+                url: "{% url 'directory_ajax' %}",
+                success: function (data) {
+                    console.log("Got the file")
+                    },
+                error: function (data) {
+                    console.log("Didn't get the file")
+                }
+            });
         }
-    })
-</script>
+    
+        $(document).ready(function() {
+        setInterval(getFile, 3000);
+    });
+</script> -->
+
+{% endblock %}
