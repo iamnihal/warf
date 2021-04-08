@@ -15,6 +15,7 @@ import time
 timestr = time.strftime("%Y-%m-%d-%H-%M")
 global directory_output_file
 directory_output_file = None
+global dir_context
 
 def index(request):
     return render(request, 'testing/index.html')
@@ -81,9 +82,7 @@ def subdomain_finder(request):
 
 def directory_ajax(request):
     if request.method == 'GET':
-        # print(directory_output_file)
         try:
-            # if os.stat(directory_output_file).st_size != 0:
             if directory_output_file is not None:
                 if os.stat(directory_output_file).st_size != 0:
                     print(f'File has been created {directory_output_file}')
@@ -104,8 +103,6 @@ def directory_ajax(request):
             return HttpResponse("ValueError")
     else:
         return render(request, 'testing/directory-index.html')
-
-
 
 #Directory Brute Force
 @background(schedule=1)
@@ -134,13 +131,6 @@ def directory_brute_force_task(directory):
     else:
         print("Default Wordlist")
         directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file], capture_output=True, text=True)
-        print(directory_search.stdout)
-        # cmd = ["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file]
-        # global directory_search_ajax
-        # directory_search_ajax = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-        # for line in iter(directory_search.stdout.readline, b''):
-        #     print(">>> " + line.rstrip())
 
     with open(directory_output_file, 'r') as write_directory_file:
         data = write_directory_file.readlines()[2:]
@@ -156,7 +146,6 @@ def directory_brute_force_task(directory):
         directory_link.append(row[2])
     
     context = zip(directory_link, size, status)
-    # return render(request, 'testing/directory.html', {'context': context})
     return context
 
 def directory_brute_force(request):
@@ -166,12 +155,8 @@ def directory_brute_force(request):
         dir_wordlist = request.POST.get('wordlist')
         global dir_context
         dir_context = directory_brute_force_task.now(directory)
-        try:
-            return render(request, 'testing/directory.html', {'context':dir_context})
-        except:
-            pass
-        # messages.success(request, "Task Completed!!")
-        # return render(request, 'testing/directory.html', {'context':context})
+        
+        return render(request, 'testing/directory.html', {'context':dir_context})
     else:
         # try:
         #     if os.path.exists(directory_output_file):
@@ -180,69 +165,6 @@ def directory_brute_force(request):
         # except TypeError:
         #     print("The file does not exist")
         return render(request, 'testing/directory-index.html')
-    
-def directory_background_result(request):
-    if request.method == 'GET':
-        return render(request, 'testing/directory.html', {'context':dir_context})
-    else:
-        return render(request, 'testing/directory.html')
-
-
-#Directory Brute Force
-# def directory_brute_force(request):
-#     if request.method == 'POST':
-#         # form = DirectoryBruteForce()
-#         global directory
-#         directory = str(request.POST.get('directory'))
-#         wordlist = request.POST.get('wordlist')
-#         print(directory)
-
-#         try:
-#             os.chdir('testing/')
-#         except:
-#             pass
-
-#         global directory_output_file
-#         directory_output_file = 'Directory_{}.txt'.format(timestr)
-
-#         if wordlist == "on":
-#             print("Wordlist Chosed")
-#             # print(os.getcwd())
-#             os.chdir('./wordlist')
-#             files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
-#             wordlist_file = files[-1]
-#             print(wordlist_file)
-#             os.chdir('../')
-#             directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w",f'wordlist/{wordlist_file}',"--plain-text-report",directory_output_file], capture_output=True, text=True)
-#         else:
-#             print("Default Wordlist")
-#             directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file], capture_output=True, text=True)
-#             # cmd = ["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file]
-#             # global directory_search_ajax
-#             # directory_search_ajax = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-#             # for line in iter(directory_search.stdout.readline, b''):
-#             #     print(">>> " + line.rstrip())
-
-#         with open(directory_output_file, 'r') as write_directory_file:
-#             data = write_directory_file.readlines()[2:]
-
-#         status = []
-#         size = []
-#         directory_link = []
-
-#         for line in data:
-#             row = re.split(" +", line)
-#             status.append(row[0])
-#             size.append(row[1])
-#             directory_link.append(row[2])
-        
-#         context = zip(directory_link, size, status)
-        
-#         return render(request, 'testing/directory.html', {'context': context})
-#     else:
-#         form = DirectoryBruteForce()
-#     return render(request, 'testing/directory-index.html')
 
 #Wayback URLs
 def waybackurls(request):

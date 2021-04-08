@@ -23,7 +23,9 @@
                 </form>
 
                 <div class="alert alert-info text-center mt-4" id="id-message" role="alert" style="visibility: hidden">
-                    Process Completed. Getting Result!!
+                    Process Finished!!
+                    <br>
+                    <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger mt-3" download>Download Report</a>
                 </div>
 <!-- <p id="id_file"></p> -->
 
@@ -40,8 +42,6 @@ $.ajax({
             type: 'GET',
             url: "{% url 'directory_ajax' %}",
             success: function (data) {
-                // clearInterval(window.interval);
-                // console.log("Got the file");
                 if(data == "FileNotFound") {
                     console.log("File is not there");
                 }
@@ -50,17 +50,15 @@ $.ajax({
                 }
                 if(data == "FileContentisZero") {
                     console.log("File Content is Zero!!")
-                    // $("#id-message").attr("style", "visibility: hidden");
                     $("#id-message").attr("style", "visibility: visibility").text("BruteForcing in process!!")
                 }
                 if((data != "FileNotFound") && (data != "FileisNone") && (data != "FileContentisZero")) {
-                    // $("#id-message").attr("style", "visibility: visible");
-                    console.log(data)
+                    console.log(data);
+                    $("#id-message").attr("style", "visibility: visibility");
+
                 }},
             error: function (data) {
-                // clearInterval(window.interval);
                 console.log("Didn't get the file");
-                // $("#id-message").attr("style", "visibility: visible").text("Something went wrong!!");
             }
         });
     }

@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, directory_ajax, directory_background_result,)
+from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, directory_ajax,)
 
 urlpatterns = [
 
@@ -33,7 +33,7 @@ urlpatterns = [
     path('download/', download_result, name='download-result'),
 
     #Fullscan URLs
-    path('scan/fullscan', full_scan, name="fullscan-page"),
+    path('scan/fullscan/', full_scan, name="fullscan-page"),
     path('fullscan/', fullscan_result, name="fullscan-subdomain"),
     path('fullscan/', fullscan_result, name="fullscan-directory"),
     path('fullscan/', fullscan_result, name="fullscan-wayback"),
@@ -43,8 +43,7 @@ urlpatterns = [
 
     #Settings
     path('setting/wordlist/', setting_wordlist, name="wordlist-page"),
-    path('scan/directory/ajax', directory_ajax, name="directory_ajax"),
-    path('scan/directory/result', directory_background_result, name="directory-bg-page"),
+    path('scan/directory/ajax/', directory_ajax, name="directory_ajax"),
 ]
 
 if settings.DEBUG:
