@@ -13,9 +13,6 @@ import requests
 import time
 
 timestr = time.strftime("%Y-%m-%d-%H-%M")
-global directory_output_file
-directory_output_file = None
-global dir_context
 
 def index(request):
     return render(request, 'testing/index.html')
@@ -24,7 +21,7 @@ def handle_uploaded_file(f):
     global wordlist_name
     wordlist_name = f'{os.path.splitext(f.name)[0]}-{time.strftime("%M-%S")}.txt'
     print(wordlist_name)
-    with open('testing/wordlist/'+wordlist_name, 'wb+') as destination:
+    with open('testing/wordlist/'+wordlist_name, 'ab+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
 
@@ -41,68 +38,75 @@ def setting_wordlist(request):
             messages.success(request, 'Please upload a valid TXT file!!')
     return render(request, 'testing/wordlist.html')
 
+def ajax_call(request):
+    scan = request.GET.get('scan', None)
+    scan_output_file = '{}_output_file'.format(scan)
+    print(scan_output_file)
+    try:
+        try:
+            if scan_output_file:
+                if os.stat(scan_output_file).st_size != 0:
+                    print("Inside 0")
+                    with open(scan_output_file, 'r') as write_file:
+                        data = write_file.readlines()[2:]
+                    data_json = {'data':data}
+                    return JsonResponse(data_json, safe=False)
+                else:
+                    return HttpResponse("FileContentisZero")
+        except FileNotFoundError:
+            return HttpResponse("FileDoesNotExist")
+    except NameError:
+        print("NameError")
+        return HttpResponse("FileNotFound")
+    except ValueError:
+        return HttpResponse("ValueError")
+
 #Subdomain Finder
+@background(schedule=1)
+def subdomain_finder_task(subdomain, gitSubdomain,gitToken):
+    print("Inside Subdomain Task")
+
+    try:
+        os.chdir('testing/')
+        print("Directory Changed")
+    except:
+        pass
+
+    if subdomain != "None":
+        global subdomain_output_file
+        subdomain_output_file = '{}_{}.txt'.format(subdomain,timestr)
+        #Enable port scanning
+        subdom = sublist3r.main(subdomain, 40, subdomain_output_file, ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
+        # return render(request, 'testing/subdomain.html', {'subdom': subdom})
+        context = {'subdom':subdom}
+        return context
+
+    if gitSubdomain != "None":
+        gitsubs = 'github_subs_{}.txt'.format(timestr)
+        result = subprocess.run(["python","github-subdomains.py","-t",gitToken,"-d",gitSubdomain,], capture_output=True, text=True)
+
+        gitsubs_list = []
+
+        for line in result.stdout.splitlines():
+            gitsubs_list.append(line)
+        
+        with open(gitsubs, 'a+') as write_gitsubs_file:
+            for line in result.stdout:
+                write_gitsubs_file.write(line + '\n')
+
+        context = {'subdom':gitsubs_list}
+        return context
+
 def subdomain_finder(request):
     if request.method == 'POST':
         subdomain = str(request.POST.get('subdomain', None))
         gitSubdomain = str(request.POST.get('github-subdomain', None))
         gitToken = str(request.POST.get('github-token', None))
-
-        try:
-            os.chdir('testing/')
-            print("Directory Changed")
-        except:
-            pass
-
-        if subdomain != "None":
-            global subdomain_output_file
-            subdomain_output_file = '{}_{}.txt'.format(subdomain,timestr)
-            #Enable port scanning
-            subdom = sublist3r.main(subdomain, 40, subdomain_output_file, ports= None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
-            return render(request, 'testing/subdomain.html', {'subdom': subdom})
- 
-        if gitSubdomain != "None":
-            gitsubs = 'github_subs_{}.txt'.format(timestr)
-            result = subprocess.run(["python","github-subdomains.py","-t",gitToken,"-d",gitSubdomain,], capture_output=True, text=True)
-
-            gitsubs_list = []
-
-            for line in result.stdout.splitlines():
-                gitsubs_list.append(line)
-            
-            with open(gitsubs, 'a+') as write_gitsubs_file:
-                for line in result.stdout:
-                    write_gitsubs_file.write(line + '\n')
-
-        return render(request, 'testing/subdomain.html', {'subdom': gitsubs_list})
+        global sub_context
+        sub_context = subdomain_finder_task.now(subdomain, gitSubdomain, gitToken)
+        return render(request, 'testing/subdomain.html', sub_context)
     else:
-        sublisterForm = SubdomainForm()
-        githubForm = GithubSubdomainForm() 
-    return render(request, 'testing/subdomain-index.html')
-
-def directory_ajax(request):
-    if request.method == 'GET':
-        try:
-            if directory_output_file is not None:
-                if os.stat(directory_output_file).st_size != 0:
-                    print(f'File has been created {directory_output_file}')
-                    with open(directory_output_file, 'r') as write_directory_file_ajax:
-                        data = write_directory_file_ajax.readlines()[2:]
-                    data_json = {'data':data}
-                    return JsonResponse(data_json, safe=False)
-                else:
-                    return HttpResponse("FileContentisZero")
-            else:
-                return HttpResponse("FileisNone")
-
-        except NameError:
-            print("NameError")
-            return HttpResponse("FileNotFound")
-
-        except ValueError:
-            return HttpResponse("ValueError")
-    else:
-        return render(request, 'testing/directory-index.html')
+        return render(request, 'testing/subdomain-index.html')
 
 #Directory Brute Force
 @background(schedule=1)
@@ -167,143 +171,177 @@ def directory_brute_force(request):
         return render(request, 'testing/directory-index.html')
 
 #Wayback URLs
+@background(schedule=1)
+def waybackurls_task(domain):
+
+    wayback_urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
+    wayback_urls_list = []
+    for link in wayback_urls:
+        wayback_urls_list.append(link[0])
+
+    unique_wayback_urls = set(wayback_urls_list)
+
+    try:
+        os.chdir('testing/')
+    except:
+        pass
+
+    global wayback_output_file
+    wayback_output_file = '{}_Wayback_URLs_{}.txt'.format(domain, timestr)
+    with open(wayback_output_file, 'a+') as write_wayback_urls:
+        for url in unique_wayback_urls:
+            write_wayback_urls.write(url + '\n')
+
+    context = {'context':unique_wayback_urls}
+    return context
+
 def waybackurls(request):
     if request.method == 'POST':
         form = Waybackurls()
         domain = str(request.POST.get('wayback'))
-        wayback_urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
-
-        wayback_urls_list = []
-        for link in wayback_urls:
-            wayback_urls_list.append(link[0])
-
-        unique_wayback_urls = set(wayback_urls_list)
-
-        try:
-            os.chdir('testing/')
-        except:
-            pass
-
-        global wayback_output_file
-        wayback_output_file = '{}_Wayback_URLs_{}.txt'.format(domain, timestr)
-        with open(wayback_output_file, 'a+') as write_wayback_urls:
-            for url in unique_wayback_urls:
-                write_wayback_urls.write(url + '\n')
-
-        return render(request, 'testing/wayback.html', {'context': unique_wayback_urls})
+        context = waybackurls_task.now(domain)
+        return render(request, 'testing/wayback.html', context)
     else:
         form = Waybackurls()
     return render(request, 'testing/wayback-index.html')
 
 #JavaScript URLs
+@background(schedule=1)
+def js_urls_task(domain):
+    
+    urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey'.format(domain)).json()
+
+    js_file_urls = []
+    for link in urls:
+        if re.search(r'\.js$', link[0]):
+            js_file_urls.append(link[0])
+
+    unique_js_file_urls = set(js_file_urls)
+
+    try:
+        os.chdir('testing/')
+    except:
+        pass
+
+    global jsurl_output_file
+    jsurl_output_file = '{}_JS_URLs_{}.txt'.format(domain, timestr)
+    with open(jsurl_output_file, 'a+') as write_js_file:
+        for url in unique_js_file_urls:
+            write_js_file.write(url + '\n')
+
+    context = {'context':unique_js_file_urls}
+    return context
+
 def js_urls(request):
     if request.method == 'POST':
         form = JsFiles()
         domain = str(request.POST.get('jsurl'))
         urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey'.format(domain)).json()
+        context = js_urls_task.now(domain)
 
-        js_file_urls = []
-        for link in urls:
-            if re.search(r'\.js$', link[0]):
-                js_file_urls.append(link[0])
-
-        unique_js_file_urls = set(js_file_urls)
-
-        global jsurl_output_file
-        jsurl_output_file = '{}_JS_URLs_{}.txt'.format(domain, timestr)
-        with open(jsurl_output_file, 'a+') as write_js_file:
-            for url in unique_js_file_urls:
-                write_js_file.write(url + '\n')
-
-        return render(request, 'testing/jsurl.html', {'context': unique_js_file_urls})
+        return render(request, 'testing/jsurl.html', context)
     else:
         form = JsFiles()
     return render(request, 'testing/jsurl-index.html')
 
 #JS Secrets
 #Need to verify live js links
+@background(schedule=1)
+def js_secrets_task(domain):
+
+    try:
+        os.chdir('testing/')
+    except:
+        print("Directory is already Testing")
+    
+    urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
+
+    js_file_urls = []
+    for link in urls:
+        if re.search(r'\.js$', link[0]):
+            js_file_urls.append(link[0])
+
+    unique_js_file_urls = set(js_file_urls)
+    print(len(unique_js_file_urls))
+
+    js_secrets_list = []
+
+    for url in unique_js_file_urls:
+        js_secrets = subprocess.run([sys.executable,"SecretFinder.py","-i",url,"-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
+        if "->" in js_secrets.stdout:
+            for item in js_secrets.stdout.splitlines():
+                js_secrets_list.append(item)
+
+    global secret_output_file
+    secret_output_file = '{}_JS_Secret_{}.txt'.format(domain,timestr)
+    with open(secret_output_file, 'a+') as secret_file:
+        for secrets in js_secrets_list:
+            secret_file.write(secrets + '\n')
+
+    context = {'context': js_secrets_list}
+    return context
+
 def js_secrets(request):
     if request.method == 'POST':
         form = JsSecrets()
         domain = str(request.POST.get('secret'))
-        urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
-
-        js_file_urls = []
-        for link in urls:
-            if re.search(r'\.js$', link[0]):
-                js_file_urls.append(link[0])
-
-        unique_js_file_urls = set(js_file_urls)
-        print(len(unique_js_file_urls))
-
-        try:
-            os.chdir('testing/')
-        except:
-            print("Directory is already Testing")
-
-        js_secrets_list = []
-
-        for url in unique_js_file_urls:
-            js_secrets = subprocess.run([sys.executable,"SecretFinder.py","-i",url,"-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
-            if "->" in js_secrets.stdout:
-                for item in js_secrets.stdout.splitlines():
-                    js_secrets_list.append(item)
-
-        
-
-        global secret_output_file
-        secret_output_file = '{}_JS_Secret_{}.txt'.format(domain,timestr)
-        with open(secret_output_file, 'a+') as secret_file:
-            for secrets in js_secrets_list:
-                secret_file.write(secrets + '\n')
-
-        return render(request, 'testing/secret.html', {'context':js_secrets_list})
+        context = js_secrets_task.now(domain)
+        print("Context Returned")
+        print(context)
+        return render(request, 'testing/secret.html', context)
     else:
         return render(request, 'testing/secret-index.html')
 
 #LinkFinder
 #Need to verify live js files
+@background(schedule=1)
+def js_links_task(domain):
+
+    urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
+
+    js_file_urls = []
+    for link in urls:
+        if re.search(r'\.js$', link[0]):
+            js_file_urls.append(link[0])
+
+    unique_js_file_urls = set(js_file_urls)
+
+    print(len(unique_js_file_urls))
+
+    try:
+        os.chdir('testing/')
+    except:
+        print("Directory is already Testing")
+
+    js_urls = []
+    for js_link in unique_js_file_urls:
+        result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
+        if result.stdout:
+            if "Usage" in result.stdout:
+                pass
+            else:
+                for item in result.stdout.splitlines():
+                    js_urls.append(item)
+        
+    global linkfinder_output_file
+    linkfinder_output_file = '{}_Linkfinder_{}.txt'.format(domain, timestr)
+
+    with open(linkfinder_output_file, 'a+') as write_linkfinder_output:
+        for line in js_urls:
+            write_linkfinder_output.write(line + '\n')
+
+    unique_js_links = set(js_urls)
+
+    context = {'context':unique_js_links}
+
+    return context
+
 def js_links(request):
     if request.method == 'POST':
         form = JsLinks()
         domain = str(request.POST.get('endpoint'))
-
-        urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
-
-        js_file_urls = []
-        for link in urls:
-            if re.search(r'\.js$', link[0]):
-                js_file_urls.append(link[0])
-
-        unique_js_file_urls = set(js_file_urls)
-
-        print(len(unique_js_file_urls))
-
-        try:
-            os.chdir('testing/')
-        except:
-            print("Directory is already Testing")
-
-        js_urls = []
-        for js_link in unique_js_file_urls:
-            result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
-            if result.stdout:
-                if "Usage" in result.stdout:
-                    pass
-                else:
-                    for item in result.stdout.splitlines():
-                        js_urls.append(item)
-            
-        global linkfinder_output_file
-        linkfinder_output_file = '{}_Linkfinder_{}.txt'.format(domain, timestr)
-
-        with open(linkfinder_output_file, 'a+') as write_linkfinder_output:
-            for line in js_urls:
-                write_linkfinder_output.write(line + '\n')
-
-        unique_js_links = set(js_urls)
-
-        return render(request, 'testing/endpoint.html', {'context': unique_js_links})
+        context = js_links_task.now(domain)
+        return render(request, 'testing/endpoint.html', context)
     else:
         form = JsLinks()
     return render(request, 'testing/endpoint-index.html')
@@ -534,9 +572,12 @@ def download_result(request):
         if secret == "secret":
             output_file = f'/home/nihal/fwapf/testing/{secret_output_file}'
             filename = f'{secret_output_file}.txt'
+            print(output_file)
+            print(filename)
             with open(output_file, 'r') as fh:
                 response = HttpResponse(fh.read(), content_type="text/html")
                 response['Content-Disposition'] = "attachment; filename=%s" % filename
+                print("Returning Response")
                 return response
 
         if link_finder == "linkfinder":

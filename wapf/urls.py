@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, directory_ajax,)
+from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, ajax_call,)
 
 urlpatterns = [
 
@@ -43,7 +43,9 @@ urlpatterns = [
 
     #Settings
     path('setting/wordlist/', setting_wordlist, name="wordlist-page"),
-    path('scan/directory/ajax/', directory_ajax, name="directory_ajax"),
+
+    #Ajax
+    path('scan/ajax/', ajax_call, name="ajax-call"),
 ]
 
 if settings.DEBUG:

@@ -19,7 +19,7 @@
 						<tbody id="id_tbody">
                             {% for url in context %}
 								<tr>
-									<td class="column1">{{ url }}</td>
+									<td class="column1">{{ url|truncatechars:100 }}</td>
 									<!-- <td class="column2">200398</td>
 									<td class="column3">iPhone X 64Gb Grey</td>
 									<td class="column4">$999.00</td>
