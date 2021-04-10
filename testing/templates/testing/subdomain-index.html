@@ -56,7 +56,7 @@ $(document).ready(function() {
 function getFile() {
 $.ajax({
     type: 'GET',
-    url: "{% url  'ajax-call' %}?scan=subdomain",
+    url: "{% url 'ajax-call' %}?scan=subdomain",
     success: function (data) {
         if(data == "FileNotFound") {
             console.log("File is not there");
@@ -65,7 +65,9 @@ $.ajax({
             console.log("FileDoesNotExist");
         }
         if((data != "FileNotFound") && (data != "FileDoesNotExist")) {
+            console.log(data);
             $("#id-message").attr("style", "visibility: visibility");
+            clearInterval(interval);
         }},
     error: function (data) {
         console.log("Didn't get the file");

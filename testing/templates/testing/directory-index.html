@@ -57,9 +57,8 @@ $.ajax({
         }
         if((data != "FileNotFound") && (data != "FileisNone") && (data != "FileContentisZero") && (data != "FileDoesNotExist")) {
             console.log(data);
-            clearInterval(interval);
             $("#id-message").attr("style", "visibility: visibility");
-
+            clearInterval(interval);
         }},
     error: function (data) {
         console.log("Didn't get the file");

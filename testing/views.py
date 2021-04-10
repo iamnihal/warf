@@ -13,6 +13,12 @@ import requests
 import time
 
 timestr = time.strftime("%Y-%m-%d-%H-%M")
+subdomain_output_file = "None"
+directory_output_file = "None"
+wayback_output_file = "None"
+jsurl_output_file = "None"
+secret_output_file = "None"
+linkfinder_output_file = "None"
 
 def index(request):
     return render(request, 'testing/index.html')
@@ -39,22 +45,51 @@ def setting_wordlist(request):
     return render(request, 'testing/wordlist.html')
 
 def ajax_call(request):
+    try:
+        os.chdir('testing/')
+    except:
+        pass
+
     scan = request.GET.get('scan', None)
     scan_output_file = '{}_output_file'.format(scan)
     print(scan_output_file)
+
+    if scan == "subdomain":
+        output_file = subdomain_output_file
+    
+    if scan == "directory":
+        output_file = directory_output_file
+
+    if scan == "wayback":
+        output_file = wayback_output_file
+
+    if scan == "jsurl":
+        output_file = jsurl_output_file
+    
+    if scan == "secret":
+        output_file = secret_output_file
+
+    if scan == "linkfinder":
+        output_file = linkfinder_output_file
+
+    print(output_file)
+
     try:
-        try:
-            if scan_output_file:
-                if os.stat(scan_output_file).st_size != 0:
-                    print("Inside 0")
-                    with open(scan_output_file, 'r') as write_file:
-                        data = write_file.readlines()[2:]
-                    data_json = {'data':data}
-                    return JsonResponse(data_json, safe=False)
-                else:
-                    return HttpResponse("FileContentisZero")
-        except FileNotFoundError:
+        if os.path.exists(output_file):
+            print("File Exist")
+            if os.stat(output_file).st_size != 0:
+                print("Inside 0")
+                with open(output_file, 'r') as write_file:
+                    data = write_file.readlines()[2:]
+                data_json = {'data':data}
+                return JsonResponse(data_json, safe=False)
+            else:
+                return HttpResponse("FileContentisZero")
+        else:
             return HttpResponse("FileDoesNotExist")
+            print("FileDoesNotExist")
+    except FileNotFoundError:
+        return HttpResponse("FileDoesNotExist")
     except NameError:
         print("NameError")
         return HttpResponse("FileNotFound")
@@ -135,6 +170,7 @@ def directory_brute_force_task(directory):
     else:
         print("Default Wordlist")
         directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file], capture_output=True, text=True)
+        print(directory_search.stdout)
 
     with open(directory_output_file, 'r') as write_directory_file:
         data = write_directory_file.readlines()[2:]
