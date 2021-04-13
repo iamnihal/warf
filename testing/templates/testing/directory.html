@@ -8,24 +8,17 @@
 
 <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger float-right" download>Download Report</a>
 
-								<th class="column1">Directory</th>
-								<th class="column2">Response Size</th>
-								<th class="column3">Status Code</th>
-								<!-- <th class="column4">Price</th>
-								<th class="column5">Quantity</th>
-								<th class="column6">Total</th> -->
+								<th>Directory</th>
+								<th>Response Size</th>
+								<th>Status Code</th>
 							</tr>
 						</thead>
-						<tbody id="id_tbody">
+						<tbody>
                             {% for directory, size, status in context %}
 								<tr>
-									<td class="column1">{{ directory }}</td>
-									<td class="column2">{{ size }}</td>
-									<td class="column3">{{ status }}</td>
-									<!-- <td class="column4">$999.00</td>
-									<td class="column5">1</td>
-									<td class="column6">$999.00</td> -->
+									<td><a href="{{ directory }}" target="_blank">{{ directory }}</a></td>
+									<td>{{ size }}</td>
+									<td>{{ status }}</td>
 								</tr>
                             {% endfor %}
-
 {% endblock %}

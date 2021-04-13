@@ -22,9 +22,19 @@
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
                 <div class="input-group">
-                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" />
-                    <div class="input-group-append">
-                        <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+                    <div class="dropdown">
+                        <input class="form-control dropdown-toggle" id="dropdownMenu1-1" data-toggle="dropdown" onkeyup="searchFunc()" type="text" placeholder="Search for...." aria-label="Search">
+                      
+                        <!--Menu-->
+                        <div class="dropdown-menu dropdown-primary" id="id-searchDropdown">
+                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'subdomain-page'  %}">Subdomain Discovery</a>
+                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'directory-page'  %}">Directory Brute-force</a>
+                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'wayback-page'  %}">Wayback URLs</a>
+                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'jsurl-page'  %}">JavaScript URLs</a>
+                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'secret-page'  %}">Secret/API keys</a>
+                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'endpoint-page'  %}">LinkFinder</a>
+                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'wordlist-page'  %}">Wordlist</a>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -86,13 +96,7 @@
                                         Wordlist
                                         <div class="sb-sidenav-collapse-arrow"></div>
                                     </a>
-                                    <!-- <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                        <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="login.html">Login</a>
-                                            <a class="nav-link" href="register.html">Register</a>
-                                            <a class="nav-link" href="password.html">Forgot Password</a>
-                                        </nav>
-                                    </div> -->
+                                   
                                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
                                         Error
                                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
@@ -166,6 +170,23 @@ $(".btn").attr("disabled", true);
 return true;
 });
 });
+</script>
+
+<script>
+    // var keywords = ["subdomain", "directory", "wayback", "jsurl", "secret", "linkfinder"];
+    function searchFunc(){
+        let input = document.getElementById('dropdownMenu1-1').value
+        input = input.toLowerCase();
+        let x = document.getElementsByClassName('mdb-dropdownLink-1');
+
+        for (i = 0; i < x.length; i++) { 
+        if (!x[i].innerHTML.toLowerCase().includes(input)) {
+            x[i].style.display="none";
+        }
+        else {
+            x[i].style.display="list-item";                 
+        }
+    }}
 </script>
 
 <footer class="py-4 bg-light mt-auto">

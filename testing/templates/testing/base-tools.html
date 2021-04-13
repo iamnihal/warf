@@ -1,84 +1,34 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block title %}
 
     {% endblock %}
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
-<!-- <link rel="icon" type="image/png" href="images/icons/favicon.ico"/> -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
-<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.css">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-<!-- <link href="https://cdn.jsdelivr.net/gh/iamnihal/chatApp/node_modules/main.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/gh/iamnihal/chatApp/node_modules/util.min.css" rel="stylesheet" /> -->
-
-<link rel="stylesheet" type="text/css" href="{% static 'testing/util.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'testing/main.css' %}">
-
-<!-- Font Awesome -->
-<link
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-  rel="stylesheet"
-/>
-<!-- Google Fonts -->
-<link
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-  rel="stylesheet"
-/>
-
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
 </head>
 <body>
-
-    <div class="limiter">
-		<div class="container-table100">
-			<div class="wrap-table100">
-    
-
-    <div class="input-group mb-2 float-left" style="width: 300px">
-        <input type="text" id="id_search" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-          <button class="btn btn-primary float-left" type="button">Search</button>
-        </div>
-      </div>
-    
-      {% block download %}
-      
-      {% endblock %}
-    
-
-				<div class="table100">
-					<table>
-						<thead>
-							<tr class="table100-head">
-
-    {% block content %}
-
-    {% endblock %}
-
-</tbody>
-</table>
-</div>
-</div>
-</div>
+    <div style="margin-top: 50px;">
+    <table id="table_id" class="table table-striped table-bordered" style="width:100%">
+        <thead class="table-dark">
+        {% block content %}
+           
+        {% endblock %}
+    </table>
 </div>
 
 <script>
-    $(document).ready(function() {
-        $("#id_search").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#id_tbody tr").filter(function() {
-            $(this).toggle($(this).text()
-            .toLowerCase().indexOf(value) > -1)
-        });
-    });
-    });
+    $(document).ready( function () {
+    $('#table_id').DataTable();
+} );
 </script>
+
 </body>
 </html>
+

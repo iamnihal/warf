@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from .forms import SubdomainForm, DirectoryBruteForce, Waybackurls, JsFiles, JsLinks, JsSecrets, GithubSubdomainForm
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse
 from django.contrib import messages
+from django.urls import reverse
 from . import sublist3r
 from .subbrute import subbrute
 from background_task import background
@@ -13,12 +14,12 @@ import requests
 import time
 
 timestr = time.strftime("%Y-%m-%d-%H-%M")
-subdomain_output_file = "None"
-directory_output_file = "None"
-wayback_output_file = "None"
-jsurl_output_file = "None"
-secret_output_file = "None"
-linkfinder_output_file = "None"
+subdomain_output_file = "Null"
+directory_output_file = "Null"
+wayback_output_file = "Null"
+jsurl_output_file = "Null"
+secret_output_file = "Null"
+linkfinder_output_file = "Null"
 
 def index(request):
     return render(request, 'testing/index.html')
@@ -44,41 +45,25 @@ def setting_wordlist(request):
             messages.success(request, 'Please upload a valid TXT file!!')
     return render(request, 'testing/wordlist.html')
 
+#AJAX Call
 def ajax_call(request):
-    try:
-        os.chdir('testing/')
-    except:
-        pass
-
     scan = request.GET.get('scan', None)
-    scan_output_file = '{}_output_file'.format(scan)
-    print(scan_output_file)
-
     if scan == "subdomain":
         output_file = subdomain_output_file
-    
     if scan == "directory":
         output_file = directory_output_file
-
     if scan == "wayback":
         output_file = wayback_output_file
-
     if scan == "jsurl":
         output_file = jsurl_output_file
-    
     if scan == "secret":
         output_file = secret_output_file
-
     if scan == "linkfinder":
         output_file = linkfinder_output_file
 
-    print(output_file)
-
     try:
         if os.path.exists(output_file):
-            print("File Exist")
             if os.stat(output_file).st_size != 0:
-                print("Inside 0")
                 with open(output_file, 'r') as write_file:
                     data = write_file.readlines()[2:]
                 data_json = {'data':data}
@@ -146,9 +131,6 @@ def subdomain_finder(request):
 #Directory Brute Force
 @background(schedule=1)
 def directory_brute_force_task(directory):
-    print("Inside Task")
-    print(directory)
-
     try:
         os.chdir('testing/')
     except:
@@ -158,19 +140,13 @@ def directory_brute_force_task(directory):
     directory_output_file = 'Directory_{}.txt'.format(timestr)
 
     if dir_wordlist == "on":
-        print("Wordlist Chosed")
-        # print(os.getcwd())
         os.chdir('./wordlist')
         files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
         wordlist_file = files[-1]
-        print(wordlist_file)
         os.chdir('../')
         directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w",f'wordlist/{wordlist_file}',"--plain-text-report",directory_output_file], capture_output=True, text=True)
-        print(directory_search.stdout)
     else:
-        print("Default Wordlist")
         directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-u",directory,"-t","60","-w","dirsearch/robotsdis.txt","--plain-text-report",directory_output_file], capture_output=True, text=True)
-        print(directory_search.stdout)
 
     with open(directory_output_file, 'r') as write_directory_file:
         data = write_directory_file.readlines()[2:]
@@ -244,10 +220,9 @@ def waybackurls(request):
 #JavaScript URLs
 @background(schedule=1)
 def js_urls_task(domain):
-    
     urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey'.format(domain)).json()
-
     js_file_urls = []
+
     for link in urls:
         if re.search(r'\.js$', link[0]):
             js_file_urls.append(link[0])
@@ -261,6 +236,7 @@ def js_urls_task(domain):
 
     global jsurl_output_file
     jsurl_output_file = '{}_JS_URLs_{}.txt'.format(domain, timestr)
+
     with open(jsurl_output_file, 'a+') as write_js_file:
         for url in unique_js_file_urls:
             write_js_file.write(url + '\n')
@@ -274,7 +250,6 @@ def js_urls(request):
         domain = str(request.POST.get('jsurl'))
         urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey'.format(domain)).json()
         context = js_urls_task.now(domain)
-
         return render(request, 'testing/jsurl.html', context)
     else:
         form = JsFiles()
@@ -284,22 +259,19 @@ def js_urls(request):
 #Need to verify live js links
 @background(schedule=1)
 def js_secrets_task(domain):
-
     try:
         os.chdir('testing/')
     except:
         print("Directory is already Testing")
     
     urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
-
     js_file_urls = []
+
     for link in urls:
         if re.search(r'\.js$', link[0]):
             js_file_urls.append(link[0])
 
     unique_js_file_urls = set(js_file_urls)
-    print(len(unique_js_file_urls))
-
     js_secrets_list = []
 
     for url in unique_js_file_urls:
@@ -310,6 +282,7 @@ def js_secrets_task(domain):
 
     global secret_output_file
     secret_output_file = '{}_JS_Secret_{}.txt'.format(domain,timestr)
+
     with open(secret_output_file, 'a+') as secret_file:
         for secrets in js_secrets_list:
             secret_file.write(secrets + '\n')
@@ -322,8 +295,6 @@ def js_secrets(request):
         form = JsSecrets()
         domain = str(request.POST.get('secret'))
         context = js_secrets_task.now(domain)
-        print("Context Returned")
-        print(context)
         return render(request, 'testing/secret.html', context)
     else:
         return render(request, 'testing/secret-index.html')
@@ -332,17 +303,14 @@ def js_secrets(request):
 #Need to verify live js files
 @background(schedule=1)
 def js_links_task(domain):
-
     urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
-
     js_file_urls = []
+
     for link in urls:
         if re.search(r'\.js$', link[0]):
             js_file_urls.append(link[0])
 
     unique_js_file_urls = set(js_file_urls)
-
-    print(len(unique_js_file_urls))
 
     try:
         os.chdir('testing/')
@@ -350,6 +318,7 @@ def js_links_task(domain):
         print("Directory is already Testing")
 
     js_urls = []
+
     for js_link in unique_js_file_urls:
         result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
         if result.stdout:
@@ -367,9 +336,7 @@ def js_links_task(domain):
             write_linkfinder_output.write(line + '\n')
 
     unique_js_links = set(js_urls)
-
     context = {'context':unique_js_links}
-
     return context
 
 def js_links(request):
@@ -392,15 +359,13 @@ def full_scan(request):
         except:
             pass
 
-        #Enable port scanning
+        #Subdomain Discovery
         global subdomain_output_file
         subdomain_output_file = '{}_{}.txt'.format(domain,timestr)
         subdom = sublist3r.main(domain, 40, subdomain_output_file, ports=None, silent=True, verbose= False, enable_bruteforce= False, engines=None)
         
-        print("Subdomain enumeration Completed")
-        
+        #Directory Brute-force
         directory_search = subprocess.run(["python","dirsearch/dirsearch.py","-l",subdomain_output_file,"--full-url","-q","-t","60","-w","dirsearch/robotsdis.txt"], capture_output=True, text=True)
-
         global directory_output_file
         directory_output_file = 'Directory_{}.txt'.format(timestr)
 
@@ -408,6 +373,7 @@ def full_scan(request):
             write_directory_output.writelines(directory_search.stdout)
 
         directory_list = []
+
         with open(directory_output_file, 'r') as r:
             for line in r:
                 directory_list.append(line)
@@ -422,30 +388,25 @@ def full_scan(request):
                 status.append(item[0])
             except IndexError:
                 status.append("None")
-
             try:
                 size.append(item[5])
             except IndexError:
                 size.append("None")
-            
             try:
                 directory_link.append(item[7])
             except IndexError:
                 directory_link.append("None")
         
         directory_brute_link = zip(directory_link, size, status)
-        
-        print("Directory Brute Force Completed")
 
-        #Wayback URLs
+        #Wayback
         wayback_urls = requests.get('http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit='.format(domain)).json()
-
         wayback_urls_list = []
+        
         for link in wayback_urls:
             wayback_urls_list.append(link[0])
 
         unique_wayback_urls = set(wayback_urls_list)
-
         global wayback_output_file
         wayback_output_file = '{}_Wayback_URLs_{}.txt'.format(domain, timestr)
 
@@ -453,16 +414,14 @@ def full_scan(request):
             for url in unique_wayback_urls:
                 write_wayback_output.write(url + '\n')
 
-
-        print("Wayback URLs Completed")
         #JavaScript URLs
         js_file_urls = []
+
         for link in wayback_urls:
             if re.search(r'\.js$', link[0]):
                 js_file_urls.append(link[0])
 
         unique_js_file_urls = set(js_file_urls)
-
         global jsurl_output_file
         jsurl_output_file = '{}_JS_URLs_{}.txt'.format(domain, timestr)
 
@@ -470,7 +429,6 @@ def full_scan(request):
             for url in unique_js_file_urls:
                 write_jsurl_output.write(url + '\n')
         
-        print("JavaScript URLs Completed")
         #JS Secrets
         js_secrets_list = []
 
@@ -487,10 +445,9 @@ def full_scan(request):
             for secrets in js_secrets_list:
                 write_secret_output.write(secrets + '\n')
 
-        print("JS Secrets Completed")
-
         #LinkFinder
         jsurls = []
+
         for js_link in unique_js_file_urls:
             result = subprocess.run([sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"], stderr=subprocess.DEVNULL, stdout=subprocess.PIPE,text=True)
             if result.stdout:
@@ -509,10 +466,7 @@ def full_scan(request):
 
         unique_js_links = set(jsurls)
 
-        print("LinkFinder Completed")
-
         global fullscanContext
-
         fullscanContext = {
             'subdom':subdom,
             'directory_link': directory_link,
@@ -522,7 +476,6 @@ def full_scan(request):
             'js_secrets':js_secrets_list,
             'js_link':list(unique_js_links)
         }
-        
         return render(request, 'testing/fullscan-overview.html', {'context':fullscanContext})
     else:
         return render(request, 'testing/fullscan-index.html')
@@ -608,12 +561,9 @@ def download_result(request):
         if secret == "secret":
             output_file = f'/home/nihal/fwapf/testing/{secret_output_file}'
             filename = f'{secret_output_file}.txt'
-            print(output_file)
-            print(filename)
             with open(output_file, 'r') as fh:
                 response = HttpResponse(fh.read(), content_type="text/html")
                 response['Content-Disposition'] = "attachment; filename=%s" % filename
-                print("Returning Response")
                 return response
 
         if link_finder == "linkfinder":

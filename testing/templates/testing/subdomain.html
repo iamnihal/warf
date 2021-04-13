@@ -5,26 +5,14 @@
 {% endblock %}
 	
 {% block content %}
-
 <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger float-right" download>Download Report</a>
-								<th class="column1">Subdomain</th>
-								<!-- <th class="column2">Order ID</th>
-								<th class="column3">Name</th>
-								<th class="column4">Price</th>
-								<th class="column5">Quantity</th>
-								<th class="column6">Total</th> -->
+								<th>Subdomain</th>
 							</tr>
 						</thead>
-						<tbody id="id_tbody">
+						<tbody>
                             {% for sub in subdom %}
 								<tr>
-									<td class="column1">{{ sub }}</td>
-									<!-- <td class="column2">200398</td>
-									<td class="column3">iPhone X 64Gb Grey</td>
-									<td class="column4">$999.00</td>
-									<td class="column5">1</td>
-									<td class="column6">$999.00</td> -->
+									<td><a href="https://{{ sub }}" target="_blank">{{ sub }}</a></td>
 								</tr>
                             {% endfor %}
-
 {% endblock %}
