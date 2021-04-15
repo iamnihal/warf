@@ -9,82 +9,82 @@
 
                                 {% if subdomain_context %}
                                 <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger float-right" download>Download Report</a>
-								<th class="column1">Subdomains</th>
+								<th>Subdomains</th>
 							</tr>
 						</thead>
-						<tbody id="id_tbody">
+						<tbody>
                             {% for subdomain in subdomain_context %}
 								<tr>
-									<td class="column1">{{ subdomain }}</td>
+									<td><a href="https://{{ subdomain }}" target="_blank">{{ subdomain }}</a></td>
 								</tr>
                             {% endfor %}
                             {% endif %}
 
                             {% if directory_context %}
                             <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger float-right" download>Download Report</a>
-								<th class="column1">Directory</th>
-								<th class="column2">Response Size</th>
-								<th class="column3">Status Code</th>
+								<th>Directory</th>
+								<th>Response Size</th>
+								<th>Status Code</th>
 							</tr>
 						</thead>
-						<tbody id="id_tbody">
+						<tbody>
                             {% for dir_link, size, status in directory_context %}
 								<tr>
-									<td class="column1">{{ dir_link }}</td>
-									<td class="column2">{{ size }}</td>
-									<td class="column3">{{ status }}</td>
+									<td><a href="{{ dir_link }}" target="_blank">{{ dir_link }}</a></td>
+									<td>{{ size }}</td>
+									<td>{{ status }}</td>
 								</tr>
                             {% endfor %}
                             {% endif %}
 
                             {% if wayback_context %}
                             <a href="{% url 'download-result' %}?scan=wayback" class="btn btn-danger float-right" download>Download Report</a>
-								<th class="column1">Wayback URLs</th>
+								<th>Wayback URLs</th>
 							</tr>
 						</thead>
-						<tbody id="id_tbody">
+						<tbody>
                             {% for url in wayback_context %}
 								<tr>
-									<td class="column1">{{ url }}</td>
+									<td><a href="{{ url }}" target="_blank">{{ url }}</a></td>
 								</tr>
                             {% endfor %}
                             {% endif %}
 
                             {% if jsurl_context %}
                             <a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-danger float-right" download>Download Report</a>
-								<th class="column1">JavaScript URLs</th>
+								<th>JavaScript URLs</th>
 							</tr>
 						</thead>
-						<tbody id="id_tbody">
+						<tbody>
                             {% for jsurl in jsurl_context %}
 								<tr>
-									<td class="column1">{{ jsurl }}</td>
+									<td><a href="{{ jsurl }}" target="_blank">{{ jsurl }}</a></td>
 								</tr>
                             {% endfor %}
                             {% endif %}
 
                             {% if secret_context %}
                             <a href="{% url 'download-result' %}?scan=secret" class="btn btn-danger float-right" download>Download Report</a>
-								<th class="column1">Secret/API Keys</th>
+								<th>Secret/API Keys</th>
 							</tr>
 						</thead>
-						<tbody id="id_tbody">
+						<tbody>
                             {% for key in secret_context %}
 								<tr>
-									<td class="column1">{{ key|truncatechars:100 }}</td>
+									<td>{{ key|truncatechars:100 }}</td>
 								</tr>
                             {% endfor %}
                             {% endif %}
 
                             {% if linkfinder_context %}
                             <a href="{% url 'download-result' %}?scan=linkfinder" class="btn btn-danger float-right" download>Download Report</a>
-								<th class="column1">Linkfinder Link</th>
+								<th>Linkfinder Link</th>
 							</tr>
 						</thead>
-						<tbody id="id_tbody">
+						<tbody>
                             {% for link in linkfinder_context %}
 								<tr>
-									<td class="column1">{{ link }}</td>
+									<td>{{ link }}</td>
 								</tr>
                             {% endfor %}
                             {% endif %}
