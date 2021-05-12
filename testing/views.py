@@ -33,7 +33,7 @@ linkfinder_output_file = "Null"
 
 def index(request):
     return render(request, "testing/index.html")
-
+    
 
 def handle_uploaded_file(f):
     global wordlist_name

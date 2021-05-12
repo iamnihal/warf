@@ -18,6 +18,8 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, ajax_call,)
+from users.views import register, profile
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
 
@@ -46,6 +48,12 @@ urlpatterns = [
 
     #Ajax
     path('scan/ajax/', ajax_call, name="ajax-call"),
+
+    #Login/Register/Logout
+    path('register/', register, name="register"),
+    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name="login"),
+    path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name="logout"),
+    path('profile/', profile, name="profile"),
 ]
 
 if settings.DEBUG:

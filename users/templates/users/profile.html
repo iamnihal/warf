@@ -1,0 +1,49 @@
+{% extends 'testing/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    <title>Profile</title>
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+
+    {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{  message }}
+                </div>
+            {% endfor %}
+    {% endif %}
+
+    <h1 class="display-4">Welcome, {{ user.username|title }}</h1>
+    <hr class="my-3">
+    <p class="text-dark">Username:- {{ user.username }}</p>
+    <p class="text-dark">Email:- {{ user.email }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="col" style="padding: 10px;">
+              {{ u_form|crispy }}
+          </div>
+        </div>
+        <div>
+            <button class="btn btn-outline-info ml-2" type="submit">Update</button>
+        </div>
+      </form>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-row mt-4">
+          <div class="col" style="padding: 10px;">
+              {{ e_form|crispy }}
+          </div>
+        </div>
+        <div>
+            <button class="btn btn-outline-info ml-2" type="submit">Update</button>
+        </div>
+      </form>
+  </div>
+  
+{% endblock %}
