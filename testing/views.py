@@ -123,6 +123,7 @@ def subdomain_finder_task(subdomain, gitSubdomain, gitToken):
             engines=None,
         )
         # return render(request, 'testing/subdomain.html', {'subdom': subdom})
+        subprocess.run(["mv", "/home/nihal/fwapf/testing/{}".format(subdomain_output_file), "/home/nihal/fwapf/testing/output/subdomain/"])
         context = {"subdom": subdom}
         return context
 
@@ -154,9 +155,10 @@ def subdomain_finder_task(subdomain, gitSubdomain, gitToken):
         return context
 
 
-def subdomain_finder(request):
+def subdomain_finder(request, domain_url=None):
     if request.method == "POST":
-        subdomain = str(request.POST.get("subdomain", None))
+        subdomain = str(request.POST.get("subdomain", domain_url))
+        print(f'Yes got into {subdomain}')
         gitSubdomain = str(request.POST.get("github-subdomain", None))
         gitToken = str(request.POST.get("github-token", None))
         global sub_context
@@ -216,7 +218,9 @@ def directory_brute_force_task(directory):
             text=True,
         )
 
-    with open(directory_output_file, "r") as write_directory_file:
+    subprocess.run(["mv", "/home/nihal/fwapf/testing/{}".format(directory_output_file), "/home/nihal/fwapf/testing/output/directory/"])
+
+    with open(f'/home/nihal/fwapf/testing/output/directory/{directory_output_file}', "r") as write_directory_file:
         data = write_directory_file.readlines()[2:]
 
     status = []
@@ -233,9 +237,10 @@ def directory_brute_force_task(directory):
     return context
 
 
-def directory_brute_force(request):
+def directory_brute_force(request, domain_url=None):
     if request.method == "POST":
-        directory = str(request.POST.get("directory"))
+        directory = str(request.POST.get("directory", domain_url))
+        print(directory)
         global dir_wordlist
         dir_wordlist = request.POST.get("wordlist")
         global dir_context
@@ -274,7 +279,7 @@ def waybackurls_task(domain):
 
     global wayback_output_file
     wayback_output_file = "{}_Wayback_URLs_{}.txt".format(domain, timestr)
-    with open(wayback_output_file, "a+") as write_wayback_urls:
+    with open(f'/home/nihal/fwapf/testing/output/wayback/{wayback_output_file}', "a+") as write_wayback_urls:
         for url in unique_wayback_urls:
             write_wayback_urls.write(url + "\n")
 
@@ -282,10 +287,10 @@ def waybackurls_task(domain):
     return context
 
 
-def waybackurls(request):
+def waybackurls(request, domain_url=None):
     if request.method == "POST":
         form = Waybackurls()
-        domain = str(request.POST.get("wayback"))
+        domain = str(request.POST.get("wayback", domain_url))
         context = waybackurls_task.now(domain)
         return render(request, "testing/wayback.html", context)
     else:
@@ -317,7 +322,7 @@ def js_urls_task(domain):
     global jsurl_output_file
     jsurl_output_file = "{}_JS_URLs_{}.txt".format(domain, timestr)
 
-    with open(jsurl_output_file, "a+") as write_js_file:
+    with open(f'/home/nihal/fwapf/testing/output/jsurl/{jsurl_output_file}', "a+") as write_js_file:
         for url in unique_js_file_urls:
             write_js_file.write(url + "\n")
 
@@ -325,10 +330,10 @@ def js_urls_task(domain):
     return context
 
 
-def js_urls(request):
+def js_urls(request, domain_url=None):
     if request.method == "POST":
         form = JsFiles()
-        domain = str(request.POST.get("jsurl"))
+        domain = str(request.POST.get("jsurl", domain_url))
         urls = requests.get(
             "http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey".format(
                 domain
@@ -378,7 +383,7 @@ def js_secrets_task(domain):
     global secret_output_file
     secret_output_file = "{}_JS_Secret_{}.txt".format(domain, timestr)
 
-    with open(secret_output_file, "a+") as secret_file:
+    with open(f'/home/nihal/fwapf/testing/output/secrets/{secret_output_file}', "a+") as secret_file:
         for secrets in js_secrets_list:
             secret_file.write(secrets + "\n")
 
@@ -386,10 +391,10 @@ def js_secrets_task(domain):
     return context
 
 
-def js_secrets(request):
+def js_secrets(request, domain_url=None):
     if request.method == "POST":
         form = JsSecrets()
-        domain = str(request.POST.get("secret"))
+        domain = str(request.POST.get("secret", domain_url))
         context = js_secrets_task.now(domain)
         return render(request, "testing/secret.html", context)
     else:
@@ -437,7 +442,7 @@ def js_links_task(domain):
     global linkfinder_output_file
     linkfinder_output_file = "{}_Linkfinder_{}.txt".format(domain, timestr)
 
-    with open(linkfinder_output_file, "a+") as write_linkfinder_output:
+    with open(f'/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_output_file}', "a+") as write_linkfinder_output:
         for line in js_urls:
             write_linkfinder_output.write(line + "\n")
 
@@ -446,10 +451,10 @@ def js_links_task(domain):
     return context
 
 
-def js_links(request):
+def js_links(request, domain_url=None):
     if request.method == "POST":
         form = JsLinks()
-        domain = str(request.POST.get("endpoint"))
+        domain = str(request.POST.get("endpoint", domain_url))
         context = js_links_task.now(domain)
         return render(request, "testing/endpoint.html", context)
     else:

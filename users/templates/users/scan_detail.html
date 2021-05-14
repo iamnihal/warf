@@ -1,0 +1,95 @@
+{% extends "testing/base.html" %}
+
+{% block title %}
+<title>Dashboard</title>
+{% endblock %}
+
+{% block content %}
+
+        <h1 class="mt-4">Targets</h1>
+        
+        {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+      {% endif %}
+
+
+      <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card border border-primary mb-3" style="max-width: 50rem;">
+                <div class="card-header text-white text-center bg-primary">
+                    {{ scan_target_name|upper  }}
+                </div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="card-header text-center text-primary">
+                        <p>Scan type:</p>
+                        <input type="text" name="scan-type" value="{{ scan_type }}" disabled>
+                    </div>
+                    <div class="card-body text-primary text-center">
+                        <p>Domain/Endpoint:</p>
+                        <input type="text" name="domain-url" value="{{ scan_domain_url }}" disabled>
+                    </div>
+                    <div class="card-footer text-center">
+                    <!-- <a href="/targets/{{ target.id }}" type="submit" class="btn btn-primary">Scan</a> -->
+                    <button class="btn btn-primary" type="submit" href="targets/start-scan/{{ scan_item.id }}/">Scan</button>
+                    </div>
+                </form>
+                <div class="card-footer text-center">
+                    {% if scan_type|stringformat:'s' == "Subdomain" %}
+                        <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger text-center" download>Download Report</a>
+                    {% elif scan_type|stringformat:'s' == "Dirsearch" %}
+                        <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger text-center" download>Download Report</a>
+                    {% elif scan_type|stringformat:'s' == "Wayback URL" %}
+                        <a href="{% url 'download-result' %}?scan=wayback" class="btn btn-danger text-center" download>Download Report</a>
+                    {% elif scan_type|stringformat:'s' == "JS File Discovery" %}
+                        <a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-danger text-center" download>Download Report</a>
+                    {% elif scan_type|stringformat:'s' == "Secret/API key" %}
+                        <a href="{% url 'download-result' %}?scan=secret" class="btn btn-danger text-center" download>Download Report</a>
+                    {% elif scan_type|stringformat:'s' == "Endpoint from JS" %}
+                        <a href="{% url 'download-result' %}?scan=linkfinder" class="btn btn-danger text-center" download>Download Report</a>
+                    {% endif %}
+                    </div>
+                <div class="text-muted text-center">
+                    {{ scan_date_posted|date:"F d, Y" }}
+                </div>
+                <!-- <div class="card-footer text-center"> -->
+                    
+                    <!-- {% if target.scan_type|stringformat:'s' == "Subdomain" %}
+                        <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-primary" download>Download Report</a>
+                    {% elif target.scan_type|stringformat:'s' == "Dirsearch" %}
+                        <a href="{% url 'download-result' %}?scan=directory" class="btn btn-primary" download>Download Report</a>
+                    {% elif target.scan_type == "wayback" %}
+                        <a href="{% url 'download-result' %}?scan=wayback" class="btn btn-primary" download>Download Report</a>
+                    {% elif target.scan_type == "jsurl" %}
+                        <a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-primary" download>Download Report</a>
+                    {% elif target.scan_type == "secret" %}
+                        <a href="{% url 'download-result' %}?scan=secret" class="btn btn-primary" download>Download Report</a>
+                    {% else %}
+                        <a href="{% url 'download-result' %}?scan=linkfinder" class="btn btn-primary" download>Download Report</a>
+                    {% endif %} -->
+                <!-- </div> -->
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Your Website 2020</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </body>
+</html>

@@ -18,7 +18,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, ajax_call,)
-from users.views import register, profile
+from users.views import register, profile, dashboard, add_target, target, start_scan, target_view
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -54,6 +54,12 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name="login"),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name="logout"),
     path('profile/', profile, name="profile"),
+    path('dashboard/', dashboard, name="dashboard"),
+    path('add-target/', add_target, name="add-target"),
+    path('targets/', target, name="targets"),
+    path('targets/start-scan/<int:pk>/', start_scan, name="scan-item"),
+    # path('targets/<int:pk>/', PostDetailView.as_view(), name="scan-detail"),
+    path('targets/<int:pk>/', target_view, name="target-view"),
 ]
 
 if settings.DEBUG:
