@@ -5,32 +5,32 @@
 {% endblock %}
 
 {% block content %}
- 
-                <h1 class="mt-4">Full Scan</h1>
-                <!-- <ol class="breadcrumb mb-4"> -->
-                    <form action="{% url 'fullscan-page' %}" id="subFormId" method="POST">
-                    {% csrf_token %}
-                    <div class="form-outline">
-                            <input type="text" id="formControlLg" class="form-control form-control-lg" name="fullscan" required/>
-                            <label class="form-label" for="formControlLg">Domain</label>
-                    </div>
-                    <br>
-                    <button type="submit" class="btn btn-danger" onclick=loadingPage()>Submit</button>
-                </form>
 
-                <br>
-                <br>
-                <div>
+<h1 class="mt-4">Full Scan</h1>
+<!-- <ol class="breadcrumb mb-4"> -->
+<form action="{% url 'fullscan-page' %}" id="subFormId" method="POST">
+    {% csrf_token %}
+    <div class="form-outline">
+        <input type="text" id="formControlLg" class="form-control form-control-lg" name="fullscan" required />
+        <label class="form-label" for="formControlLg">Domain</label>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-danger" onclick=loadingPage()>Submit</button>
+</form>
 
-                <ul class="list-group" style="max-width: 280px;">
-                    <li class="list-group-item active">This Scan Includes:-</li>
-                    <li class="list-group-item">Subdomain Discovery</li>
-                    <li class="list-group-item">Directory Brute Force</li>
-                    <li class="list-group-item">Wayback URLs Discovery</li>
-                    <li class="list-group-item">JavaScript URLs Discovery</li>
-                    <li class="list-group-item">Secret Keys/APIs Discovery</li>
-                    <li class="list-group-item">LinkFinder</li>
-                  </ul>
-                  </div>
+<br>
+<br>
+<div>
+
+    <ul class="list-group" style="max-width: 280px;">
+        <li class="list-group-item active">This Scan Includes:-</li>
+        <li class="list-group-item">Subdomain Discovery</li>
+        <li class="list-group-item">Directory Brute Force</li>
+        <li class="list-group-item">Wayback URLs Discovery</li>
+        <li class="list-group-item">JavaScript URLs Discovery</li>
+        <li class="list-group-item">Secret Keys/APIs Discovery</li>
+        <li class="list-group-item">LinkFinder</li>
+    </ul>
+</div>
 
 {% endblock %}

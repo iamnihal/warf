@@ -1,19 +1,19 @@
 {% extends 'testing/base-tools.html' %}
 
 {% block title %}
-	<title>JavaScript URLs</title>
+<title>JavaScript URLs</title>
 {% endblock %}
-	
+
 {% block content %}
 
 <a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-danger float-right" download>Download Report</a>
-								<th>JavaScript URLs</th>
-							</tr>
-						</thead>
-						<tbody>
-                            {% for url in context %}
-								<tr>
-									<td><a href="{{ url }}" target="_blank">{{ url|truncatechars:75 }}</a></td>
-								</tr>
-                            {% endfor %}		
-{% endblock %}
+<th>JavaScript URLs</th>
+</tr>
+</thead>
+<tbody>
+    {% for url in context %}
+    <tr>
+        <td><a href="{{ url }}" target="_blank">{{ url|truncatechars:75 }}</a></td>
+    </tr>
+    {% endfor %}
+    {% endblock %}

@@ -2,19 +2,19 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    <title>Logout</title>
+<title>Logout</title>
 {% endblock %}
 
 {% block content %}
 <form method="POST">
     {% csrf_token %}
     <div class="form-row">
-      <div class="col" style="padding: 10px;">
-          {{ target_form|crispy }}
-      </div>
+        <div class="col" style="padding: 10px;">
+            {{ target_form|crispy }}
+        </div>
     </div>
     <div style="padding: 10px;">
         <button class="btn btn-outline-info" type="submit">Add Target</button>
     </div>
-  </form>
+</form>
 {% endblock %}

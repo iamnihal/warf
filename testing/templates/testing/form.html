@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <form action="subs/" method="post" onsubmit="myDomain()">
         {% csrf_token %}
@@ -14,7 +16,7 @@
         <input type="submit" value="Find Subdomains">
     </form>
 
-    <hr/>
+    <hr />
 
     <form action="directory/" method="post" onsubmit="myDirectory()">
         {% csrf_token %}
@@ -23,7 +25,7 @@
         <input type="submit" value="Directory Brute Force">
     </form>
 
-    <hr/>
+    <hr />
 
     <form action="wayback/" method="post" onsubmit="myUrl()">
         {% csrf_token %}
@@ -32,16 +34,16 @@
         <input type="submit" value="Find Waybackurls">
     </form>
 
-    <hr/>
-    
+    <hr />
+
     <form action='jsfiles/' method="post" onsubmit="myJsFiles()">
         {% csrf_token %}
         <label>Domain: </label>
         <input type="text" name="jsfile" id="jsfile-id" required>
         <input type="submit" value="Find Javascript Files">
     </form>
-    
-    <hr/>
+
+    <hr />
 
     <form action='jsecret/' method="post" onsubmit="myJsecret()">
         {% csrf_token %}
@@ -50,7 +52,7 @@
         <input type="submit" value="Find Secret Keys from JS files">
     </form>
 
-    <hr/>
+    <hr />
 
     <form action='jslinks/' method="post" onsubmit="myJsLinks()">
         {% csrf_token %}
@@ -60,48 +62,47 @@
     </form>
 
     <script>
-        function myDomain(){
+        function myDomain() {
             mySub = document.getElementById('sub-id').value;
             txt = document.createElement("TEXT");
-            txt.innerHTML = "Finding subdomains for  "+mySub;
+            txt.innerHTML = "Finding subdomains for  " + mySub;
             document.body.appendChild(txt);
         }
 
-        function myDirectory(){
+        function myDirectory() {
             mySub = document.getElementById('directory-id').value;
             txt = document.createElement("TEXT");
-            txt.innerHTML = "Directory Brute Force for  "+mySub;
+            txt.innerHTML = "Directory Brute Force for  " + mySub;
             document.body.appendChild(txt);
         }
 
-        function myUrl(){
+        function myUrl() {
             mySub = document.getElementById('waybackurl-id').value;
             txt = document.createElement("TEXT");
-            txt.innerHTML = "Fetching WaybackUrls for  "+mySub;
+            txt.innerHTML = "Fetching WaybackUrls for  " + mySub;
             document.body.appendChild(txt);
         }
 
-        function myJsFiles(){
+        function myJsFiles() {
             mySub = document.getElementById('jsfile-id').value;
             txt = document.createElement("TEXT");
-            txt.innerHTML = "Finding JS Files for  "+mySub;
+            txt.innerHTML = "Finding JS Files for  " + mySub;
             document.body.appendChild(txt);
         }
 
-        function myJsecret(){
+        function myJsecret() {
             mySub = document.getElementById('jsecret-id').value;
             txt = document.createElement("TEXT");
-            txt.innerHTML = "Extracting Secret Keys from Javascript files for  "+mySub;
+            txt.innerHTML = "Extracting Secret Keys from Javascript files for  " + mySub;
             document.body.appendChild(txt);
         }
 
-        function myJsLinks(){
+        function myJsLinks() {
             mySub = document.getElementById('jslink-id').value;
             txt = document.createElement("TEXT");
-            txt.innerHTML = "Extracting links from Javascript files for  "+mySub;
+            txt.innerHTML = "Extracting links from Javascript files for  " + mySub;
             document.body.appendChild(txt);
         }
-
     </script>
     <div>
         <hr>
@@ -109,6 +110,7 @@
         <div style="font-size:large; font-family:'Times New Roman', Times, serif; font-size: larger;">{{ subs }}</div>
         {% endfor %}
     </div>
-    
+
 </body>
+
 </html>

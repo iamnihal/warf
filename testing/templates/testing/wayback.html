@@ -1,7 +1,7 @@
 {% extends "testing/base-tools.html" %}
 
 {% block title %}
-    <title>Wayback URLs</title>
+<title>Wayback URLs</title>
 {% endblock %}
 
 {% block content %}
@@ -11,10 +11,10 @@
 </tr>
 </thead>
 <tbody>
-{% for url in context %}
+    {% for url in context %}
     <tr>
         <td><a href="{{ url }}" target="_blank">{{ url }}</a></td>
     </tr>
-{% endfor %}
+    {% endfor %}
 </tbody>
 {% endblock %}

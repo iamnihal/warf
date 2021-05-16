@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,32 +8,46 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
 </head>
+
 <body>
     <ul class="list-group" style="max-width: 500px">
-        <a href="{% url 'fullscan-subdomain' %}?type=subdomain" target="_blank"><li class="list-group-item d-flex justify-content-between align-items-center">
-          Subdomains
-          <span class="badge bg-primary rounded-pill">{{ context.subdom|length }}</span>
-        </li></a>
-        <a href="{% url 'fullscan-directory' %}?type=directory" target="_blank"><li class="list-group-item d-flex justify-content-between align-items-center">
-          Directory Brute Force
-          <span class="badge bg-primary rounded-pill">{{ context.directory_link|length }}</span>
-        </li></a>
-        <a href="{% url 'fullscan-wayback' %}?type=wayback" target="_blank"><li class="list-group-item d-flex justify-content-between align-items-center">
-          Wayback URLs
-          <span class="badge bg-primary rounded-pill">{{ context.wayback_url|length  }}</span>
-        </li></a>
-        <a href="{% url 'fullscan-jsurl' %}?type=jsurl" target="_blank"><li class="list-group-item d-flex justify-content-between align-items-center">
-          JavaScript URLs
-          <span class="badge bg-primary rounded-pill">{{ context.js_url|length }}</span>
-        </li></a>
-        <a href="{% url 'fullscan-secrets' %}?type=secrets" target="_blank"><li class="list-group-item d-flex justify-content-between align-items-center">
-          Secret Keys
-          <span class="badge bg-primary rounded-pill">{{ context.js_secrets|length }}</span>
-        </li></a>
-        <a href="{% url 'fullscan-linkfinder' %}?type=linkfinder" target="_blank"><li class="list-group-item d-flex justify-content-between align-items-center">
-          Links from JS files
-          <span class="badge bg-primary rounded-pill">{{ context.js_link|length }}</span>
-        </li></a>
-      </ul>
+        <a href="{% url 'fullscan-subdomain' %}?type=subdomain" target="_blank">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Subdomains
+                <span class="badge bg-primary rounded-pill">{{ context.subdom|length }}</span>
+            </li>
+        </a>
+        <a href="{% url 'fullscan-directory' %}?type=directory" target="_blank">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Directory Brute Force
+                <span class="badge bg-primary rounded-pill">{{ context.directory_link|length }}</span>
+            </li>
+        </a>
+        <a href="{% url 'fullscan-wayback' %}?type=wayback" target="_blank">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Wayback URLs
+                <span class="badge bg-primary rounded-pill">{{ context.wayback_url|length  }}</span>
+            </li>
+        </a>
+        <a href="{% url 'fullscan-jsurl' %}?type=jsurl" target="_blank">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                JavaScript URLs
+                <span class="badge bg-primary rounded-pill">{{ context.js_url|length }}</span>
+            </li>
+        </a>
+        <a href="{% url 'fullscan-secrets' %}?type=secrets" target="_blank">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Secret Keys
+                <span class="badge bg-primary rounded-pill">{{ context.js_secrets|length }}</span>
+            </li>
+        </a>
+        <a href="{% url 'fullscan-linkfinder' %}?type=linkfinder" target="_blank">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                Links from JS files
+                <span class="badge bg-primary rounded-pill">{{ context.js_link|length }}</span>
+            </li>
+        </a>
+    </ul>
 </body>
+
 </html>

@@ -1,19 +1,19 @@
 {% extends 'testing/base-tools.html' %}
 
 {% block title %}
-	<title>Endpoints from JavaScript</title>
+<title>Endpoints from JavaScript</title>
 {% endblock %}
-	
+
 {% block content %}
 <a href="{% url 'download-result' %}?scan=linkfinder" class="btn btn-danger float-right" download>Download Report</a>
 
-								<th>Endpoints</th>
-							</tr>
-						</thead>
-						<tbody>
-                            {% for endpoint in context %}
-								<tr>
-									<td><a href="{{ endpoint }}" target="_blank">{{ endpoint }}</a></td>
-								</tr>
-                            {% endfor %}
-{% endblock %}
+<th>Endpoints</th>
+</tr>
+</thead>
+<tbody>
+    {% for endpoint in context %}
+    <tr>
+        <td><a href="{{ endpoint }}" target="_blank">{{ endpoint }}</a></td>
+    </tr>
+    {% endfor %}
+    {% endblock %}

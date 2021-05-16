@@ -1,7 +1,7 @@
 {% extends 'testing/base-tools.html' %}
 
 {% block title %}
-    <title>Directory</title>
+<title>Directory</title>
 {% endblock %}
 
 {% block content %}
@@ -12,14 +12,14 @@
 </tr>
 </thead>
 <tbody>
-{% for directory, size, code in context %}
-<tr>
-<td class="column1"><a>{{ directory }}</a></td>
-<td class="column2">{{ size }}</td>
-<td class="column3">{{ code }}</td>
-<!-- <td class="column4">$999.00</td>
+    {% for directory, size, code in context %}
+    <tr>
+        <td class="column1"><a>{{ directory }}</a></td>
+        <td class="column2">{{ size }}</td>
+        <td class="column3">{{ code }}</td>
+        <!-- <td class="column4">$999.00</td>
 <td class="column5">1</td>
 <td class="column6">$999.00</td> -->
-</tr>
-{% endfor %}
-{% endblock %}
+    </tr>
+    {% endfor %}
+    {% endblock %}

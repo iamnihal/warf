@@ -1,239 +1,220 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        {% block title %}<title>Dashboard SB Admin</title>{% endblock %}
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
-        <link href="https://cdn.jsdelivr.net/gh/StartBootstrap/startbootstrap-sb-admin/dist/css/styles.min.css" rel="stylesheet" />
-        <!-- <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" /> -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" /> -->
-         <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    </head>
-    <body class="sb-nav-fixed">
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand" href="{% url 'index-page' %}">Wapf Pipeline</a>
-            <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
-            
-            <!-- Navbar Search-->
-            <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-                <div class="input-group">
-                    <div class="dropdown">
-                        <input class="form-control dropdown-toggle" id="dropdownMenu1-1" data-toggle="dropdown" onkeyup="searchFunc()" type="text" placeholder="Search for...." aria-label="Search">
-                      
-                        <!--Menu-->
-                        <div class="dropdown-menu dropdown-primary" id="id-searchDropdown">
-                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'subdomain-page'  %}">Subdomain Discovery</a>
-                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'directory-page'  %}">Directory Brute-force</a>
-                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'wayback-page'  %}">Wayback URLs</a>
-                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'jsurl-page'  %}">JavaScript URLs</a>
-                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'secret-page'  %}">Secret/API keys</a>
-                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'endpoint-page'  %}">LinkFinder</a>
-                          <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'wordlist-page'  %}">Wordlist</a>
-                        </div>
+
+<head>
+    {% block title %}<title>Dashboard SB Admin</title>{% endblock %}
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/gh/StartBootstrap/startbootstrap-sb-admin/dist/css/styles.min.css"
+        rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'index-page' %}">Wapf Pipeline</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i
+                class="fas fa-bars"></i></button>
+
+        <!-- Navbar Search-->
+        <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+            <div class="input-group">
+                <div class="dropdown">
+                    <input class="form-control dropdown-toggle" id="dropdownMenu1-1" data-toggle="dropdown"
+                        onkeyup="searchFunc()" type="text" placeholder="Search for...." aria-label="Search">
+
+                    <!--Menu-->
+                    <div class="dropdown-menu dropdown-primary" id="id-searchDropdown">
+                        <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'subdomain-page'  %}">Subdomain
+                            Discovery</a>
+                        <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'directory-page'  %}">Directory
+                            Brute-force</a>
+                        <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'wayback-page'  %}">Wayback URLs</a>
+                        <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'jsurl-page'  %}">JavaScript URLs</a>
+                        <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'secret-page'  %}">Secret/API keys</a>
+                        <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'endpoint-page'  %}">LinkFinder</a>
+                        <a class="dropdown-item mdb-dropdownLink-1" href="{% url 'wordlist-page'  %}">Wordlist</a>
                     </div>
                 </div>
-            </form>
-            <!-- Navbar-->
-            {% if user.is_authenticated %}
-                <a class="nav-link text-light" href="{% url 'add-target' %}">Add Target</a>
-                <a class="nav-link text-light" href="{% url 'targets' %}">Targets</a>
-                <a class="nav-link text-light" href="{% url 'profile' %}">Profile</a>
-                <a class="nav-link text-light" href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a class="nav-link text-light" href="{% url 'login' %}">Login</a>
-                <a class="nav-link text-light" href="{% url 'register' %}">Register</a>
-            {% endif %}
+            </div>
+        </form>
+        <!-- Navbar-->
+        {% if user.is_authenticated %}
+        <a class="nav-link text-light" href="{% url 'add-target' %}">Add Target</a>
+        <a class="nav-link text-light" href="{% url 'targets' %}">Targets</a>
+        <a class="nav-link text-light" href="{% url 'profile' %}">Profile</a>
+        <a class="nav-link text-light" href="{% url 'logout' %}">Logout</a>
+        {% else %}
+        <a class="nav-link text-light" href="{% url 'login' %}">Login</a>
+        <a class="nav-link text-light" href="{% url 'register' %}">Register</a>
+        {% endif %}
 
-            <!-- <ul class="navbar-nav ml-auto ml-md-0">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                        <a class="dropdown-item" href="#">Settings</a>
-                        <a class="dropdown-item" href="#">Activity Log</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="login.html">Logout</a>
-                    </div>
-                </li>
-            </ul> -->
-        </nav>
-        <div id="layoutSidenav">
-            <div id="layoutSidenav_nav">
-                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                    <div class="sb-sidenav-menu">
-                        <div class="nav">
-                            <div class="sb-sidenav-menu-heading">Core</div>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
 
-                            {% if user.is_authenticated %}
-                                <a class="nav-link" href="{% url 'dashboard' %}">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                    Dashboard
-                                </a> 
-                            {% else %}
-                                <a class="nav-link" href="{% url 'index-page' %}">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                    HOME
-                                </a>
-                            {% endif %}
-                            <div class="sb-sidenav-menu-heading">Interface</div>
+                        {% if user.is_authenticated %}
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        {% else %}
+                        <a class="nav-link" href="{% url 'index-page' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            HOME
+                        </a>
+                        {% endif %}
+                        <div class="sb-sidenav-menu-heading">Interface</div>
 
-                            <a class="nav-link" href="{% url 'fullscan-page' %}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Full Scan
-                            </a>
+                        <a class="nav-link" href="{% url 'fullscan-page' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Full Scan
+                        </a>
 
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                Scans
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts"
+                            aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Scans
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
 
-                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="{% url 'subdomain-page' %}">Subdomain</a>
-                                    <a class="nav-link" href="{% url 'directory-page' %}">Directory</a>
-                                    <a class="nav-link" href="{% url 'wayback-page' %}">Wayback URLs</a>
-                                    <a class="nav-link" href="{% url 'jsurl-page' %}">JS File Discovery</a>
-                                    <a class="nav-link" href="{% url 'secret-page' %}">Secrets from JS</a>
-                                    <a class="nav-link" href="{% url 'endpoint-page' %}">Endpoints from JS</a>
-                                </nav>
-                            </div>
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                                <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                                Settings
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                                    
-                                    <a class="nav-link collapsed" href="{% url 'wordlist-page' %}" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                                        Wordlist
-                                        <div class="sb-sidenav-collapse-arrow"></div>
-                                    </a>
-                                   
-                                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                                        Error
-                                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                    </a>
-                                    <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                        <nav class="sb-sidenav-menu-nested nav">
-                                            <a class="nav-link" href="401.html">401 Page</a>
-                                            <a class="nav-link" href="404.html">404 Page</a>
-                                            <a class="nav-link" href="500.html">500 Page</a>
-                                        </nav>
-                                    </div>
-                                </nav>
-                            </div>
-                            <div class="sb-sidenav-menu-heading">Addons</div>
-                            <a class="nav-link" href="charts.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Charts
-                            </a>
-                            <a class="nav-link" href="tables.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                                Tables
-                            </a>
+                        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
+                            data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{% url 'subdomain-page' %}">Subdomain</a>
+                                <a class="nav-link" href="{% url 'directory-page' %}">Directory</a>
+                                <a class="nav-link" href="{% url 'wayback-page' %}">Wayback URLs</a>
+                                <a class="nav-link" href="{% url 'jsurl-page' %}">JS File Discovery</a>
+                                <a class="nav-link" href="{% url 'secret-page' %}">Secrets from JS</a>
+                                <a class="nav-link" href="{% url 'endpoint-page' %}">Endpoints from JS</a>
+                            </nav>
                         </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+                            aria-expanded="false" aria-controls="collapsePages">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            Settings
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo"
+                            data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+
+                                <a class="nav-link collapsed" href="{% url 'wordlist-page' %}"
+                                    data-target="#pagesCollapseAuth" aria-expanded="false"
+                                    aria-controls="pagesCollapseAuth">
+                                    Wordlist
+                                    <div class="sb-sidenav-collapse-arrow"></div>
+                                </a>
+
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                    data-target="#pagesCollapseError" aria-expanded="false"
+                                    aria-controls="pagesCollapseError">
+                                    Error
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne"
+                                    data-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="401.html">401 Page</a>
+                                        <a class="nav-link" href="404.html">404 Page</a>
+                                        <a class="nav-link" href="500.html">500 Page</a>
+                                    </nav>
+                                </div>
+                            </nav>
+                        </div>
+                        <div class="sb-sidenav-menu-heading">Addons</div>
+                        <a class="nav-link" href="charts.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Charts
+                        </a>
+                        <a class="nav-link" href="tables.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                            Tables
+                        </a>
                     </div>
-                    <div class="sb-sidenav-footer">
-                        <div class="small">Logged in as:</div>
-                        Start Bootstrap
-                    </div>
-                </nav>
-            </div>
-
-            <div id="layoutSidenav_content">
-                <main>
-                    <div class="container-fluid">
-            {% block content %}
-            
-            
-            {% endblock %}
-
-            <div id="spinner"></div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Logged in as:</div>
+                    Start Bootstrap
+                </div>
+            </nav>
         </div>
-        <div></div>
-        <div class="card mb-4"><div class="card-body"></div></div>
+
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+                    {% block content %}
+
+                    {% endblock %}
+                    <div id="spinner"></div>
+                </div>
         </div>
-</main>
-</div>
-
-<script>
-function loadingPage() {
-if(document.getElementById("formControlLg").value.length !== 0) {
-//Create outer div
-let div = document.createElement("div")
-div.id = 'spinner-box'
-div.className = 'text-center mt-3'
-
-//Create inner div
-let innerdiv = document.createElement("div")
-innerdiv.role = 'status'
-innerdiv.className = 'spinner-border text-primary'
-
-div.appendChild(innerdiv);
-document.getElementById("spinner").appendChild(div);
-}
-}
-</script>
-
-<script>
-$(document).ready(function () {
-$("#subFormId").submit(function () {
-$(".btn").attr("disabled", true);
-return true;
-});
-});
-</script>
-
-<script>
-    // var keywords = ["subdomain", "directory", "wayback", "jsurl", "secret", "linkfinder"];
-    function searchFunc(){
-        let input = document.getElementById('dropdownMenu1-1').value
-        input = input.toLowerCase();
-        let x = document.getElementsByClassName('mdb-dropdownLink-1');
-
-        for (i = 0; i < x.length; i++) { 
-        if (!x[i].innerHTML.toLowerCase().includes(input)) {
-            x[i].style.display="none";
-        }
-        else {
-            x[i].style.display="list-item";                 
-        }
-    }}
-</script>
-
-<!-- <footer class="py-4 bg-light mt-auto">
-    <div class="container-fluid">
-        <div class="d-flex align-items-center justify-content-between small">
-            <div class="text-muted">Copyright &copy; Your Website 2020</div>
-            <div>
-                <a href="#">Privacy Policy</a>
-                &middot;
-                <a href="#">Terms &amp; Conditions</a>
-            </div>
-        </div>
+        </main>
     </div>
-</footer> -->
-</div>
-</div>
-<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script> -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script src="{% static 'testing/scripts.js' %}"></script>
-<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script> -->
-<!-- <script src="assets/demo/chart-area-demo.js"></script>
-<script src="assets/demo/chart-bar-demo.js"></script> -->
-<!-- <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script> -->
-<!-- <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script> -->
-<!-- <script src="assets/demo/datatables-demo.js"></script> -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.css" rel="stylesheet"/>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"></script>
+
+    <script>
+        function loadingPage() {
+            if (document.getElementById("formControlLg").value.length !== 0) {
+                //Create outer div
+                let div = document.createElement("div")
+                div.id = 'spinner-box'
+                div.className = 'text-center mt-3'
+
+                //Create inner div
+                let innerdiv = document.createElement("div")
+                innerdiv.role = 'status'
+                innerdiv.className = 'spinner-border text-primary'
+
+                div.appendChild(innerdiv);
+                document.getElementById("spinner").appendChild(div);
+            }
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#subFormId").submit(function () {
+                $(".btn").attr("disabled", true);
+                return true;
+            });
+        });
+    </script>
+
+    <script>
+        function searchFunc() {
+            let input = document.getElementById('dropdownMenu1-1').value
+            input = input.toLowerCase();
+            let x = document.getElementsByClassName('mdb-dropdownLink-1');
+
+            for (i = 0; i < x.length; i++) {
+                if (!x[i].innerHTML.toLowerCase().includes(input)) {
+                    x[i].style.display = "none";
+                } else {
+                    x[i].style.display = "list-item";
+                }
+            }
+        }
+    </script>
+    </div>
+    </div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous">
+    </script>
+    <script src="{% static 'testing/scripts.js' %}"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.css" rel="stylesheet" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"></script>
 </body>
+
 </html>

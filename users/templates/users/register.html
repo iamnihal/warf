@@ -2,24 +2,24 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-    <title>Register</title>
+<title>Register</title>
 {% endblock %}
-   
+
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        <div class="form-row">
-          <div class="col" style="padding: 10px;">
-              {{ form|crispy }}
-          </div>
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="col" style="padding: 10px;">
+            {{ form|crispy }}
         </div>
-        <div style="padding: 10px;">
-            <button class="btn btn-outline-info" type="submit">Sign Up</button>
-        </div>
-      </form>
-      <div class="border-top pt-3">
-          <small class="text-muted" style="padding: 10px;">
-              Already Have An Account? <a class="ml-2" href="{% url 'login' %}">Sign In</a>
-          </small>
-      </div>
+    </div>
+    <div style="padding: 10px;">
+        <button class="btn btn-outline-info" type="submit">Sign Up</button>
+    </div>
+</form>
+<div class="border-top pt-3">
+    <small class="text-muted" style="padding: 10px;">
+        Already Have An Account? <a class="ml-2" href="{% url 'login' %}">Sign In</a>
+    </small>
+</div>
 {% endblock %}

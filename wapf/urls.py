@@ -32,6 +32,8 @@ urlpatterns = [
     path('scan/jsurl/', js_urls, name="jsurl-page" ),
     path('scan/secret/', js_secrets, name="secret-page"),
     path('scan/endpoint/', js_links, name="endpoint-page"),
+
+    #Download URLs
     path('download/', download_result, name="download-result"),
     path('download/<int:pk>/', download_target_result, name="download-target-result"),
 
@@ -54,12 +56,14 @@ urlpatterns = [
     path('register/', register, name="register"),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name="login"),
     path('logout/', auth_views.LogoutView.as_view(template_name='users/logout.html'), name="logout"),
+
+    #Profile/Dashboard
     path('profile/', profile, name="profile"),
     path('dashboard/', dashboard, name="dashboard"),
+
+    #Targets
     path('add-target/', add_target, name="add-target"),
     path('targets/', target, name="targets"),
-    # path('targets/start-scan/<int:pk>/', start_scan, name="scan-item"),
-    # path('targets/<int:pk>/', PostDetailView.as_view(), name="scan-detail"),
     path('targets/<int:pk>/', target_view, name="target-view"),
     path('targets/<int:pk>/result/', scan_result, name="scan-result"),
 ]

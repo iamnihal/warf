@@ -1,18 +1,18 @@
 {% extends 'testing/base-tools.html' %}
 
 {% block title %}
-	<title>Subdomains</title>
+<title>Subdomains</title>
 {% endblock %}
-	
+
 {% block content %}
 <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger float-right" download>Download Report</a>
-								<th>Subdomain</th>
-							</tr>
-						</thead>
-						<tbody>
-                            {% for sub in subdom %}
-								<tr>
-									<td><a href="https://{{ sub }}" target="_blank">{{ sub }}</a></td>
-								</tr>
-                            {% endfor %}
-{% endblock %}
+<th>Subdomain</th>
+</tr>
+</thead>
+<tbody>
+    {% for sub in subdom %}
+    <tr>
+        <td><a href="https://{{ sub }}" target="_blank">{{ sub }}</a></td>
+    </tr>
+    {% endfor %}
+    {% endblock %}

@@ -6,109 +6,105 @@
 
 {% block content %}
 
-        <h1 class="mt-4">Targets</h1>
-        
-        {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }} text-center">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<h1 class="mt-4">Target</h1>
+
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card border border-primary mb-3" style="max-width: 50rem;">
+            <div class="card-header text-white text-center bg-primary">
+                {{ scan_target_name|upper  }}
             </div>
-        {% endfor %}
-      {% endif %}
-
-
-      <div class="row">
-        <div class="col-xl-3 col-md-6">
-            <div class="card border border-primary mb-3" style="max-width: 50rem;">
-                <div class="card-header text-white text-center bg-primary">
-                    {{ scan_target_name|upper  }}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="card-header text-center text-primary">
+                    <p>Scan type:</p>
+                    <input type="text" name="scan-type" value="{{ scan_type }}" disabled>
                 </div>
-                <form method="POST">
-                    {% csrf_token %}
-                    <div class="card-header text-center text-primary">
-                        <p>Scan type:</p>
-                        <input type="text" name="scan-type" value="{{ scan_type }}" disabled>
-                    </div>
-                    <div class="card-body text-primary text-center">
-                        <p>Domain/Endpoint:</p>
-                        <input type="text" name="domain-url" value="{{ scan_domain_url }}" disabled>
-                    </div>
-                    <div class="card-footer text-center">
+                <div class="card-body text-primary text-center">
+                    <p>Domain/Endpoint:</p>
+                    <input type="text" name="domain-url" value="{{ scan_domain_url }}" disabled>
+                </div>
+                <div class="card-footer text-center">
                     <!-- <a href="/targets/{{ target.id }}" type="submit" class="btn btn-primary">Scan</a> -->
-                    <button class="btn btn-primary" type="submit" href="targets/start-scan/{{ scan_item.id }}/">Scan</button>
-                    </div>
-                </form>
-                <div class="text-center">
-                    {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                    {% else %}
-                        <a href="{% url 'scan-result' scan_item.id %}?scan={{ scan_type }}" class="btn btn-primary">Result</a>
-                    {% endif %}
+                    <button class="btn btn-primary" type="submit"
+                        href="targets/start-scan/{{ scan_item.id }}/">Scan</button>
                 </div>
-                 <div class="card-footer text-center">
-                    {% if scan_type|stringformat:'s' == "Subdomain" %}
-                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}     
-                    {% else %}
-                        <a href="{% url 'download-target-result' scan_item.id %}?scan=subdomain" class="btn btn-danger text-center" download>Download Report</a>
-                        {% endif %}
-                    {% endif %}
+            </form>
+            <div class="text-center">
+                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                {% else %}
+                <a href="{% url 'scan-result' scan_item.id %}?scan={{ scan_type }}" target="_blank"
+                    class="btn btn-primary">Result</a>
+                {% endif %}
+            </div>
+            <div class="card-footer text-center">
+                {% if scan_type|stringformat:'s' == "Subdomain" %}
+                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                {% else %}
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=subdomain"
+                    class="btn btn-danger text-center" download>Download Report</a>
+                {% endif %}
+                {% endif %}
 
-                    {% if scan_type|stringformat:'s' == "Dirsearch" %}
-                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                    {% else %}
-                        <a href="{% url 'download-target-result' scan_item.id %}?scan=directory" class="btn btn-danger text-center" download>Download Report</a>
-                        {% endif %}
-                    {% endif %}
+                {% if scan_type|stringformat:'s' == "Dirsearch" %}
+                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                {% else %}
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=directory"
+                    class="btn btn-danger text-center" download>Download Report</a>
+                {% endif %}
+                {% endif %}
 
-                    {% if scan_type|stringformat:'s' == "Wayback URL" %}
-                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                    {% else %}
-                        <a href="{% url 'download-target-result' scan_item.id %}?scan=wayback" class="btn btn-danger text-center" download>Download Report</a>
-                        {% endif %}
-                    {% endif %}
+                {% if scan_type|stringformat:'s' == "Wayback URL" %}
+                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                {% else %}
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=wayback"
+                    class="btn btn-danger text-center" download>Download Report</a>
+                {% endif %}
+                {% endif %}
 
-                    {% if scan_type|stringformat:'s' == "JS File Discovery" %}
-                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                    {% else %}
-                        <a href="{% url 'download-target-result' scan_item.id %}?scan=jsurl" class="btn btn-danger text-center" download>Download Report</a>
-                        {%  endif %}
-                    {% endif %}
+                {% if scan_type|stringformat:'s' == "JS File Discovery" %}
+                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                {% else %}
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=jsurl" class="btn btn-danger text-center"
+                    download>Download Report</a>
+                {%  endif %}
+                {% endif %}
 
-                    {% if scan_type|stringformat:'s' == "Secret/API key" %}
-                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                    {% else %}
-                        <a href="{% url 'download-target-result' scan_item.id %}?scan=secret" class="btn btn-danger text-center" download>Download Report</a>
-                        {%  endif %}
-                    {% endif %}
+                {% if scan_type|stringformat:'s' == "Secret/API key" %}
+                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                {% else %}
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=secret" class="btn btn-danger text-center"
+                    download>Download Report</a>
+                {%  endif %}
+                {% endif %}
 
-                    {% if scan_type|stringformat:'s' == "Endpoint from JS" %}
-                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                    {% else %}
-                        <a href="{% url 'download-target-result' scan_item.id %}?scan=linkfinder" class="btn btn-danger text-center" download>Download Report</a>
-                        {% endif %}
-                    {% endif %}
+                {% if scan_type|stringformat:'s' == "Endpoint from JS" %}
+                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                {% else %}
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=linkfinder"
+                    class="btn btn-danger text-center" download>Download Report</a>
+                {% endif %}
+                {% endif %}
 
-                    </div>
-                <div class="text-muted text-center">
-                    {{ scan_date_posted|date:"F d, Y" }}
-                </div>
+            </div>
+            <div class="text-muted text-center">
+                {{ scan_date_posted|date:"F d, Y" }}
             </div>
         </div>
     </div>
+</div>
 
 {% endblock %}
-                <footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; Your Website 2020</div>
-                            <div>
-                                <a href="#">Privacy Policy</a>
-                                &middot;
-                                <a href="#">Terms &amp; Conditions</a>
-                            </div>
-                        </div>
-                    </div>
-                </footer>
-            </div>
-        </div>
-    </body>
+</div>
+</div>
+</body>
+
 </html>

@@ -1,7 +1,7 @@
 venv/
 db.sqlite3
 testing/dirsearch/logs/*.log
-testing/output/
+testing/output/.*
 
 # Django stuff:
 *.log
