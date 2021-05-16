@@ -66,12 +66,6 @@ def add_target(request):
             new_target = target_form.save(commit=False)
             new_target.author = request.user
             new_target.save()
-            # if scan_type == "Subdomain":
-            #     subdomain_finder(request, domain_url)
-            # elif scan_type == "Dirsearch":
-            #     directory_brute_force(request, domain_url)
-            # else:
-            #     subdomain_finder(request, domain_url)
             return redirect('targets')
     else:
         target_form = AddTargetForm()
@@ -83,34 +77,28 @@ def target(request):
     return render(request, 'users/targets.html', {'targets':target_list})
 
 
-# class PostDetailView(DetailView):
-#     model = Scan
-#     template_name = 'users/scan_detail.html'
-
-
-def target_view(request, pk):
-    scan_item = Scan.objects.get(id=pk)
-    scan_type = Scan.objects.get(id=pk).scan_type
-    scan_domain_url = Scan.objects.get(id=pk).domain_url
-    scan_date_posted = Scan.objects.get(id=pk).scan_date
-    scan_target_name = Scan.objects.get(id=pk).target_name
-    print("Hurray")
-    print(scan_type)
-    print(scan_domain_url)
-    if scan_type == "Subdomain":
-        subdomain_finder(request, scan_domain_url)
-    elif scan_type == "Dirsearch":
-        directory_brute_force(request, scan_domain_url)
-    elif scan_type == "Wayback URL":
-        waybackurls(request, scan_domain_url)
-    elif scan_type == "JS File Discovery":
-        js_urls(request, scan_domain_url)
-    elif scan_type == "Secret/API key":
-        js_secrets(request, scan_domain_url)
-    elif scan_type == "Endpoint from JS":
-        js_links(request, scan_domain_url)
+# def target_view(request, pk):
+#     scan_item = Scan.objects.get(id=pk)
+#     scan_type = Scan.objects.get(id=pk).scan_type
+#     scan_domain_url = Scan.objects.get(id=pk).domain_url
+#     scan_date_posted = Scan.objects.get(id=pk).scan_date
+#     scan_target_name = Scan.objects.get(id=pk).target_name
+#     print(scan_type)
+#     print(scan_domain_url)
+#     if scan_type == "Subdomain":
+#         subdomain_finder(request, scan_domain_url)
+#     elif scan_type == "Dirsearch":
+#         directory_brute_force(request, scan_domain_url)
+#     elif scan_type == "Wayback URL":
+#         waybackurls(request, scan_domain_url)
+#     elif scan_type == "JS File Discovery":
+#         js_urls(request, scan_domain_url)
+#     elif scan_type == "Secret/API key":
+#         js_secrets(request, scan_domain_url)
+#     elif scan_type == "Endpoint from JS":
+#         js_links(request, scan_domain_url)
  
-    return render(request, 'users/scan_detail.html', {'scan_type':scan_type, 'scan_domain_url':scan_domain_url, 'scan_date_posted':scan_date_posted, 'scan_target_name':scan_target_name, 'scan_item':scan_item})
+#     return render(request, 'users/scan_detail.html', {'scan_type':scan_type, 'scan_domain_url':scan_domain_url, 'scan_date_posted':scan_date_posted, 'scan_target_name':scan_target_name, 'scan_item':scan_item})
 
 
 

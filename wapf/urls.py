@@ -17,8 +17,8 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, ajax_call,)
-from users.views import register, profile, dashboard, add_target, target, start_scan, target_view
+from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, ajax_call, target_view, scan_result, download_target_result,)
+from users.views import register, profile, dashboard, add_target, target
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -32,7 +32,8 @@ urlpatterns = [
     path('scan/jsurl/', js_urls, name="jsurl-page" ),
     path('scan/secret/', js_secrets, name="secret-page"),
     path('scan/endpoint/', js_links, name="endpoint-page"),
-    path('download/', download_result, name='download-result'),
+    path('download/', download_result, name="download-result"),
+    path('download/<int:pk>/', download_target_result, name="download-target-result"),
 
     #Fullscan URLs
     path('scan/fullscan/', full_scan, name="fullscan-page"),
@@ -57,9 +58,10 @@ urlpatterns = [
     path('dashboard/', dashboard, name="dashboard"),
     path('add-target/', add_target, name="add-target"),
     path('targets/', target, name="targets"),
-    path('targets/start-scan/<int:pk>/', start_scan, name="scan-item"),
+    # path('targets/start-scan/<int:pk>/', start_scan, name="scan-item"),
     # path('targets/<int:pk>/', PostDetailView.as_view(), name="scan-detail"),
     path('targets/<int:pk>/', target_view, name="target-view"),
+    path('targets/<int:pk>/result/', scan_result, name="scan-result"),
 ]
 
 if settings.DEBUG:

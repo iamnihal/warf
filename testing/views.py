@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.urls import reverse
 from . import sublist3r
 from .subbrute import subbrute
 from background_task import background
+from users.views import Scan
+from .models import ResultFileName, Scan
 import subprocess
 import os
 import sys
@@ -30,9 +33,122 @@ jsurl_output_file = "Null"
 secret_output_file = "Null"
 linkfinder_output_file = "Null"
 
-
 def index(request):
     return render(request, "testing/index.html")
+
+
+
+def target_view(request, pk):
+    scan_item = Scan.objects.get(id=pk)
+    scan_type = Scan.objects.get(id=pk).scan_type
+    scan_domain_url = Scan.objects.get(id=pk).domain_url
+    scan_date_posted = Scan.objects.get(id=pk).scan_date
+    scan_target_name = Scan.objects.get(id=pk).target_name
+    result_filename = ResultFileName.objects.filter(scan_item=Scan.objects.get(id=pk)).first()
+    print(f'Target View:- {scan_type}')
+    print(f'Target View:- {scan_domain_url}')
+    if request.method == "POST":
+        if scan_type == "Subdomain":
+            subdomain_finder(request, scan_domain_url, pk)
+            return redirect('target-view', pk=scan_item.id)
+        elif scan_type == "Dirsearch":
+            directory_brute_force(request, scan_domain_url, pk)
+            return redirect('target-view', pk=scan_item.id)
+        elif scan_type == "Wayback URL":
+            waybackurls(request, scan_domain_url, pk)
+            return redirect('target-view', pk=scan_item.id)
+        elif scan_type == "JS File Discovery":
+            js_urls(request, scan_domain_url, pk)
+            return redirect('target-view', pk=scan_item.id)
+        elif scan_type == "Secret/API key":
+            js_secrets(request, scan_domain_url, pk)
+            return redirect('target-view', pk=scan_item.id)
+        elif scan_type == "Endpoint from JS":
+            js_links(request, scan_domain_url, pk)
+            return redirect('target-view', pk=scan_item.id)
+ 
+    return render(request, 'users/scan_detail.html', {'scan_type':scan_type, 'scan_domain_url':scan_domain_url, 'scan_date_posted':scan_date_posted, 'scan_target_name':scan_target_name, 'scan_item':scan_item, 'result_filename':result_filename})
+
+
+
+def scan_result(request, pk):
+    result_filename = ResultFileName.objects.filter(scan_item=Scan.objects.get(id=pk)).first()
+    print(pk)
+    print(f'File Name is {result_filename}')
+    scan_type = request.GET.get("scan", None)
+    print(scan_type)
+
+    if scan_type == "Subdomain":
+        for file in os.listdir('/home/nihal/fwapf/testing/output/subdomain'):
+            if re.match(file, str(result_filename)):
+                print(file)
+                with open(f'/home/nihal/fwapf/testing/output/subdomain/{file}', 'r') as rf:
+                    context = rf.readlines()
+
+        return render(request, 'testing/subdomain.html', {'subdom':context})
+
+    if scan_type == "Dirsearch":
+        print("Inside Dirsearch")
+        for file in os.listdir('/home/nihal/fwapf/testing/output/directory'):
+            if re.match(file, str(result_filename)):
+                with open(f'/home/nihal/fwapf/testing/output/directory/{file}', 'r') as rf:
+                    data = rf.readlines()[2:]
+                    print(data)
+
+        status = []
+        size = []
+        directory_link = []
+
+        for line in data:
+            row = re.split(" +", line)
+            status.append(row[0])
+            size.append(row[1])
+            directory_link.append(row[2])
+
+        context = zip(directory_link, size, status)
+
+        return render(request, 'testing/directory.html', {'context':context})
+
+
+    if scan_type == "Wayback URL":
+        for file in os.listdir('/home/nihal/fwapf/testing/output/wayback'):
+            if re.match(file, str(result_filename)):
+                with open(f'/home/nihal/fwapf/testing/output/wayback/{file}', 'r') as rf:
+                    data = rf.readlines()
+
+        return render(request, 'testing/wayback.html', {'context':data})
+
+    
+    if scan_type == "JS File Discovery":
+        for file in os.listdir('/home/nihal/fwapf/testing/output/jsurl'):
+            if re.match(file, str(result_filename)):
+                with open(f'/home/nihal/fwapf/testing/output/jsurl/{file}', 'r') as rf:
+                    data = rf.readlines()
+
+        return render(request, 'testing/jsurl.html', {'context':data})
+
+
+    if scan_type == "Secret/API key":
+        for file in os.listdir('/home/nihal/fwapf/testing/output/secrets'):
+            if re.match(file, str(result_filename)):
+                with open(f'/home/nihal/fwapf/testing/output/secrets/{file}', 'r') as rf:
+                    data = rf.readlines()
+
+        return render(request, 'testing/secret.html', {'context':data})
+
+    if scan_type == "Endpoint from JS":
+        for file in os.listdir('/home/nihal/fwapf/testing/output/linkfinder'):
+            if re.match(file, str(result_filename)):
+                with open(f'/home/nihal/fwapf/testing/output/linkfinder/{file}', 'r') as rf:
+                    data = rf.readlines()
+
+        return render(request, 'testing/endpoint.html', {'context':data})
+
+        
+    return HttpResponse("Hola")
+
+
+
     
 
 def handle_uploaded_file(f):
@@ -99,7 +215,7 @@ def ajax_call(request):
 
 # Subdomain Finder
 @background(schedule=1)
-def subdomain_finder_task(subdomain, gitSubdomain, gitToken):
+def subdomain_finder_task(subdomain, gitSubdomain, gitToken, pk=None):
     print("Inside Subdomain Task")
 
     try:
@@ -111,6 +227,12 @@ def subdomain_finder_task(subdomain, gitSubdomain, gitToken):
     if subdomain != "None":
         global subdomain_output_file
         subdomain_output_file = "{}_{}.txt".format(subdomain, timestr)
+
+        if pk is not None:
+            scan_target = Scan.objects.get(id=pk)
+            print(pk)
+            print(scan_target)
+            ResultFileName.objects.create(file_name=subdomain_output_file, scan_item=scan_target)
         # Enable port scanning
         subdom = sublist3r.main(
             subdomain,
@@ -155,14 +277,14 @@ def subdomain_finder_task(subdomain, gitSubdomain, gitToken):
         return context
 
 
-def subdomain_finder(request, domain_url=None):
+def subdomain_finder(request, domain_url=None, pk=None):
     if request.method == "POST":
         subdomain = str(request.POST.get("subdomain", domain_url))
         print(f'Yes got into {subdomain}')
         gitSubdomain = str(request.POST.get("github-subdomain", None))
         gitToken = str(request.POST.get("github-token", None))
         global sub_context
-        sub_context = subdomain_finder_task.now(subdomain, gitSubdomain, gitToken)
+        sub_context = subdomain_finder_task.now(subdomain, gitSubdomain, gitToken, pk)
         return render(request, "testing/subdomain.html", sub_context)
     else:
         return render(request, "testing/subdomain-index.html")
@@ -170,7 +292,7 @@ def subdomain_finder(request, domain_url=None):
 
 # Directory Brute Force
 @background(schedule=1)
-def directory_brute_force_task(directory):
+def directory_brute_force_task(directory, pk=None):
     try:
         os.chdir("testing/")
     except:
@@ -178,6 +300,10 @@ def directory_brute_force_task(directory):
 
     global directory_output_file
     directory_output_file = "Directory_{}.txt".format(timestr)
+
+    if pk is not None:
+        scan_target = Scan.objects.get(id=pk)
+        ResultFileName.objects.create(file_name=directory_output_file, scan_item=scan_target)
 
     if dir_wordlist == "on":
         os.chdir("./wordlist")
@@ -237,14 +363,13 @@ def directory_brute_force_task(directory):
     return context
 
 
-def directory_brute_force(request, domain_url=None):
+def directory_brute_force(request, domain_url=None, pk=None):
     if request.method == "POST":
         directory = str(request.POST.get("directory", domain_url))
-        print(directory)
         global dir_wordlist
         dir_wordlist = request.POST.get("wordlist")
         global dir_context
-        dir_context = directory_brute_force_task.now(directory)
+        dir_context = directory_brute_force_task.now(directory, pk)
 
         return render(request, "testing/directory.html", {"context": dir_context})
     else:
@@ -259,7 +384,7 @@ def directory_brute_force(request, domain_url=None):
 
 # Wayback URLs
 @background(schedule=1)
-def waybackurls_task(domain):
+def waybackurls_task(domain, pk=None):
 
     wayback_urls = requests.get(
         "http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit=".format(
@@ -279,6 +404,12 @@ def waybackurls_task(domain):
 
     global wayback_output_file
     wayback_output_file = "{}_Wayback_URLs_{}.txt".format(domain, timestr)
+
+    if pk is not None:
+        scan_target = Scan.objects.get(id=pk)
+        print(scan_target)
+        ResultFileName.objects.create(file_name=wayback_output_file, scan_item=scan_target)
+
     with open(f'/home/nihal/fwapf/testing/output/wayback/{wayback_output_file}', "a+") as write_wayback_urls:
         for url in unique_wayback_urls:
             write_wayback_urls.write(url + "\n")
@@ -287,11 +418,11 @@ def waybackurls_task(domain):
     return context
 
 
-def waybackurls(request, domain_url=None):
+def waybackurls(request, domain_url=None, pk=None):
     if request.method == "POST":
         form = Waybackurls()
         domain = str(request.POST.get("wayback", domain_url))
-        context = waybackurls_task.now(domain)
+        context = waybackurls_task.now(domain, pk)
         return render(request, "testing/wayback.html", context)
     else:
         form = Waybackurls()
@@ -300,7 +431,7 @@ def waybackurls(request, domain_url=None):
 
 # JavaScript URLs
 @background(schedule=1)
-def js_urls_task(domain):
+def js_urls_task(domain, pk=None):
     urls = requests.get(
         "http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey".format(
             domain
@@ -322,6 +453,11 @@ def js_urls_task(domain):
     global jsurl_output_file
     jsurl_output_file = "{}_JS_URLs_{}.txt".format(domain, timestr)
 
+    if pk is not None:
+        scan_target = Scan.objects.get(id=pk)
+        print(scan_target)
+        ResultFileName.objects.create(file_name=jsurl_output_file, scan_item=scan_target)
+
     with open(f'/home/nihal/fwapf/testing/output/jsurl/{jsurl_output_file}', "a+") as write_js_file:
         for url in unique_js_file_urls:
             write_js_file.write(url + "\n")
@@ -330,7 +466,7 @@ def js_urls_task(domain):
     return context
 
 
-def js_urls(request, domain_url=None):
+def js_urls(request, domain_url=None, pk=None):
     if request.method == "POST":
         form = JsFiles()
         domain = str(request.POST.get("jsurl", domain_url))
@@ -339,7 +475,7 @@ def js_urls(request, domain_url=None):
                 domain
             )
         ).json()
-        context = js_urls_task.now(domain)
+        context = js_urls_task.now(domain, pk)
         return render(request, "testing/jsurl.html", context)
     else:
         form = JsFiles()
@@ -349,7 +485,7 @@ def js_urls(request, domain_url=None):
 # JS Secrets
 # Need to verify live js links
 @background(schedule=1)
-def js_secrets_task(domain):
+def js_secrets_task(domain, pk=None):
     try:
         os.chdir("testing/")
     except:
@@ -383,6 +519,11 @@ def js_secrets_task(domain):
     global secret_output_file
     secret_output_file = "{}_JS_Secret_{}.txt".format(domain, timestr)
 
+    if pk is not None:
+        scan_target = Scan.objects.get(id=pk)
+        print(scan_target)
+        ResultFileName.objects.create(file_name=secret_output_file, scan_item=scan_target)
+
     with open(f'/home/nihal/fwapf/testing/output/secrets/{secret_output_file}', "a+") as secret_file:
         for secrets in js_secrets_list:
             secret_file.write(secrets + "\n")
@@ -391,11 +532,11 @@ def js_secrets_task(domain):
     return context
 
 
-def js_secrets(request, domain_url=None):
+def js_secrets(request, domain_url=None, pk=None):
     if request.method == "POST":
         form = JsSecrets()
         domain = str(request.POST.get("secret", domain_url))
-        context = js_secrets_task.now(domain)
+        context = js_secrets_task.now(domain, pk)
         return render(request, "testing/secret.html", context)
     else:
         return render(request, "testing/secret-index.html")
@@ -404,7 +545,7 @@ def js_secrets(request, domain_url=None):
 # LinkFinder
 # Need to verify live js files
 @background(schedule=1)
-def js_links_task(domain):
+def js_links_task(domain, pk=None):
     urls = requests.get(
         "http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit=".format(
             domain
@@ -441,6 +582,11 @@ def js_links_task(domain):
 
     global linkfinder_output_file
     linkfinder_output_file = "{}_Linkfinder_{}.txt".format(domain, timestr)
+
+    if pk is not None:
+        scan_target = Scan.objects.get(id=pk)
+        print(scan_target)
+        ResultFileName.objects.create(file_name=linkfinder_output_file, scan_item=scan_target)
 
     with open(f'/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_output_file}', "a+") as write_linkfinder_output:
         for line in js_urls:
@@ -696,6 +842,95 @@ def fullscan_result(request):
         return render(request, "testing/fullscan.html")
 
 
+
+def download_target_result(request, pk):
+    if request.method == "GET":
+        subdomain = request.GET.get("scan", None)
+        directory = request.GET.get("scan", None)
+        wayback = request.GET.get("scan", None)
+        jsurl = request.GET.get("scan", None)
+        secret = request.GET.get("scan", None)
+        link_finder = request.GET.get("scan", None)
+        print(pk)
+
+        if subdomain == "subdomain":
+            subdomain_output_file = ResultFileName.objects.filter(scan_item=Scan.objects.get(id=pk)).first()
+            if subdomain_output_file == "Null" or subdomain_output_file is None:
+                pass
+
+
+            print(subdomain_output_file)
+            output_file = (
+                f"/home/nihal/fwapf/testing/output/subdomain/{subdomain_output_file}"
+            )
+            filename = f"{subdomain_output_file}.txt"
+            with open(output_file, "r") as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response["Content-Disposition"] = "attachment; filename=%s" % filename
+                return response
+
+        if directory == "directory":
+            directory_output_file = ResultFileName.objects.filter(scan_item=Scan.objects.get(id=pk)).first()
+
+            output_file = (
+                f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}"
+            )
+            filename = f"{directory_output_file}.txt"
+            with open(output_file, "r") as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response["Content-Disposition"] = "attachment; filename=%s" % filename
+                return response
+
+
+        if wayback == "wayback":
+            output_file = (
+                f"/home/nihal/fwapf/testing/output/wayback/{wayback_output_file}"
+            )
+            filename = f"{wayback_output_file}.txt"
+            with open(output_file, "r") as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response["Content-Disposition"] = "attachment; filename=%s" % filename
+                return response
+
+        if jsurl == "jsurl":
+            output_file = f"/home/nihal/fwapf/testing/output/jsurl/{jsurl_output_file}"
+            filename = f"{jsurl_output_file}.txt"
+            with open(output_file, "r") as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response["Content-Disposition"] = "attachment; filename=%s" % filename
+                return response
+
+        if secret == "secret":
+            if pk is not None:
+                secret_output_file = ResultFileName.objects.filter(scan_item=Scan.objects.get(id=pk)).first()
+
+            print("Yes it is secret")
+            output_file = (
+                f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}"
+            )
+            print(output_file)
+            filename = f"{secret_output_file}.txt"
+            with open(output_file, "r") as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response["Content-Disposition"] = "attachment; filename=%s" % filename
+                return response
+
+        if link_finder == "linkfinder":
+            output_file = (
+                f"/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_output_file}"
+            )
+            filename = f"{linkfinder_output_file}.txt"
+            with open(output_file, "r") as fh:
+                response = HttpResponse(fh.read(), content_type="text/html")
+                response["Content-Disposition"] = "attachment; filename=%s" % filename
+                return response
+    else:
+        return render(request, "testing/index.html")
+
+
+
+
+
 def download_result(request):
     if request.method == "GET":
         subdomain = request.GET.get("scan", None)
@@ -704,8 +939,12 @@ def download_result(request):
         jsurl = request.GET.get("scan", None)
         secret = request.GET.get("scan", None)
         link_finder = request.GET.get("scan", None)
+        print(pk)
 
         if subdomain == "subdomain":
+            if pk is not None:
+                secret_output_file = ResultFileName.objects.filter(scan_item=Scan.objects.get(id=pk)).first()
+
             output_file = (
                 f"/home/nihal/fwapf/testing/output/subdomain/{subdomain_output_file}"
             )
@@ -744,9 +983,14 @@ def download_result(request):
                 return response
 
         if secret == "secret":
+            if pk is not None:
+                secret_output_file = ResultFileName.objects.filter(scan_item=Scan.objects.get(id=pk)).first()
+
+            print("Yes it is secret")
             output_file = (
                 f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}"
             )
+            print(output_file)
             filename = f"{secret_output_file}.txt"
             with open(output_file, "r") as fh:
                 response = HttpResponse(fh.read(), content_type="text/html")

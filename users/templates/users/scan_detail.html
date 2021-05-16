@@ -38,40 +38,59 @@
                     <button class="btn btn-primary" type="submit" href="targets/start-scan/{{ scan_item.id }}/">Scan</button>
                     </div>
                 </form>
-                <div class="card-footer text-center">
-                    {% if scan_type|stringformat:'s' == "Subdomain" %}
-                        <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger text-center" download>Download Report</a>
-                    {% elif scan_type|stringformat:'s' == "Dirsearch" %}
-                        <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger text-center" download>Download Report</a>
-                    {% elif scan_type|stringformat:'s' == "Wayback URL" %}
-                        <a href="{% url 'download-result' %}?scan=wayback" class="btn btn-danger text-center" download>Download Report</a>
-                    {% elif scan_type|stringformat:'s' == "JS File Discovery" %}
-                        <a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-danger text-center" download>Download Report</a>
-                    {% elif scan_type|stringformat:'s' == "Secret/API key" %}
-                        <a href="{% url 'download-result' %}?scan=secret" class="btn btn-danger text-center" download>Download Report</a>
-                    {% elif scan_type|stringformat:'s' == "Endpoint from JS" %}
-                        <a href="{% url 'download-result' %}?scan=linkfinder" class="btn btn-danger text-center" download>Download Report</a>
+                <div class="text-center">
+                    {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                    {% else %}
+                        <a href="{% url 'scan-result' scan_item.id %}?scan={{ scan_type }}" class="btn btn-primary">Result</a>
                     {% endif %}
+                </div>
+                 <div class="card-footer text-center">
+                    {% if scan_type|stringformat:'s' == "Subdomain" %}
+                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}     
+                    {% else %}
+                        <a href="{% url 'download-target-result' scan_item.id %}?scan=subdomain" class="btn btn-danger text-center" download>Download Report</a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if scan_type|stringformat:'s' == "Dirsearch" %}
+                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                    {% else %}
+                        <a href="{% url 'download-target-result' scan_item.id %}?scan=directory" class="btn btn-danger text-center" download>Download Report</a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if scan_type|stringformat:'s' == "Wayback URL" %}
+                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                    {% else %}
+                        <a href="{% url 'download-target-result' scan_item.id %}?scan=wayback" class="btn btn-danger text-center" download>Download Report</a>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if scan_type|stringformat:'s' == "JS File Discovery" %}
+                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                    {% else %}
+                        <a href="{% url 'download-target-result' scan_item.id %}?scan=jsurl" class="btn btn-danger text-center" download>Download Report</a>
+                        {%  endif %}
+                    {% endif %}
+
+                    {% if scan_type|stringformat:'s' == "Secret/API key" %}
+                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                    {% else %}
+                        <a href="{% url 'download-target-result' scan_item.id %}?scan=secret" class="btn btn-danger text-center" download>Download Report</a>
+                        {%  endif %}
+                    {% endif %}
+
+                    {% if scan_type|stringformat:'s' == "Endpoint from JS" %}
+                        {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                    {% else %}
+                        <a href="{% url 'download-target-result' scan_item.id %}?scan=linkfinder" class="btn btn-danger text-center" download>Download Report</a>
+                        {% endif %}
+                    {% endif %}
+
                     </div>
                 <div class="text-muted text-center">
                     {{ scan_date_posted|date:"F d, Y" }}
                 </div>
-                <!-- <div class="card-footer text-center"> -->
-                    
-                    <!-- {% if target.scan_type|stringformat:'s' == "Subdomain" %}
-                        <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-primary" download>Download Report</a>
-                    {% elif target.scan_type|stringformat:'s' == "Dirsearch" %}
-                        <a href="{% url 'download-result' %}?scan=directory" class="btn btn-primary" download>Download Report</a>
-                    {% elif target.scan_type == "wayback" %}
-                        <a href="{% url 'download-result' %}?scan=wayback" class="btn btn-primary" download>Download Report</a>
-                    {% elif target.scan_type == "jsurl" %}
-                        <a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-primary" download>Download Report</a>
-                    {% elif target.scan_type == "secret" %}
-                        <a href="{% url 'download-result' %}?scan=secret" class="btn btn-primary" download>Download Report</a>
-                    {% else %}
-                        <a href="{% url 'download-result' %}?scan=linkfinder" class="btn btn-primary" download>Download Report</a>
-                    {% endif %} -->
-                <!-- </div> -->
             </div>
         </div>
     </div>

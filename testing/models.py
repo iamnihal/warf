@@ -20,3 +20,10 @@ class Scan(models.Model):
 
     def __str__(self):
         return self.target_name
+
+class ResultFileName(models.Model):
+    file_name = models.CharField(max_length=100)
+    scan_item = models.ForeignKey(Scan, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.file_name
