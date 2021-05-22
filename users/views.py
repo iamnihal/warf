@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from testing.forms import AddTargetForm
-from testing.models import Scan
+from testing.models import Scan, ResultFileName
 from testing.views import *
 
 
@@ -54,7 +54,31 @@ def profile(request):
 
 @login_required
 def dashboard(request):
-    return render(request, "users/dashboard.html")
+    if request.method == "GET":
+        username = request.user
+        scan_info = Scan.objects.filter(author=username)
+        subdomain = scan_info.filter(scan_type="Subdomain")
+        directory = scan_info.filter(scan_type="Dirsearch")
+        wayback = scan_info.filter(scan_type="Wayback URL")
+        jsfile = scan_info.filter(scan_type="JS File Discovery")
+        secrets = scan_info.filter(scan_type="Secret/API key")
+        endpoint = scan_info.filter(scan_type="Endpoint from JS")
+        targets = Scan.objects.filter(
+            author=User.objects.filter(username="nihal").first()
+        )
+        scans = ResultFileName.objects.filter(scan_item__in=targets)
+
+    scanContext = {
+        "scan_info": scan_info,
+        "scans": scans,
+        "subdomain": subdomain,
+        "directory": directory,
+        "wayback": wayback,
+        "jsfile": jsfile,
+        "secrets": secrets,
+        "endpoint": endpoint,
+    }
+    return render(request, "users/dashboard.html", {"context": scanContext})
 
 
 @login_required
@@ -71,6 +95,7 @@ def add_target(request):
     else:
         target_form = AddTargetForm()
     return render(request, "users/add-target.html", {"target_form": target_form})
+
 
 @login_required
 def target(request):

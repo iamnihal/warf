@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.urls import reverse
@@ -37,7 +37,13 @@ linkfinder_output_file = "Null"
 
 
 def index(request):
-    return render(request, "testing/index.html")
+    if not request.user.is_authenticated:
+        messages.warning(
+            request, 'To save your scans, you must first <a href="/login">log in</a>!!'
+        )
+        return render(request, "users/dashboard.html")
+    else:
+        return HttpResponseRedirect("dashboard/")
 
 
 @login_required
@@ -1074,4 +1080,4 @@ def download_result(request):
                 response["Content-Disposition"] = "attachment; filename=%s" % filename
                 return response
     else:
-        return render(request, "testing/index.html")
+        return render(request, "users/dashboard.html")

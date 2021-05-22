@@ -20,7 +20,7 @@
 
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <a class="navbar-brand" href="{% url 'index-page' %}">Wapf Pipeline</a>
+        <a class="navbar-brand" href="{% url 'dashboard' %}">WAPF</a>
         <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i
                 class="fas fa-bars"></i></button>
 
@@ -48,9 +48,6 @@
         </form>
         <!-- Navbar-->
         {% if user.is_authenticated %}
-        <a class="nav-link text-light" href="{% url 'add-target' %}">Add Target</a>
-        <a class="nav-link text-light" href="{% url 'targets' %}">Targets</a>
-        <a class="nav-link text-light" href="{% url 'profile' %}">Profile</a>
         <a class="nav-link text-light" href="{% url 'logout' %}">Logout</a>
         {% else %}
         <a class="nav-link text-light" href="{% url 'login' %}">Login</a>
@@ -90,6 +87,7 @@
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
 
+
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
                             data-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
@@ -101,40 +99,75 @@
                                 <a class="nav-link" href="{% url 'endpoint-page' %}">Endpoints from JS</a>
                             </nav>
                         </div>
-                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-                            aria-expanded="false" aria-controls="collapsePages">
-                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                            Settings
+
+                        {% if user.is_authenticated %}
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTarget"
+                            aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Target
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                        <div class="collapse" id="collapseTarget" aria-labelledby="headingOne"
+                            data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{% url 'add-target' %}">Add Target</a>
+                                <a class="nav-link" href="{% url 'targets' %}">View Targets</a>
+                            </nav>
+                        </div>
+                        {% endif %}
                         <div class="collapse" id="collapsePages" aria-labelledby="headingTwo"
                             data-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-
-                                <a class="nav-link collapsed" href="{% url 'wordlist-page' %}"
-                                    data-target="#pagesCollapseAuth" aria-expanded="false"
-                                    aria-controls="pagesCollapseAuth">
-                                    Wordlist
-                                    <div class="sb-sidenav-collapse-arrow"></div>
-                                </a>
-
-                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
-                                    data-target="#pagesCollapseError" aria-expanded="false"
-                                    aria-controls="pagesCollapseError">
-                                    Error
-                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                                </a>
-                                <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne"
-                                    data-parent="#sidenavAccordionPages">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="401.html">401 Page</a>
-                                        <a class="nav-link" href="404.html">404 Page</a>
-                                        <a class="nav-link" href="500.html">500 Page</a>
-                                    </nav>
-                                </div>
                             </nav>
                         </div>
-                        <div class="sb-sidenav-menu-heading">Addons</div>
+
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUser"
+                            aria-expanded="false" aria-controls="collapsePages">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            User
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseUser" aria-labelledby="headingTwo"
+                            data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+
+                                {% if user.is_authenticated %}
+                                <a class="nav-link collapsed" href="{% url 'profile' %}"
+                                    data-target="#pagesCollapseAuth" aria-expanded="false"
+                                    aria-controls="pagesCollapseAuth">
+                                    Profile
+                                    <div class="sb-sidenav-collapse-arrow"></div>
+                                </a>
+                                <a class="nav-link collapsed" href="{% url 'logout' %}" data-target="#pagesCollapseAuth"
+                                    aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                    Logout
+                                    <div class="sb-sidenav-collapse-arrow"></div>
+                                </a>
+                                {% else %}
+                                <a class="nav-link collapsed" href="{% url 'login' %}" data-target="#pagesCollapseAuth"
+                                    aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                    Login
+                                    <div class="sb-sidenav-collapse-arrow"></div>
+                                </a>
+                                <a class="nav-link collapsed" href="{% url 'register' %}"
+                                    data-target="#pagesCollapseAuth" aria-expanded="false"
+                                    aria-controls="pagesCollapseAuth">
+                                    Register
+                                    <div class="sb-sidenav-collapse-arrow"></div>
+                                </a>
+                                {% endif %}
+                            </nav>
+
+                        </div>
+
+                        <a class="nav-link" href="{% url 'wordlist-page' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Wordlist
+                        </a>
+                        <!-- <div class="sb-sidenav-menu-heading">Addons</div>
                         <a class="nav-link" href="charts.html">
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                             Charts
@@ -142,7 +175,7 @@
                         <a class="nav-link" href="tables.html">
                             <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
                             Tables
-                        </a>
+                        </a> -->
                     </div>
                 </div>
                 <div class="sb-sidenav-footer">
