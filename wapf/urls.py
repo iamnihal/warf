@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, ajax_call, target_view, scan_result, download_target_result,)
+from testing.views import (subdomain_finder, index, directory_brute_force, waybackurls, js_urls, js_secrets, js_links, full_scan, fullscan_result, download_result, setting_wordlist, ajax_call, target_view, scan_result, download_target_result, scan_view, dash_scan,)
 from users.views import register, profile, dashboard, add_target, target
 from django.contrib.auth import views as auth_views
 
@@ -61,11 +61,13 @@ urlpatterns = [
     path('profile/', profile, name="profile"),
     path('dashboard/', dashboard, name="dashboard"),
 
-    #Targets
+    #Targets/Scans
     path('add-target/', add_target, name="add-target"),
     path('targets/', target, name="targets"),
     path('targets/<int:pk>/', target_view, name="target-view"),
     path('targets/<int:pk>/result/', scan_result, name="scan-result"),
+    path('targets/<str:scantype>/overview/', scan_view, name="scan-view"),
+    path('scans/overview/', dash_scan, name="dash-scan"),
 ]
 
 if settings.DEBUG:

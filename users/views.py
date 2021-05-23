@@ -30,7 +30,6 @@ def profile(request):
         e_form = UserEmailUpdateForm(request.POST, instance=request.user)
         if u_form and u_form.is_valid():
             u_form.save()
-            print("Username Changed")
             messages.success(request, "Username successfully changed!!")
             return redirect("profile")
         elif e_form and e_form.is_valid():
@@ -40,7 +39,6 @@ def profile(request):
                 return redirect("profile")
             else:
                 e_form.save()
-                print("Email changed")
                 messages.success(request, "Email successfully changed!!")
                 return redirect("profile")
     else:
@@ -64,7 +62,7 @@ def dashboard(request):
         secrets = scan_info.filter(scan_type="Secret/API key")
         endpoint = scan_info.filter(scan_type="Endpoint from JS")
         targets = Scan.objects.filter(
-            author=User.objects.filter(username="nihal").first()
+            author=User.objects.filter(username=username).first()
         )
         scans = ResultFileName.objects.filter(scan_item__in=targets)
 
@@ -102,5 +100,14 @@ def target(request):
     if request.method == "GET":
         if request.user.is_authenticated:
             username = request.user
-            target_list = Scan.objects.filter(author=username).order_by("-scan_date")
-            return render(request, "users/targets.html", {"targets": target_list})
+            q = request.GET.get("q", None)
+            if q:
+                targets = Scan.objects.filter(target_name__icontains=q)
+                if targets:
+                    return render(request, "users/targets.html", {"targets":targets})
+                else:
+                    messages.warning(request, "<center>Search not found!!</center>")
+                    return render(request, "users/targets.html")
+            else:
+                target_list = Scan.objects.filter(author=username).order_by("-scan_date")
+                return render(request, "users/targets.html", {"targets": target_list})

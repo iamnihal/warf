@@ -23,7 +23,7 @@
             <div class="card-header">Subdomain</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.subdomain|length }} Subdomain Scan</h5>
-            <a class="link-white card-footer pt-1" href="#">View</a>
+            <a class="link-white card-footer pt-1" href="{% url 'scan-view' 'Subdomain' %}">View</a>
             </div>
         </div>
     </div>
@@ -33,7 +33,7 @@
             <div class="card-header text-dark">Directory BruteForce</div>
             <div class="card-body">
             <h5 class="card-title text-dark">{{ context.directory|length }} Directory BruteForce Scan</h5>
-            <a class="link-white card-footer pt-1 text-dark" href="#">View</a>
+            <a class="link-white card-footer pt-1 text-dark" href="{% url 'scan-view' 'Dirsearch' %}">View</a>
             </div>
         </div>
     </div>
@@ -43,7 +43,7 @@
             <div class="card-header">Wayback URLs</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.wayback|length }} Wayback Scan</h5>
-            <a class="link-white card-footer pt-1" href="#">View</a>
+            <a class="link-white card-footer pt-1" href="{% url 'scan-view' 'Wayback URL' %}">View</a>
             </div>
         </div>
     </div>
@@ -53,7 +53,7 @@
             <div class="card-header">JS URLs Discovery</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.jsurl|length }} JS Discovery Scan</h5>
-            <a class="link-white card-footer pt-1" href="#">View</a>
+            <a class="link-white card-footer pt-1" href="{% url 'scan-view' 'JS File Discovery' %}">View</a>
             </div>
         </div>
     </div>
@@ -63,7 +63,7 @@
             <div class="card-header text-dark">Secret/API Keys</div>
             <div class="card-body">
             <h5 class="card-title text-dark">{{ context.secrets|length }} Secret Keys Scans</h5>
-            <a class="link-white card-footer pt-1 text-dark" href="#">View</a>
+            <a class="link-white card-footer pt-1 text-dark" href="{% url 'scan-view' 'Secret' %}">View</a>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
             <div class="card-header">Links From JS Files</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.endpoint|length }} LinkFinder Scan</h5>
-            <a class="link-white card-footer pt-1" href="#">View</a>
+            <a class="link-white card-footer pt-1" href="{% url 'scan-view' 'Endpoint from JS' %}">View</a>
             </div>
         </div>
     </div>
@@ -83,7 +83,7 @@
             <div class="card-header">Targets</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.scan_info|length }} Targets</h5>
-            <a class="link-white card-footer pt-1" href="#">View</a>
+            <a class="link-white card-footer pt-1" href="{% url 'targets' %}">View</a>
             </div>
         </div>
     </div>
@@ -93,7 +93,7 @@
             <div class="card-header">Scans</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.scans|length }} Scans</h5>
-            <a class="link-dark card-footer pt-1" href="#">View</a>
+            <a class="link-dark card-footer pt-1" href="{% url 'dash-scan' %}">View</a>
             </div>
         </div>
     </div>

@@ -60,8 +60,6 @@ def target_view(request, pk):
             result_filename = ResultFileName.objects.filter(
                 scan_item=Scan.objects.get(id=pk)
             ).first()
-            print(f"Target View:- {scan_type}")
-            print(f"Target View:- {scan_domain_url}")
             if request.method == "POST":
                 messages.success(request, "Scan Successfully Completed.")
                 if scan_type == "Subdomain":
@@ -101,19 +99,60 @@ def target_view(request, pk):
 
 
 @login_required
+def scan_view(request, scantype):
+    if request.method == "GET":
+        user = request.user
+        q = request.GET.get("q", None)
+        if q:
+            targets = Scan.objects.filter(target_name__icontains=q)
+            if targets:
+                scan_overview = {"scans":targets}
+                return render(request, "users/overview.html", {"context":scan_overview})
+            else:
+                messages.warning(request, "<center>Search not found!!</center>")
+                return render(request, "users/overview.html")
+
+        if scantype == "Secret":
+            scans = Scan.objects.filter(scan_type="Secret/API key", author=user)
+        else:
+            scans = Scan.objects.filter(scan_type=scantype, author=user)
+
+        try:
+            scan_type = scans[0].scan_type
+        except IndexError:
+            pass 
+
+        if not scans:
+            messages.warning(request, 'You dont have any targets. <a href="/add-target/">Add one</a>')
+            return render(request, "users/targets.html")
+        else:
+            scan_overview = {"scans": scans, "scan_type": scan_type}
+
+    return render(request, "users/overview.html", {"context": scan_overview})
+
+
+def dash_scan(request):
+    if request.method == "GET":
+        user = request.user
+        q = request.GET.get("q", None)
+        targets = Scan.objects.filter(author=User.objects.filter(username=user).first())
+        scans = ResultFileName.objects.filter(scan_item__in=targets)
+        # print(scans)
+        if q:
+            tempScan = Scan.objects.filter(resultfilename__in=scans).filter(target_name__icontains=q)
+            # return render(request, "users/dash-scan.html", {"scans":tempScan})
+            
+        return render(request, "users/dash-scan.html", {"scans":scans})
+
+@login_required
 def scan_result(request, pk):
     result_filename = ResultFileName.objects.filter(
         scan_item=Scan.objects.get(id=pk)
     ).first()
-    print(pk)
-    print(f"File Name is {result_filename}")
     scan_type = request.GET.get("scan", None)
-    print(scan_type)
-
     if scan_type == "Subdomain":
         for file in os.listdir("/home/nihal/fwapf/testing/output/subdomain"):
             if re.match(file, str(result_filename)):
-                print(file)
                 with open(
                     f"/home/nihal/fwapf/testing/output/subdomain/{file}", "r"
                 ) as rf:
@@ -122,14 +161,12 @@ def scan_result(request, pk):
         return render(request, "testing/subdomain.html", {"subdom": context})
 
     if scan_type == "Dirsearch":
-        print("Inside Dirsearch")
         for file in os.listdir("/home/nihal/fwapf/testing/output/directory"):
             if re.match(file, str(result_filename)):
                 with open(
                     f"/home/nihal/fwapf/testing/output/directory/{file}", "r"
                 ) as rf:
                     data = rf.readlines()[2:]
-                    print(data)
 
         status = []
         size = []
@@ -189,7 +226,6 @@ def scan_result(request, pk):
 def handle_uploaded_file(f):
     global wordlist_name
     wordlist_name = f'{os.path.splitext(f.name)[0]}-{time.strftime("%M-%S")}.txt'
-    print(wordlist_name)
     with open("testing/wordlist/" + wordlist_name, "ab+") as destination:
         for chunk in f.chunks():
             destination.write(chunk)
@@ -238,11 +274,9 @@ def ajax_call(request):
                 return HttpResponse("FileContentisZero")
         else:
             return HttpResponse("FileDoesNotExist")
-            print("FileDoesNotExist")
     except FileNotFoundError:
         return HttpResponse("FileDoesNotExist")
     except NameError:
-        print("NameError")
         return HttpResponse("FileNotFound")
     except ValueError:
         return HttpResponse("ValueError")
@@ -251,11 +285,9 @@ def ajax_call(request):
 # Subdomain Finder
 @background(schedule=1)
 def subdomain_finder_task(subdomain, gitSubdomain, gitToken, pk=None):
-    print("Inside Subdomain Task")
 
     try:
         os.chdir("testing/")
-        print("Directory Changed")
     except:
         pass
 
@@ -265,8 +297,6 @@ def subdomain_finder_task(subdomain, gitSubdomain, gitToken, pk=None):
 
         if pk is not None:
             scan_target = Scan.objects.get(id=pk)
-            print(pk)
-            print(scan_target)
             ResultFileName.objects.create(
                 file_name=subdomain_output_file, scan_item=scan_target
             )
@@ -323,7 +353,6 @@ def subdomain_finder_task(subdomain, gitSubdomain, gitToken, pk=None):
 def subdomain_finder(request, domain_url=None, pk=None):
     if request.method == "POST":
         subdomain = str(request.POST.get("subdomain", domain_url))
-        print(f"Yes got into {subdomain}")
         gitSubdomain = str(request.POST.get("github-subdomain", None))
         gitToken = str(request.POST.get("github-token", None))
         global sub_context
@@ -454,7 +483,6 @@ def waybackurls_task(domain, pk=None):
 
     if pk is not None:
         scan_target = Scan.objects.get(id=pk)
-        print(scan_target)
         ResultFileName.objects.create(
             file_name=wayback_output_file, scan_item=scan_target
         )
@@ -506,7 +534,6 @@ def js_urls_task(domain, pk=None):
 
     if pk is not None:
         scan_target = Scan.objects.get(id=pk)
-        print(scan_target)
         ResultFileName.objects.create(
             file_name=jsurl_output_file, scan_item=scan_target
         )
@@ -575,7 +602,6 @@ def js_secrets_task(domain, pk=None):
 
     if pk is not None:
         scan_target = Scan.objects.get(id=pk)
-        print(scan_target)
         ResultFileName.objects.create(
             file_name=secret_output_file, scan_item=scan_target
         )
@@ -642,7 +668,6 @@ def js_links_task(domain, pk=None):
 
     if pk is not None:
         scan_target = Scan.objects.get(id=pk)
-        print(scan_target)
         ResultFileName.objects.create(
             file_name=linkfinder_output_file, scan_item=scan_target
         )
@@ -675,7 +700,6 @@ def full_scan(request):
 
         try:
             os.chdir("testing/")
-            print("Directory Changed")
         except:
             pass
 
@@ -925,7 +949,6 @@ def download_target_result(request, pk):
         jsurl = request.GET.get("scan", None)
         secret = request.GET.get("scan", None)
         link_finder = request.GET.get("scan", None)
-        print(pk)
 
         if subdomain == "subdomain":
             subdomain_output_file = ResultFileName.objects.filter(
@@ -934,7 +957,6 @@ def download_target_result(request, pk):
             if subdomain_output_file == "Null" or subdomain_output_file is None:
                 pass
 
-            print(subdomain_output_file)
             output_file = (
                 f"/home/nihal/fwapf/testing/output/subdomain/{subdomain_output_file}"
             )
@@ -982,11 +1004,9 @@ def download_target_result(request, pk):
                     scan_item=Scan.objects.get(id=pk)
                 ).first()
 
-            print("Yes it is secret")
             output_file = (
                 f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}"
             )
-            print(output_file)
             filename = f"{secret_output_file}.txt"
             with open(output_file, "r") as fh:
                 response = HttpResponse(fh.read(), content_type="text/html")
@@ -1059,11 +1079,9 @@ def download_result(request):
                     scan_item=Scan.objects.get(id=pk)
                 ).first()
 
-            print("Yes it is secret")
             output_file = (
                 f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}"
             )
-            print(output_file)
             filename = f"{secret_output_file}.txt"
             with open(output_file, "r") as fh:
                 response = HttpResponse(fh.read(), content_type="text/html")
