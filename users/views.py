@@ -104,10 +104,12 @@ def target(request):
             if q:
                 targets = Scan.objects.filter(target_name__icontains=q)
                 if targets:
-                    return render(request, "users/targets.html", {"targets":targets})
+                    return render(request, "users/targets.html", {"targets": targets})
                 else:
                     messages.warning(request, "<center>Search not found!!</center>")
                     return render(request, "users/targets.html")
             else:
-                target_list = Scan.objects.filter(author=username).order_by("-scan_date")
+                target_list = Scan.objects.filter(author=username).order_by(
+                    "-scan_date"
+                )
                 return render(request, "users/targets.html", {"targets": target_list})

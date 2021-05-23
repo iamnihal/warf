@@ -106,8 +106,10 @@ def scan_view(request, scantype):
         if q:
             targets = Scan.objects.filter(target_name__icontains=q)
             if targets:
-                scan_overview = {"scans":targets}
-                return render(request, "users/overview.html", {"context":scan_overview})
+                scan_overview = {"scans": targets}
+                return render(
+                    request, "users/overview.html", {"context": scan_overview}
+                )
             else:
                 messages.warning(request, "<center>Search not found!!</center>")
                 return render(request, "users/overview.html")
@@ -120,10 +122,12 @@ def scan_view(request, scantype):
         try:
             scan_type = scans[0].scan_type
         except IndexError:
-            pass 
+            pass
 
         if not scans:
-            messages.warning(request, 'You dont have any targets. <a href="/add-target/">Add one</a>')
+            messages.warning(
+                request, 'You dont have any targets. <a href="/add-target/">Add one</a>'
+            )
             return render(request, "users/targets.html")
         else:
             scan_overview = {"scans": scans, "scan_type": scan_type}
@@ -137,12 +141,38 @@ def dash_scan(request):
         q = request.GET.get("q", None)
         targets = Scan.objects.filter(author=User.objects.filter(username=user).first())
         scans = ResultFileName.objects.filter(scan_item__in=targets)
-        # print(scans)
         if q:
-            tempScan = Scan.objects.filter(resultfilename__in=scans).filter(target_name__icontains=q)
-            # return render(request, "users/dash-scan.html", {"scans":tempScan})
-            
-        return render(request, "users/dash-scan.html", {"scans":scans})
+            tempScan = Scan.objects.filter(resultfilename__in=scans).filter(
+                target_name__icontains=q
+            )
+            print(tempScan)
+            return render(request, "users/dash-scan.html", {"scans": tempScan, "q": q})
+
+        return render(request, "users/dash-scan.html", {"scans": scans})
+
+
+def scan_search(request):
+    if request.method == "GET":
+        q = request.GET.get("q")
+        user = request.user
+        if q:
+            targets = Scan.objects.filter(
+                author=User.objects.filter(username=user).first()
+            )
+            scanFiles = ResultFileName.objects.filter(scan_item__in=targets)
+            scans = Scan.objects.filter(resultfilename__in=scanFiles).filter(
+                target_name__icontains=q
+            )
+            return render(
+                request, "users/scan-search-result.html", {"context": scans, "q": q}
+            )
+        else:
+            messages.warning(request, "<center>Search not found!!</center>")
+            return render(request, "users/scan-search-result.html")
+
+    else:
+        return render(request, "users/dash-scan.html")
+
 
 @login_required
 def scan_result(request, pk):
