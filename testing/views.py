@@ -117,7 +117,9 @@ def scan_view(request, scantype):
         if scantype == "Secret":
             scans = Scan.objects.filter(scan_type="Secret/API key", author=user)
         else:
-            scans = Scan.objects.filter(scan_type=scantype, author=user)
+            scans = Scan.objects.filter(scan_type=scantype, author=user).order_by(
+                "-scan_date"
+            )
 
         try:
             scan_type = scans[0].scan_type
@@ -139,13 +141,18 @@ def dash_scan(request):
     if request.method == "GET":
         user = request.user
         q = request.GET.get("q", None)
-        targets = Scan.objects.filter(author=User.objects.filter(username=user).first())
-        scans = ResultFileName.objects.filter(scan_item__in=targets)
+        targets = Scan.objects.filter(
+            author=User.objects.filter(username=user).first()
+        ).order_by("-scan_date")
+        scans = ResultFileName.objects.filter(scan_item__in=targets).order_by(
+            "-scan_item__scan_date"
+        )
         if q:
-            tempScan = Scan.objects.filter(resultfilename__in=scans).filter(
-                target_name__icontains=q
+            tempScan = (
+                Scan.objects.filter(resultfilename__in=scans)
+                .filter(target_name__icontains=q)
+                .order_by("-scan_date")
             )
-            print(tempScan)
             return render(request, "users/dash-scan.html", {"scans": tempScan, "q": q})
 
         return render(request, "users/dash-scan.html", {"scans": scans})
@@ -180,6 +187,7 @@ def scan_result(request, pk):
         scan_item=Scan.objects.get(id=pk)
     ).first()
     scan_type = request.GET.get("scan", None)
+    context = None
     if scan_type == "Subdomain":
         for file in os.listdir("/home/nihal/fwapf/testing/output/subdomain"):
             if re.match(file, str(result_filename)):
@@ -188,15 +196,24 @@ def scan_result(request, pk):
                 ) as rf:
                     context = rf.readlines()
 
+        if context is None:
+            messages.warning(request, "Scan is in process. Please wait.")
+            return render(request, "testing/subdomain.html", {"subdom": context})
+
         return render(request, "testing/subdomain.html", {"subdom": context})
 
     if scan_type == "Dirsearch":
+        data = None
         for file in os.listdir("/home/nihal/fwapf/testing/output/directory"):
             if re.match(file, str(result_filename)):
                 with open(
                     f"/home/nihal/fwapf/testing/output/directory/{file}", "r"
                 ) as rf:
                     data = rf.readlines()[2:]
+
+        if data is None:
+            messages.warning(request, "Scan is in process. Please wait.")
+            return render(request, "testing/subdomain.html", {"context": context})
 
         status = []
         size = []
@@ -210,9 +227,14 @@ def scan_result(request, pk):
 
         context = zip(directory_link, size, status)
 
+        if context is None:
+            messages.warning(request, "Scan is in process. Please wait.")
+            return render(request, "testing/subdomain.html", {"context": context})
+
         return render(request, "testing/directory.html", {"context": context})
 
     if scan_type == "Wayback URL":
+        data = ""
         for file in os.listdir("/home/nihal/fwapf/testing/output/wayback"):
             if re.match(file, str(result_filename)):
                 with open(
@@ -220,7 +242,11 @@ def scan_result(request, pk):
                 ) as rf:
                     data = rf.readlines()
 
-        return render(request, "testing/wayback.html", {"context": data})
+        if data:
+            return render(request, "testing/wayback.html", {"context": data})
+        else:
+            messages.warning(request, "Scan is in process. Please wait.")
+            return render(request, "testing/wayback.html", {"context": data})
 
     if scan_type == "JS File Discovery":
         for file in os.listdir("/home/nihal/fwapf/testing/output/jsurl"):
@@ -600,7 +626,7 @@ def js_secrets_task(domain, pk=None):
     try:
         os.chdir("testing/")
     except:
-        print("Directory is already Testing")
+        pass
 
     urls = requests.get(
         "http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit=".format(
@@ -675,7 +701,7 @@ def js_links_task(domain, pk=None):
     try:
         os.chdir("testing/")
     except:
-        print("Directory is already Testing")
+        pass
 
     js_urls = []
 
