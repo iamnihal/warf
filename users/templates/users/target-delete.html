@@ -1,0 +1,32 @@
+{% extends "testing/base.html" %}
+
+{% block title %}
+<title>Delete Target</title>
+{% endblock %}
+
+{% block content %}
+
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+<div class="row mt-4 ml-1">
+    <h3 style="font-family: cursive; font-weight: bold;" class="mb-3">Delete target <a href="{% url 'target-view' target.id %}">{{ target.target_name }}</a>?</h3>
+    <form action="{% url 'target-delete' target.id %}" method="POST">
+        {% csrf_token %}
+        <button class="btn btn-primary" type="submit" href="{% url 'target-delete' target.id %}">Delete</button>
+        <a class="btn btn-danger ml-2" type="submit" href="{% url 'target-view' target.id %}">Cancel</a>
+    </form>
+</div>
+
+{% endblock %}
+</div>
+</div>
+</body>
+</html>

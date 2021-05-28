@@ -158,6 +158,25 @@ def dash_scan(request):
         return render(request, "users/dash-scan.html", {"scans": scans})
 
 
+def target_delete(request, pk):
+    request_user = request.user
+    target = Scan.objects.filter(id=pk).first()
+    target_owner = User.objects.filter(scan=target).first()
+    if request_user == target_owner:
+        if request.method == "POST":
+            if request_user == target_owner:
+                target.delete()
+                messages.success(request, f'"{target.target_name}" target deleted')
+                print("Deleted")
+                return redirect('/targets')
+            else:
+                return render(request, "users/401.html")
+    else:
+        return render(request, "users/401.html")
+    context = {"target": target}
+    return render(request, "users/target-delete.html", context)
+
+
 def scan_search(request):
     if request.method == "GET":
         q = request.GET.get("q")
@@ -739,11 +758,11 @@ def js_links_task(domain, pk=None):
     return context
 
 
-def js_links(request, domain_url=None):
+def js_links(request, domain_url=None, pk=None):
     if request.method == "POST":
         form = JsLinks()
         domain = str(request.POST.get("endpoint", domain_url))
-        context = js_links_task.now(domain)
+        context = js_links_task.now(domain, pk)
         return render(request, "testing/endpoint.html", context)
     else:
         form = JsLinks()

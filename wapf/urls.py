@@ -36,6 +36,7 @@ from testing.views import (
     scan_view,
     dash_scan,
     scan_search,
+    target_delete,
 )
 from users.views import register, profile, dashboard, add_target, target
 from django.contrib.auth import views as auth_views
@@ -86,6 +87,7 @@ urlpatterns = [
     path("targets/<int:pk>/", target_view, name="target-view"),
     path("targets/<int:pk>/result/", scan_result, name="scan-result"),
     path("targets/<str:scantype>/overview/", scan_view, name="scan-view"),
+    path("targets/delete/<int:pk>/", target_delete, name="target-delete"),
     path("scans/overview/", dash_scan, name="dash-scan"),
     path("scans/overview/search/", scan_search, name="scan-search"),
 ]

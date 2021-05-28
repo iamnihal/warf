@@ -1,7 +1,7 @@
 {% extends "testing/base.html" %}
 
 {% block title %}
-<title>{{ scan_target_name|upper }}</title>
+<title>{{ scan_target_name|title }}</title>
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,9 @@
 {% endfor %}
 {% endif %}
 
-<h1 class="mt-4">Target</h1>
+<div class="pt-3 pb-3">
+    <h4><span class="badge bg-primary">{{ scan_target_name|title }}</span></h4>
+</div>
 
 <div class="row">
     <div class="col-xl-3 col-md-6">
@@ -38,11 +40,11 @@
                         href="targets/start-scan/{{ scan_item.id }}/">Scan</button>
                 </div>
             </form>
-            <div class="text-center">
+            <div class="text-center mb-2">
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
                 <a href="{% url 'scan-result' scan_item.id %}?scan={{ scan_type }}" target="_blank"
-                    class="btn btn-primary">Result</a>
+                    class="btn btn-success">Result</a>
                 {% endif %}
             </div>
             <div class="card-footer text-center">
@@ -50,7 +52,7 @@
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
                 <a href="{% url 'download-target-result' scan_item.id %}?scan=subdomain"
-                    class="btn btn-danger text-center" download>Download Report</a>
+                    class="btn btn-outline-primary text-center" download>Download Report</a>
                 {% endif %}
                 {% endif %}
 
@@ -58,7 +60,7 @@
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
                 <a href="{% url 'download-target-result' scan_item.id %}?scan=directory"
-                    class="btn btn-danger text-center" download>Download Report</a>
+                    class="btn btn-outline-primary text-center" download>Download Report</a>
                 {% endif %}
                 {% endif %}
 
@@ -66,14 +68,14 @@
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
                 <a href="{% url 'download-target-result' scan_item.id %}?scan=wayback"
-                    class="btn btn-danger text-center" download>Download Report</a>
+                    class="btn btn-outline-primary text-center" download>Download Report</a>
                 {% endif %}
                 {% endif %}
 
                 {% if scan_type|stringformat:'s' == "JS File Discovery" %}
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=jsurl" class="btn btn-danger text-center"
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=jsurl" class="btn btn-outline-primary text-center"
                     download>Download Report</a>
                 {%  endif %}
                 {% endif %}
@@ -81,7 +83,7 @@
                 {% if scan_type|stringformat:'s' == "Secret/API key" %}
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=secret" class="btn btn-danger text-center"
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=secret" class="btn btn-outline-primary text-center"
                     download>Download Report</a>
                 {%  endif %}
                 {% endif %}
@@ -90,14 +92,18 @@
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
                 <a href="{% url 'download-target-result' scan_item.id %}?scan=linkfinder"
-                    class="btn btn-danger text-center" download>Download Report</a>
+                    class="btn btn-outline-primary text-center" download>Download Report</a>
                 {% endif %}
                 {% endif %}
 
             </div>
+            <div class="card-footer text-center">
+                <a class="btn btn-danger" href="{% url 'target-delete' scan_item.id %}">Delete</a>
+            </div>
             <div class="text-muted text-center">
                 {{ scan_date_posted|date:"F d, Y" }}
             </div>
+            
         </div>
     </div>
 </div>

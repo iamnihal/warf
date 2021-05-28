@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<h1 class="mt-4">Full Scan</h1>
+<h1 class="mt-4" style="font-family: cursive">Full Scan</h1>
 <!-- <ol class="breadcrumb mb-4"> -->
 <form action="{% url 'fullscan-page' %}" id="subFormId" method="POST">
     {% csrf_token %}
@@ -21,7 +21,6 @@
 <br>
 <br>
 <div>
-
     <ul class="list-group" style="max-width: 280px;">
         <li class="list-group-item active">This Scan Includes:-</li>
         <li class="list-group-item">Subdomain Discovery</li>

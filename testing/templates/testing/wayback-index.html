@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<h1 class="mt-4">Wayback Machine URLs</h1>
+<h3 class="mt-4" style="font-family: cursive; font-weight: bold;">Wayback Machine URLs</h3>
 <form action="{% url 'wayback-page' %}" id="subFormId" method="POST">
     {% csrf_token %}
     <div class="form-outline">

@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<h1 class="mt-4">Subdomain Discovery</h1>
+<h3 class="mt-4" style="font-family:cursive; font-weight: bold;">Subdomain Discovery</h3>
 <!-- <ol class="breadcrumb mb-4"> -->
 <form action="{% url 'subdomain-page' %}" id="subFormId" method="POST">
     {% csrf_token %}
@@ -22,7 +22,7 @@
 </div>
 
 <div class="container-fluid">
-    <h1 class="mt-4">Subdomain Discovery from Github</h1>
+    <h3 class="mt-4" style="font-family: cursive; font-weight: bold;">Subdomain Discovery from Github</h3>
     <form action="{% url 'subdomain-page' %}" id="gitsubFormId" method="POST">
         {% csrf_token %}
         <!-- Domain -->
