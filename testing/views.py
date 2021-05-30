@@ -155,6 +155,7 @@ def dash_scan(request):
             "-scan_item__scan_date"
         )
         total_targets = scans.count()
+
         if q:
             tempScan = (
                 Scan.objects.filter(resultfilename__in=scans)
@@ -164,12 +165,14 @@ def dash_scan(request):
             return render(request, "users/dash-scan.html", {"scans": tempScan, "q": q})
 
         paginator = Paginator(scans, 8)
-        page_number = request.GET.get('page')
-        print(page_number)
+        page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
-        print(page_obj)
 
-        return render(request, "users/dash-scan.html", {"scans": page_obj, "total_targets":total_targets})
+        return render(
+            request,
+            "users/dash-scan.html",
+            {"scans": page_obj, "total_targets": total_targets},
+        )
 
 
 def target_delete(request, pk):
@@ -219,96 +222,104 @@ def scan_result(request, pk):
         scan_item=Scan.objects.get(id=pk)
     ).first()
     scan_type = request.GET.get("scan", None)
-    context = None
-    if scan_type == "Subdomain":
-        for file in os.listdir("/home/nihal/fwapf/testing/output/subdomain"):
-            if re.match(file, str(result_filename)):
-                with open(
-                    f"/home/nihal/fwapf/testing/output/subdomain/{file}", "r"
-                ) as rf:
-                    context = rf.readlines()
+    user = request.user
+    target_owner = User.objects.filter(
+        scan=Scan.objects.get(resultfilename=result_filename)
+    ).first()
 
-        if context is None:
-            messages.warning(request, "Scan is in process. Please wait.")
+    if user == target_owner:
+        context = None
+        if scan_type == "Subdomain":
+            for file in os.listdir("/home/nihal/fwapf/testing/output/subdomain"):
+                if re.match(file, str(result_filename)):
+                    with open(
+                        f"/home/nihal/fwapf/testing/output/subdomain/{file}", "r"
+                    ) as rf:
+                        context = rf.readlines()
+
+            if context is None:
+                messages.warning(request, "Scan is in process. Please wait.")
+                return render(request, "testing/subdomain.html", {"subdom": context})
+
             return render(request, "testing/subdomain.html", {"subdom": context})
 
-        return render(request, "testing/subdomain.html", {"subdom": context})
+        if scan_type == "Dirsearch":
+            data = None
+            for file in os.listdir("/home/nihal/fwapf/testing/output/directory"):
+                if re.match(file, str(result_filename)):
+                    with open(
+                        f"/home/nihal/fwapf/testing/output/directory/{file}", "r"
+                    ) as rf:
+                        data = rf.readlines()[2:]
 
-    if scan_type == "Dirsearch":
-        data = None
-        for file in os.listdir("/home/nihal/fwapf/testing/output/directory"):
-            if re.match(file, str(result_filename)):
-                with open(
-                    f"/home/nihal/fwapf/testing/output/directory/{file}", "r"
-                ) as rf:
-                    data = rf.readlines()[2:]
+            if data is None:
+                messages.warning(request, "Scan is in process. Please wait.")
+                return render(request, "testing/subdomain.html", {"context": context})
 
-        if data is None:
-            messages.warning(request, "Scan is in process. Please wait.")
-            return render(request, "testing/subdomain.html", {"context": context})
+            status = []
+            size = []
+            directory_link = []
 
-        status = []
-        size = []
-        directory_link = []
+            for line in data:
+                row = re.split(" +", line)
+                status.append(row[0])
+                size.append(row[1])
+                directory_link.append(row[2])
 
-        for line in data:
-            row = re.split(" +", line)
-            status.append(row[0])
-            size.append(row[1])
-            directory_link.append(row[2])
+            context = zip(directory_link, size, status)
 
-        context = zip(directory_link, size, status)
+            if context is None:
+                messages.warning(request, "Scan is in process. Please wait.")
+                return render(request, "testing/subdomain.html", {"context": context})
 
-        if context is None:
-            messages.warning(request, "Scan is in process. Please wait.")
-            return render(request, "testing/subdomain.html", {"context": context})
+            return render(request, "testing/directory.html", {"context": context})
 
-        return render(request, "testing/directory.html", {"context": context})
+        if scan_type == "Wayback URL":
+            data = ""
+            for file in os.listdir("/home/nihal/fwapf/testing/output/wayback"):
+                if re.match(file, str(result_filename)):
+                    with open(
+                        f"/home/nihal/fwapf/testing/output/wayback/{file}", "r"
+                    ) as rf:
+                        data = rf.readlines()
 
-    if scan_type == "Wayback URL":
-        data = ""
-        for file in os.listdir("/home/nihal/fwapf/testing/output/wayback"):
-            if re.match(file, str(result_filename)):
-                with open(
-                    f"/home/nihal/fwapf/testing/output/wayback/{file}", "r"
-                ) as rf:
-                    data = rf.readlines()
+            if data:
+                return render(request, "testing/wayback.html", {"context": data})
+            else:
+                messages.warning(request, "Scan is in process. Please wait.")
+                return render(request, "testing/wayback.html", {"context": data})
 
-        if data:
-            return render(request, "testing/wayback.html", {"context": data})
-        else:
-            messages.warning(request, "Scan is in process. Please wait.")
-            return render(request, "testing/wayback.html", {"context": data})
+        if scan_type == "JS File Discovery":
+            for file in os.listdir("/home/nihal/fwapf/testing/output/jsurl"):
+                if re.match(file, str(result_filename)):
+                    with open(
+                        f"/home/nihal/fwapf/testing/output/jsurl/{file}", "r"
+                    ) as rf:
+                        data = rf.readlines()
 
-    if scan_type == "JS File Discovery":
-        for file in os.listdir("/home/nihal/fwapf/testing/output/jsurl"):
-            if re.match(file, str(result_filename)):
-                with open(f"/home/nihal/fwapf/testing/output/jsurl/{file}", "r") as rf:
-                    data = rf.readlines()
+            return render(request, "testing/jsurl.html", {"context": data})
 
-        return render(request, "testing/jsurl.html", {"context": data})
+        if scan_type == "Secret/API key":
+            for file in os.listdir("/home/nihal/fwapf/testing/output/secrets"):
+                if re.match(file, str(result_filename)):
+                    with open(
+                        f"/home/nihal/fwapf/testing/output/secrets/{file}", "r"
+                    ) as rf:
+                        data = rf.readlines()
 
-    if scan_type == "Secret/API key":
-        for file in os.listdir("/home/nihal/fwapf/testing/output/secrets"):
-            if re.match(file, str(result_filename)):
-                with open(
-                    f"/home/nihal/fwapf/testing/output/secrets/{file}", "r"
-                ) as rf:
-                    data = rf.readlines()
+            return render(request, "testing/secret.html", {"context": data})
 
-        return render(request, "testing/secret.html", {"context": data})
+        if scan_type == "Endpoint from JS":
+            for file in os.listdir("/home/nihal/fwapf/testing/output/linkfinder"):
+                if re.match(file, str(result_filename)):
+                    with open(
+                        f"/home/nihal/fwapf/testing/output/linkfinder/{file}", "r"
+                    ) as rf:
+                        data = rf.readlines()
 
-    if scan_type == "Endpoint from JS":
-        for file in os.listdir("/home/nihal/fwapf/testing/output/linkfinder"):
-            if re.match(file, str(result_filename)):
-                with open(
-                    f"/home/nihal/fwapf/testing/output/linkfinder/{file}", "r"
-                ) as rf:
-                    data = rf.readlines()
+            return render(request, "testing/endpoint.html", {"context": data})
 
-        return render(request, "testing/endpoint.html", {"context": data})
-
-    return HttpResponse("Hola")
+    return render(request, "users/401.html")
 
 
 def handle_uploaded_file(f):
@@ -1031,6 +1042,8 @@ def fullscan_result(request):
 @login_required
 def download_target_result(request, pk):
     if request.method == "GET":
+        user = request.user
+        target_owner = User.objects.filter(scan=Scan.objects.get(id=pk)).first()
         subdomain = request.GET.get("scan", None)
         directory = request.GET.get("scan", None)
         wayback = request.GET.get("scan", None)
@@ -1038,78 +1051,90 @@ def download_target_result(request, pk):
         secret = request.GET.get("scan", None)
         link_finder = request.GET.get("scan", None)
 
-        if subdomain == "subdomain":
-            subdomain_output_file = ResultFileName.objects.filter(
-                scan_item=Scan.objects.get(id=pk)
-            ).first()
-            if subdomain_output_file == "Null" or subdomain_output_file is None:
-                pass
+        if user == target_owner:
+            if subdomain == "subdomain":
+                subdomain_output_file = ResultFileName.objects.filter(
+                    scan_item=Scan.objects.get(id=pk)
+                ).first()
+                if subdomain_output_file == "Null" or subdomain_output_file is None:
+                    pass
 
-            output_file = (
-                f"/home/nihal/fwapf/testing/output/subdomain/{subdomain_output_file}"
-            )
-            filename = f"{subdomain_output_file}.txt"
-            with open(output_file, "r") as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response["Content-Disposition"] = "attachment; filename=%s" % filename
-                return response
+                output_file = f"/home/nihal/fwapf/testing/output/subdomain/{subdomain_output_file}"
+                filename = f"{subdomain_output_file}.txt"
+                with open(output_file, "r") as fh:
+                    response = HttpResponse(fh.read(), content_type="text/html")
+                    response["Content-Disposition"] = (
+                        "attachment; filename=%s" % filename
+                    )
+                    return response
 
-        if directory == "directory":
-            directory_output_file = ResultFileName.objects.filter(
-                scan_item=Scan.objects.get(id=pk)
-            ).first()
-
-            output_file = (
-                f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}"
-            )
-            filename = f"{directory_output_file}.txt"
-            with open(output_file, "r") as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response["Content-Disposition"] = "attachment; filename=%s" % filename
-                return response
-
-        if wayback == "wayback":
-            output_file = (
-                f"/home/nihal/fwapf/testing/output/wayback/{wayback_output_file}"
-            )
-            filename = f"{wayback_output_file}.txt"
-            with open(output_file, "r") as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response["Content-Disposition"] = "attachment; filename=%s" % filename
-                return response
-
-        if jsurl == "jsurl":
-            output_file = f"/home/nihal/fwapf/testing/output/jsurl/{jsurl_output_file}"
-            filename = f"{jsurl_output_file}.txt"
-            with open(output_file, "r") as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response["Content-Disposition"] = "attachment; filename=%s" % filename
-                return response
-
-        if secret == "secret":
-            if pk is not None:
-                secret_output_file = ResultFileName.objects.filter(
+            if directory == "directory":
+                directory_output_file = ResultFileName.objects.filter(
                     scan_item=Scan.objects.get(id=pk)
                 ).first()
 
-            output_file = (
-                f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}"
-            )
-            filename = f"{secret_output_file}.txt"
-            with open(output_file, "r") as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response["Content-Disposition"] = "attachment; filename=%s" % filename
-                return response
+                output_file = f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}"
+                filename = f"{directory_output_file}.txt"
+                with open(output_file, "r") as fh:
+                    response = HttpResponse(fh.read(), content_type="text/html")
+                    response["Content-Disposition"] = (
+                        "attachment; filename=%s" % filename
+                    )
+                    return response
 
-        if link_finder == "linkfinder":
-            output_file = (
-                f"/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_output_file}"
-            )
-            filename = f"{linkfinder_output_file}.txt"
-            with open(output_file, "r") as fh:
-                response = HttpResponse(fh.read(), content_type="text/html")
-                response["Content-Disposition"] = "attachment; filename=%s" % filename
-                return response
+            if wayback == "wayback":
+                output_file = (
+                    f"/home/nihal/fwapf/testing/output/wayback/{wayback_output_file}"
+                )
+                filename = f"{wayback_output_file}.txt"
+                with open(output_file, "r") as fh:
+                    response = HttpResponse(fh.read(), content_type="text/html")
+                    response["Content-Disposition"] = (
+                        "attachment; filename=%s" % filename
+                    )
+                    return response
+
+            if jsurl == "jsurl":
+                output_file = (
+                    f"/home/nihal/fwapf/testing/output/jsurl/{jsurl_output_file}"
+                )
+                filename = f"{jsurl_output_file}.txt"
+                with open(output_file, "r") as fh:
+                    response = HttpResponse(fh.read(), content_type="text/html")
+                    response["Content-Disposition"] = (
+                        "attachment; filename=%s" % filename
+                    )
+                    return response
+
+            if secret == "secret":
+                if pk is not None:
+                    secret_output_file = ResultFileName.objects.filter(
+                        scan_item=Scan.objects.get(id=pk)
+                    ).first()
+
+                output_file = (
+                    f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}"
+                )
+                filename = f"{secret_output_file}.txt"
+                with open(output_file, "r") as fh:
+                    response = HttpResponse(fh.read(), content_type="text/html")
+                    response["Content-Disposition"] = (
+                        "attachment; filename=%s" % filename
+                    )
+                    return response
+
+            if link_finder == "linkfinder":
+                output_file = f"/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_output_file}"
+                filename = f"{linkfinder_output_file}.txt"
+                with open(output_file, "r") as fh:
+                    response = HttpResponse(fh.read(), content_type="text/html")
+                    response["Content-Disposition"] = (
+                        "attachment; filename=%s" % filename
+                    )
+                    return response
+
+        else:
+            return HttpResponse("Lol. It won't work. :p")
     else:
         return render(request, "testing/index.html")
 

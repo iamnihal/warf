@@ -63,6 +63,10 @@
 </div>
 
 <div class="text-center">
+
+    {% if scans.has_other_pages == False %}
+    {% else %}
+
     {% if scans.has_previous %}
     <a class="btn btn-outline-primary mb-4" href="?page=1">First</a>
     <a class="btn btn-outline-primary mb-4" href="?page={{ context.previous_page_number }}">Previous</a>
@@ -80,7 +84,8 @@
     <a class="btn btn-outline-primary mb-4" href="?page={{ scans.next_page_number }}">Next</a>
     <a class="btn btn-outline-primary mb-4" href="?page={{ scans.paginator.num_pages }}">Last</a>
     {% endif %}
-</div>
+    {% endif %}
+</div>  
 
 {% endblock %}
 </div>
