@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from . import sublist3r
 from .subbrute import subbrute
 from background_task import background
@@ -104,37 +105,43 @@ def scan_view(request, scantype):
         user = request.user
         q = request.GET.get("q", None)
         if q:
-            targets = Scan.objects.filter(target_name__icontains=q)
-            if targets:
-                scan_overview = {"scans": targets}
-                return render(
-                    request, "users/overview.html", {"context": scan_overview}
-                )
-            else:
+            scans = Scan.objects.filter(
+                author=user, target_name__icontains=q, scan_type=scantype
+            )
+            total_targets = scans.count()
+            if total_targets == 0:
                 messages.warning(request, "<center>Search not found!!</center>")
                 return render(request, "users/overview.html")
-
-        if scantype == "Secret":
-            scans = Scan.objects.filter(scan_type="Secret/API key", author=user)
         else:
-            scans = Scan.objects.filter(scan_type=scantype, author=user).order_by(
-                "-scan_date"
-            )
-
-        try:
-            scan_type = scans[0].scan_type
-        except IndexError:
-            pass
+            if scantype == "Secret":
+                scans = Scan.objects.filter(scan_type="Secret/API key", author=user)
+                total_targets = scans.count()
+            else:
+                scans = Scan.objects.filter(scan_type=scantype, author=user).order_by(
+                    "-scan_date"
+                )
+                total_targets = scans.count()
 
         if not scans:
             messages.warning(
                 request, 'You dont have any targets. <a href="/add-target/">Add one</a>'
             )
             return render(request, "users/targets.html")
-        else:
-            scan_overview = {"scans": scans, "scan_type": scan_type}
 
-    return render(request, "users/overview.html", {"context": scan_overview})
+        paginator = Paginator(scans, 8)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "users/overview.html",
+        {
+            "context": page_obj,
+            "total_targets": total_targets,
+            "scan_type": scantype,
+            "page_number": page_number,
+        },
+    )
 
 
 def dash_scan(request):
@@ -147,6 +154,7 @@ def dash_scan(request):
         scans = ResultFileName.objects.filter(scan_item__in=targets).order_by(
             "-scan_item__scan_date"
         )
+        total_targets = scans.count()
         if q:
             tempScan = (
                 Scan.objects.filter(resultfilename__in=scans)
@@ -155,7 +163,13 @@ def dash_scan(request):
             )
             return render(request, "users/dash-scan.html", {"scans": tempScan, "q": q})
 
-        return render(request, "users/dash-scan.html", {"scans": scans})
+        paginator = Paginator(scans, 8)
+        page_number = request.GET.get('page')
+        print(page_number)
+        page_obj = paginator.get_page(page_number)
+        print(page_obj)
+
+        return render(request, "users/dash-scan.html", {"scans": page_obj, "total_targets":total_targets})
 
 
 def target_delete(request, pk):
@@ -167,8 +181,7 @@ def target_delete(request, pk):
             if request_user == target_owner:
                 target.delete()
                 messages.success(request, f'"{target.target_name}" target deleted')
-                print("Deleted")
-                return redirect('/targets')
+                return redirect("/targets")
             else:
                 return render(request, "users/401.html")
     else:

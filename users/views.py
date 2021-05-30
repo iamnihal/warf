@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from testing.forms import AddTargetForm
 from testing.models import Scan, ResultFileName
 from testing.views import *
@@ -15,9 +16,12 @@ def register(request):
         if form.is_valid():
             new_user = form.save()
             messages.success(request, "You are now logged in.")
-            new_user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1']) 
+            new_user = authenticate(
+                username=form.cleaned_data["username"],
+                password=form.cleaned_data["password1"],
+            )
             login(request, new_user)
-            return redirect('dashboard')
+            return redirect("dashboard")
     else:
         form = UserRegisterForm()
     return render(request, "users/register.html", {"form": form})
@@ -112,4 +116,9 @@ def target(request):
                 target_list = Scan.objects.filter(author=username).order_by(
                     "-scan_date"
                 )
-                return render(request, "users/targets.html", {"targets": target_list})
+                total_targets = target_list.count()
+                paginator = Paginator(target_list, 8)
+                page_number = request.GET.get('page')
+                page_obj = paginator.get_page(page_number)
+
+                return render(request, "users/targets.html", {"targets": page_obj, "total_targets":total_targets})
