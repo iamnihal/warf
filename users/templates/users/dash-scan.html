@@ -12,10 +12,10 @@
 <div class="row mt-3">
     <div class="col-sm col-12 col-md-9">
         <h4><span class="badge bg-primary">Targets {{ scans|length }}</span></h4>
-        <h5><span class="badge badge-dark">Scans Completed {{ scans|length }}</span></h5>
+        <h5><span class="badge badge-dark">{{ scans|length }} Scans Completed</span></h5>
     </div>
 
-    <div class="col-sm">
+    <div class="col-sm mb-2">
         <form method="GET" action="{% url 'scan-search' %}">
         <input class="form-control" name="q" type="search" placeholder="Search" aria-label="Search"> 
     </div>

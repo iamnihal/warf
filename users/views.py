@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .forms import UserRegisterForm, UserEmailUpdateForm, UserUsernameUpdateForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from testing.forms import AddTargetForm
 from testing.models import Scan, ResultFileName
@@ -12,12 +13,11 @@ def register(request):
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get("username")
-            messages.success(
-                request, f"Account created for '{username}'. Now you can log in."
-            )
-            return redirect("login")
+            new_user = form.save()
+            messages.success(request, "You are now logged in.")
+            new_user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1']) 
+            login(request, new_user)
+            return redirect('dashboard')
     else:
         form = UserRegisterForm()
     return render(request, "users/register.html", {"form": form})
