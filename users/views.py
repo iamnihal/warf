@@ -8,9 +8,16 @@ from django.core.paginator import Paginator
 from testing.forms import AddTargetForm
 from testing.models import Scan, ResultFileName
 from testing.views import *
+import string as st
+import random
 
 
 def register(request):
+    password_suggestion = "".join(
+        random.choices(
+            st.digits + st.ascii_lowercase + st.ascii_letters + st.punctuation, k=15
+        )
+    )
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
         if form.is_valid():
@@ -24,7 +31,9 @@ def register(request):
             return redirect("dashboard")
     else:
         form = UserRegisterForm()
-    return render(request, "users/register.html", {"form": form})
+    return render(
+        request, "users/register.html", {"form": form, "password": password_suggestion}
+    )
 
 
 @login_required
@@ -118,7 +127,11 @@ def target(request):
                 )
                 total_targets = target_list.count()
                 paginator = Paginator(target_list, 8)
-                page_number = request.GET.get('page')
+                page_number = request.GET.get("page")
                 page_obj = paginator.get_page(page_number)
 
-                return render(request, "users/targets.html", {"targets": page_obj, "total_targets":total_targets})
+                return render(
+                    request,
+                    "users/targets.html",
+                    {"targets": page_obj, "total_targets": total_targets},
+                )
