@@ -38,7 +38,7 @@ from testing.views import (
     scan_search,
     target_delete,
 )
-from users.views import register, profile, dashboard, add_target, target
+from users.views import register, profile, dashboard, add_target, target, target_bookmark, bookmark_view
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -90,6 +90,8 @@ urlpatterns = [
     path("targets/delete/<int:pk>/", target_delete, name="target-delete"),
     path("scans/overview/", dash_scan, name="dash-scan"),
     path("scans/overview/search/", scan_search, name="scan-search"),
+    path("targets/<int:pk>/bookmark/", target_bookmark, name="target-bookmark"),
+    path("targets/bookmark/", bookmark_view, name="bookmark-view"),
 ]
 
 if settings.DEBUG:

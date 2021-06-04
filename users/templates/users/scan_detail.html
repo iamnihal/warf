@@ -15,8 +15,11 @@
 {% endif %}
 
 <div class="pt-3 pb-3">
-    <h4><span class="badge bg-primary">{{ scan_target_name|title }}</span></h4>
+    <h4><span class="badge bg-primary">{{ scan_target_name|title }}</span><a href="{% url 'target-bookmark' scan_item.id %}"><img src="https://img.icons8.com/cute-clipart/32/000000/bookmark-ribbon.png"/></a></h4>
+    
 </div>
+
+
 
 <div class="row">
     <div class="col-xl-3 col-md-6">

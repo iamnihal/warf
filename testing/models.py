@@ -16,6 +16,7 @@ class Scan(models.Model):
     target_name = models.CharField(max_length=100)
     scan_type = models.CharField(max_length=50, choices=SCAN_TYPE)
     domain_url = models.CharField(max_length=100)
+    is_bookmark = models.IntegerField(default=0)
     scan_date = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
 
