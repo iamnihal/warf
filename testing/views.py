@@ -58,6 +58,7 @@ def target_view(request, pk):
             scan_domain_url = Scan.objects.get(id=pk).domain_url
             scan_date_posted = Scan.objects.get(id=pk).scan_date
             scan_target_name = Scan.objects.get(id=pk).target_name
+            scan_is_bookmark = Scan.objects.get(id=pk).is_bookmark
             result_filename = ResultFileName.objects.filter(
                 scan_item=Scan.objects.get(id=pk)
             ).first()
@@ -92,6 +93,7 @@ def target_view(request, pk):
                     "scan_target_name": scan_target_name,
                     "scan_item": scan_item,
                     "result_filename": result_filename,
+                    "scan_is_bookmark": scan_is_bookmark,
                 },
             )
 

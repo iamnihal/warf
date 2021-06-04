@@ -138,27 +138,36 @@ def target(request):
 
 
 def target_bookmark(request, pk):
-    target = Scan.objects.get(id=pk)
-    if target.is_bookmark == 1:
-        target.is_bookmark = 0
-        target.save(update_fields=['is_bookmark'])
-        messages.success(request, 'Target removed from Bookmark')
-    else:
-        target.is_bookmark = 1
-        target.save(update_fields=['is_bookmark'])
-        messages.success(request, 'Target added to Bookmark')
+    if request.method == "GET":
+        if request.user.is_authenticated:
+            username = request.user
+            target = Scan.objects.get(id=pk)
+            if username == target.author:
+                if target.is_bookmark == 1:
+                    target.is_bookmark = 0
+                    target.save(update_fields=["is_bookmark"])
+                    messages.success(request, "Target removed from Bookmark")
+                else:
+                    target.is_bookmark = 1
+                    target.save(update_fields=["is_bookmark"])
+                    messages.success(request, "Target added to Bookmark")
 
-    return redirect(f"http://localhost:8000/targets/{pk}")
+                return redirect(f"http://localhost:8000/targets/{pk}")
+            else:
+                return render(request, "users/401.html")
+
 
 def bookmark_view(request):
     q = request.GET.get("q", None)
     if q:
-        targets = Scan.objects.filter(target_name__icontains=q, is_bookmark=1).order_by('-scan_date')
+        targets = Scan.objects.filter(target_name__icontains=q, is_bookmark=1).order_by(
+            "-scan_date"
+        )
         if targets:
-            return render(request, "users/bookmark.html", {"targets":targets})
+            return render(request, "users/bookmark.html", {"targets": targets})
         else:
             messages.success(request, "Searchn not found")
             return render(request, "users/bookmark.html")
     else:
-        targets = Scan.objects.filter(is_bookmark=1).order_by('-scan_date')
-        return render(request, "users/bookmark.html", {"targets":targets})
+        targets = Scan.objects.filter(is_bookmark=1).order_by("-scan_date")
+        return render(request, "users/bookmark.html", {"targets": targets})
