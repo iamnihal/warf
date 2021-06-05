@@ -37,6 +37,7 @@ from testing.views import (
     dash_scan,
     scan_search,
     target_delete,
+    fullscan_overview,
 )
 from users.views import register, profile, dashboard, add_target, target, target_bookmark, bookmark_view
 from django.contrib.auth import views as auth_views
@@ -56,6 +57,7 @@ urlpatterns = [
     path("download/<int:pk>/", download_target_result, name="download-target-result"),
     # Fullscan URLs
     path("scan/fullscan/", full_scan, name="fullscan-page"),
+    path("fullscan/", fullscan_result, name="fullscan"),
     path("fullscan/", fullscan_result, name="fullscan-subdomain"),
     path("fullscan/", fullscan_result, name="fullscan-directory"),
     path("fullscan/", fullscan_result, name="fullscan-wayback"),
@@ -92,6 +94,7 @@ urlpatterns = [
     path("scans/overview/search/", scan_search, name="scan-search"),
     path("targets/<int:pk>/bookmark/", target_bookmark, name="target-bookmark"),
     path("targets/bookmark/", bookmark_view, name="bookmark-view"),
+    path("targets/<int:pk>/fullscan/result/", fullscan_overview, name="fullscan-overview"),
 ]
 
 if settings.DEBUG:

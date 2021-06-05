@@ -55,57 +55,17 @@
                 </div>
             </form>
             <div class="text-center mb-2">
-                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
+                {% if result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'scan-result' scan_item.id %}?scan={{ scan_type }}" target="_blank"
+                <a href="{% url 'fullscan-overview' scan_item.id %}" target="_blank"
                     class="btn btn-success">Result</a>
                 {% endif %}
             </div>
             <div class="card-footer text-center">
-                {% if scan_type|stringformat:'s' == "Subdomain" %}
+                {% if scan_type|stringformat:'s' == "Full Scan" %}
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
                 <a href="{% url 'download-target-result' scan_item.id %}?scan=subdomain"
-                    class="btn btn-outline-primary text-center" download>Download Report</a>
-                {% endif %}
-                {% endif %}
-
-                {% if scan_type|stringformat:'s' == "Dirsearch" %}
-                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=directory"
-                    class="btn btn-outline-primary text-center" download>Download Report</a>
-                {% endif %}
-                {% endif %}
-
-                {% if scan_type|stringformat:'s' == "Wayback URL" %}
-                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=wayback"
-                    class="btn btn-outline-primary text-center" download>Download Report</a>
-                {% endif %}
-                {% endif %}
-
-                {% if scan_type|stringformat:'s' == "JS File Discovery" %}
-                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=jsurl" class="btn btn-outline-primary text-center"
-                    download>Download Report</a>
-                {%  endif %}
-                {% endif %}
-
-                {% if scan_type|stringformat:'s' == "Secret/API key" %}
-                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=secret" class="btn btn-outline-primary text-center"
-                    download>Download Report</a>
-                {%  endif %}
-                {% endif %}
-
-                {% if scan_type|stringformat:'s' == "Endpoint from JS" %}
-                {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=linkfinder"
                     class="btn btn-outline-primary text-center" download>Download Report</a>
                 {% endif %}
                 {% endif %}

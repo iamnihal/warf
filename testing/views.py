@@ -54,16 +54,17 @@ def target_view(request, pk):
         request_user = User.objects.get(id=request.user.id)
         if scan_author == request_user:
             scan_item = Scan.objects.get(id=pk)
-            scan_type = Scan.objects.get(id=pk).scan_type
-            scan_domain_url = Scan.objects.get(id=pk).domain_url
-            scan_date_posted = Scan.objects.get(id=pk).scan_date
-            scan_target_name = Scan.objects.get(id=pk).target_name
-            scan_is_bookmark = Scan.objects.get(id=pk).is_bookmark
-            result_filename = ResultFileName.objects.filter(
-                scan_item=Scan.objects.get(id=pk)
-            ).first()
+            scan_type = scan_item.scan_type
+            scan_domain_url = scan_item.domain_url
+            scan_date_posted = scan_item.scan_date
+            scan_target_name = scan_item.target_name
+            scan_is_bookmark = scan_item.is_bookmark
+            result_filename = ResultFileName.objects.filter(scan_item=scan_item).first()
             if request.method == "POST":
                 messages.success(request, "Scan Successfully Completed.")
+                if scan_type == "Full Scan":
+                    full_scan(request, scan_domain_url, pk)
+                    return redirect("target-view", pk=scan_item.id)
                 if scan_type == "Subdomain":
                     subdomain_finder(request, scan_domain_url, pk)
                     return redirect("target-view", pk=scan_item.id)
@@ -83,19 +84,20 @@ def target_view(request, pk):
                     js_links(request, scan_domain_url, pk)
                     return redirect("target-view", pk=scan_item.id)
 
-            return render(
-                request,
-                "users/scan_detail.html",
-                {
-                    "scan_type": scan_type,
-                    "scan_domain_url": scan_domain_url,
-                    "scan_date_posted": scan_date_posted,
-                    "scan_target_name": scan_target_name,
-                    "scan_item": scan_item,
-                    "result_filename": result_filename,
-                    "scan_is_bookmark": scan_is_bookmark,
-                },
-            )
+            context = {
+                "scan_type": scan_type,
+                "scan_domain_url": scan_domain_url,
+                "scan_date_posted": scan_date_posted,
+                "scan_target_name": scan_target_name,
+                "scan_item": scan_item,
+                "result_filename": result_filename,
+                "scan_is_bookmark": scan_is_bookmark,
+            }
+
+            if scan_type == "Full Scan":
+                return render(request, "users/fullscan-detail.html", context)
+            else:
+                return render(request, "users/scan_detail.html", context)
 
         else:
             return render(request, "users/401.html")
@@ -412,7 +414,7 @@ def subdomain_finder_task(subdomain, gitSubdomain, gitToken, pk=None):
             enable_bruteforce=False,
             engines=None,
         )
-        # return render(request, 'testing/subdomain.html', {'subdom': subdom})
+
         subprocess.run(
             [
                 "mv",
@@ -529,8 +531,8 @@ def directory_brute_force_task(directory, pk=None):
 
     with open(
         f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}", "r"
-    ) as write_directory_file:
-        data = write_directory_file.readlines()[2:]
+    ) as read_directory_file:
+        data = read_directory_file.readlines()[2:]
 
     status = []
     size = []
@@ -773,13 +775,14 @@ def js_links_task(domain, pk=None):
             file_name=linkfinder_output_file, scan_item=scan_target
         )
 
+    unique_js_links = set(js_urls)
+
     with open(
         f"/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_output_file}", "a+"
     ) as write_linkfinder_output:
-        for line in js_urls:
+        for line in unique_js_links:
             write_linkfinder_output.write(line + "\n")
 
-    unique_js_links = set(js_urls)
     context = {"context": unique_js_links}
     return context
 
@@ -792,191 +795,291 @@ def js_links(request, domain_url=None, pk=None):
         return render(request, "testing/endpoint.html", context)
     else:
         form = JsLinks()
-    return render(request, "testing/endpoint-index.html")
+    return render(request, "testing/endpoint-index.html", {"context": form})
 
 
-def full_scan(request):
-    if request.method == "POST":
-        domain = str(request.POST.get("fullscan"))
+@background(schedule=1)
+def full_scan_task(domain, pk=None):
+    try:
+        os.chdir("testing/")
+    except:
+        pass
 
+    # Subdomain Discovery
+    global subdomain_output_file
+    subdomain_output_file = "{}_{}.txt".format(domain, timestr)
+    subdom = sublist3r.main(
+        domain,
+        40,
+        subdomain_output_file,
+        ports=None,
+        silent=True,
+        verbose=False,
+        enable_bruteforce=False,
+        engines=None,
+    )
+
+    subprocess.run(
+        [
+            "mv",
+            "/home/nihal/fwapf/testing/{}".format(subdomain_output_file),
+            "/home/nihal/fwapf/testing/output/subdomain/",
+        ]
+    )
+
+    # Directory Brute-force
+    directory_search = subprocess.run(
+        [
+            "python",
+            "dirsearch/dirsearch.py",
+            "-l",
+            f"/home/nihal/fwapf/testing/output/subdomain/{subdomain_output_file}",
+            "--full-url",
+            "-q",
+            "-t",
+            "60",
+            "-w",
+            "dirsearch/robotsdis.txt",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    global directory_output_file
+    directory_output_file = "Directory_{}.txt".format(timestr)
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}", "a+"
+    ) as write_directory_output:
+        write_directory_output.writelines(directory_search.stdout)
+
+    directory_list = []
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}", "r"
+    ) as r:
+        for line in r:
+            directory_list.append(line)
+
+    status = []
+    size = []
+    directory_link = []
+
+    for line in directory_list:
+        item = line.split(" ")
         try:
-            os.chdir("testing/")
-        except:
-            pass
+            status.append(item[0])
+        except IndexError:
+            status.append("None")
+        try:
+            size.append(item[5])
+        except IndexError:
+            size.append("None")
+        try:
+            directory_link.append(item[7])
+        except IndexError:
+            directory_link.append("None")
 
-        # Subdomain Discovery
-        global subdomain_output_file
-        subdomain_output_file = "{}_{}.txt".format(domain, timestr)
-        subdom = sublist3r.main(
-            domain,
-            40,
-            subdomain_output_file,
-            ports=None,
-            silent=True,
-            verbose=False,
-            enable_bruteforce=False,
-            engines=None,
+    directory_brute_link = zip(directory_link, size, status)
+
+    # Wayback
+    wayback_urls = requests.get(
+        "http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit=".format(
+            domain
         )
+    ).json()
+    wayback_urls_list = []
 
-        # Directory Brute-force
-        directory_search = subprocess.run(
-            [
-                "python",
-                "dirsearch/dirsearch.py",
-                "-l",
-                subdomain_output_file,
-                "--full-url",
-                "-q",
-                "-t",
-                "60",
-                "-w",
-                "dirsearch/robotsdis.txt",
-            ],
-            capture_output=True,
+    for link in wayback_urls:
+        wayback_urls_list.append(link[0])
+
+    unique_wayback_urls = set(wayback_urls_list)
+    global wayback_output_file
+    wayback_output_file = "{}_Wayback_URLs_{}.txt".format(domain, timestr)
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/wayback/{wayback_output_file}", "a+"
+    ) as write_wayback_output:
+        for url in unique_wayback_urls:
+            write_wayback_output.write(url + "\n")
+
+    # JavaScript URLs
+    js_file_urls = []
+
+    for link in wayback_urls:
+        if re.search(r"\.js$", link[0]):
+            js_file_urls.append(link[0])
+
+    unique_js_file_urls = set(js_file_urls)
+    global jsurl_output_file
+    jsurl_output_file = "{}_JS_URLs_{}.txt".format(domain, timestr)
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/jsurl/{jsurl_output_file}", "a+"
+    ) as write_jsurl_output:
+        for url in unique_js_file_urls:
+            write_jsurl_output.write(url + "\n")
+
+    # JS Secrets
+    js_secrets_list = []
+
+    for url in unique_js_file_urls:
+        js_secrets = subprocess.run(
+            [sys.executable, "SecretFinder.py", "-i", url, "-o", "cli"],
+            stderr=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
             text=True,
         )
-        global directory_output_file
-        directory_output_file = "Directory_{}.txt".format(timestr)
+        if "->" in js_secrets.stdout:
+            for item in js_secrets.stdout.splitlines():
+                js_secrets_list.append(item)
 
-        with open(
-            f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}", "a+"
-        ) as write_directory_output:
-            write_directory_output.writelines(directory_search.stdout)
+    global secret_output_file
+    secret_output_file = "{}_JS_Secret_{}.txt".format(domain, timestr)
 
-        directory_list = []
+    unique_js_secrets_list = set(js_secrets_list)
+    with open(
+        f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}", "a+"
+    ) as write_secret_output:
+        for secrets in unique_js_secrets_list:
+            write_secret_output.write(secrets + "\n")
 
-        with open(
-            f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}", "r"
-        ) as r:
-            for line in r:
-                directory_list.append(line)
+    # LinkFinder
+    jsurls = []
 
-        status = []
-        size = []
-        directory_link = []
-
-        for line in directory_list:
-            item = line.split(" ")
-            try:
-                status.append(item[0])
-            except IndexError:
-                status.append("None")
-            try:
-                size.append(item[5])
-            except IndexError:
-                size.append("None")
-            try:
-                directory_link.append(item[7])
-            except IndexError:
-                directory_link.append("None")
-
-        directory_brute_link = zip(directory_link, size, status)
-
-        # Wayback
-        wayback_urls = requests.get(
-            "http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey&limit=".format(
-                domain
-            )
-        ).json()
-        wayback_urls_list = []
-
-        for link in wayback_urls:
-            wayback_urls_list.append(link[0])
-
-        unique_wayback_urls = set(wayback_urls_list)
-        global wayback_output_file
-        wayback_output_file = "{}_Wayback_URLs_{}.txt".format(domain, timestr)
-
-        with open(
-            f"/home/nihal/fwapf/testing/output/wayback/{wayback_output_file}", "a+"
-        ) as write_wayback_output:
-            for url in unique_wayback_urls:
-                write_wayback_output.write(url + "\n")
-
-        # JavaScript URLs
-        js_file_urls = []
-
-        for link in wayback_urls:
-            if re.search(r"\.js$", link[0]):
-                js_file_urls.append(link[0])
-
-        unique_js_file_urls = set(js_file_urls)
-        global jsurl_output_file
-        jsurl_output_file = "{}_JS_URLs_{}.txt".format(domain, timestr)
-
-        with open(
-            f"/home/nihal/fwapf/testing/output/jsurl/{jsurl_output_file}", "a+"
-        ) as write_jsurl_output:
-            for url in unique_js_file_urls:
-                write_jsurl_output.write(url + "\n")
-
-        # JS Secrets
-        js_secrets_list = []
-
-        for url in unique_js_file_urls:
-            js_secrets = subprocess.run(
-                [sys.executable, "SecretFinder.py", "-i", url, "-o", "cli"],
-                stderr=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                text=True,
-            )
-            if "->" in js_secrets.stdout:
-                for item in js_secrets.stdout.splitlines():
-                    js_secrets_list.append(item)
-
-        global secret_output_file
-        secret_output_file = "{}_JS_Secret_{}.txt".format(domain, timestr)
-
-        with open(
-            f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}", "a+"
-        ) as write_secret_output:
-            for secrets in js_secrets_list:
-                write_secret_output.write(secrets + "\n")
-
-        # LinkFinder
-        jsurls = []
-
-        for js_link in unique_js_file_urls:
-            result = subprocess.run(
-                [sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"],
-                stderr=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                text=True,
-            )
-            if result.stdout:
-                if "Usage" in result.stdout:
-                    pass
-                else:
-                    for item in result.stdout.splitlines():
-                        jsurls.append(item)
-
-        global linkfinder_output_file
-        linkfinder_output_file = "{}_Linkfinder_{}.txt".format(domain, timestr)
-
-        with open(
-            f"/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_output_file}",
-            "a+",
-        ) as write_linkfinder_output:
-            for line in jsurls:
-                write_linkfinder_output.write(line + "\n")
-
-        unique_js_links = set(jsurls)
-
-        global fullscanContext
-        fullscanContext = {
-            "subdom": subdom,
-            "directory_link": directory_link,
-            "directory_size_status": directory_brute_link,
-            "wayback_url": list(unique_wayback_urls),
-            "js_url": list(unique_js_file_urls),
-            "js_secrets": js_secrets_list,
-            "js_link": list(unique_js_links),
-        }
-        return render(
-            request, "testing/fullscan-overview.html", {"context": fullscanContext}
+    for js_link in unique_js_file_urls:
+        result = subprocess.run(
+            [sys.executable, "linkfinder.py", "-i", js_link, "-o", "cli"],
+            stderr=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            text=True,
         )
+        if result.stdout:
+            if "Usage" in result.stdout:
+                pass
+            else:
+                for item in result.stdout.splitlines():
+                    jsurls.append(item)
+
+    global linkfinder_output_file
+    linkfinder_output_file = "{}_Linkfinder_{}.txt".format(domain, timestr)
+
+    unique_js_links = set(jsurls)
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_output_file}",
+        "a+",
+    ) as write_linkfinder_output:
+        for line in unique_js_links:
+            write_linkfinder_output.write(line + "\n")
+
+    global fullscanContext
+    fullscanContext = {
+        "subdom": subdom,
+        "directory_link": directory_link,
+        "directory_size_status": directory_brute_link,
+        "wayback_url": list(unique_wayback_urls),
+        "js_url": list(unique_js_file_urls),
+        "js_secrets": js_secrets_list,
+        "js_link": list(unique_js_links),
+    }
+
+    if pk is not None:
+        scan_target = Scan.objects.get(id=pk)
+        scan_filenames = [
+            subdomain_output_file,
+            directory_output_file,
+            wayback_output_file,
+            jsurl_output_file,
+            secret_output_file,
+            linkfinder_output_file,
+        ]
+        filename_objs = [
+            ResultFileName(file_name=name, scan_item=scan_target)
+            for name in scan_filenames
+        ]
+        ResultFileName.objects.bulk_create(filename_objs)
+
+    return fullscanContext
+
+
+def full_scan(request, domain_url=None, pk=None):
+    if request.method == "POST":
+        domain = str(request.POST.get("fullscan"))
+        context = full_scan_task.now(domain, pk)
+        return render(request, "testing/fullscan-overview.html", {"context": context})
     else:
         return render(request, "testing/fullscan-index.html")
+
+
+def fullscan_overview(request, pk):
+    target = Scan.objects.get(id=pk)
+    result_filenames = ResultFileName.objects.filter(scan_item=target)
+    subdomain_file = result_filenames[0]
+    directory_file = result_filenames[1]
+    wayback_file = result_filenames[2]
+    jsurl_file = result_filenames[3]
+    secret_file = result_filenames[4]
+    linkfinder_file = result_filenames[5]
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/subdomain/{subdomain_file}", "r"
+    ) as read_subdomain_file:
+        subdom = read_subdomain_file.readlines()
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/directory/{directory_file}", "r"
+    ) as read_directory_file:
+        data = read_directory_file.readlines()[2:]
+
+    status = []
+    size = []
+    directory_link = []
+
+    for line in data:
+        row = re.split(" +", line)
+        try:
+            status.append(row[0])
+            size.append(row[2])
+            directory_link.append(row[4])
+        except IndexError:
+            pass
+
+    directory_brute_link = zip(directory_link, size, status)
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/wayback/{wayback_file}", "r"
+    ) as read_wayback_file:
+        unique_wayback_urls = read_wayback_file.readlines()
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/jsurl/{jsurl_file}", "r"
+    ) as read_jsurl_file:
+        unique_js_file_urls = read_jsurl_file.readlines()
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/secrets/{secret_file}", "r"
+    ) as read_secret_file:
+        js_secrets_list = read_secret_file.readlines()
+
+    with open(
+        f"/home/nihal/fwapf/testing/output/linkfinder/{linkfinder_file}", "r"
+    ) as read_linkfinder_file:
+        unique_js_links = read_linkfinder_file.readlines()
+
+    global fullscanContext
+    fullscanContext = {
+        "subdom": subdom,
+        "directory_link": directory_link,
+        "directory_size_status": directory_brute_link,
+        "wayback_url": list(unique_wayback_urls),
+        "js_url": list(unique_js_file_urls),
+        "js_secrets": js_secrets_list,
+        "js_link": list(unique_js_links),
+    }
+
+    return render(
+        request, "testing/fullscan-overview.html", {"context": fullscanContext}
+    )
 
 
 def fullscan_result(request):
