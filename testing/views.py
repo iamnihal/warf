@@ -50,10 +50,11 @@ def index(request):
 @login_required
 def target_view(request, pk):
     if request.user.is_authenticated:
-        scan_author = User.objects.get(scan=Scan.objects.get(id=pk))
+        target = Scan.objects.get(id=pk)
+        scan_author = User.objects.get(scan=target)
         request_user = User.objects.get(id=request.user.id)
         if scan_author == request_user:
-            scan_item = Scan.objects.get(id=pk)
+            scan_item = target
             scan_type = scan_item.scan_type
             scan_domain_url = scan_item.domain_url
             scan_date_posted = scan_item.scan_date
@@ -152,9 +153,9 @@ def dash_scan(request):
     if request.method == "GET":
         user = request.user
         q = request.GET.get("q", None)
-        targets = Scan.objects.filter(
-            author=User.objects.filter(username=user).first()
-        ).order_by("-scan_date")
+        targets = Scan.objects.filter(author=User.objects.get(username=user)).order_by(
+            "-scan_date"
+        )
         scans = ResultFileName.objects.filter(scan_item__in=targets).order_by(
             "-scan_item__scan_date"
         )
@@ -181,8 +182,8 @@ def dash_scan(request):
 
 def target_delete(request, pk):
     request_user = request.user
-    target = Scan.objects.filter(id=pk).first()
-    target_owner = User.objects.filter(scan=target).first()
+    target = Scan.objects.get(id=pk)
+    target_owner = User.objects.get(scan=target)
     if request_user == target_owner:
         if request.method == "POST":
             if request_user == target_owner:
@@ -980,7 +981,7 @@ def full_scan_task(domain, pk=None):
         "wayback_url": list(unique_wayback_urls),
         "js_url": list(unique_js_file_urls),
         "js_secrets": js_secrets_list,
-        "js_link": list(unique_js_links),
+        "js_link": unique_js_links,
     }
 
     if pk is not None:
@@ -1005,7 +1006,7 @@ def full_scan_task(domain, pk=None):
 def full_scan(request, domain_url=None, pk=None):
     if request.method == "POST":
         domain = str(request.POST.get("fullscan"))
-        context = full_scan_task.now(domain, pk)
+        context = full_scan_task.now(domain_url, pk)
         return render(request, "testing/fullscan-overview.html", {"context": context})
     else:
         return render(request, "testing/fullscan-index.html")
@@ -1148,7 +1149,9 @@ def fullscan_result(request):
 def download_target_result(request, pk):
     if request.method == "GET":
         user = request.user
-        target_owner = User.objects.filter(scan=Scan.objects.get(id=pk)).first()
+        target = Scan.objects.get(id=pk)
+        target_owner = User.objects.get(scan=target)
+        fullscan = request.GET.get("scan", None)
         subdomain = request.GET.get("scan", None)
         directory = request.GET.get("scan", None)
         wayback = request.GET.get("scan", None)
@@ -1158,9 +1161,7 @@ def download_target_result(request, pk):
 
         if user == target_owner:
             if subdomain == "subdomain":
-                subdomain_output_file = ResultFileName.objects.filter(
-                    scan_item=Scan.objects.get(id=pk)
-                ).first()
+                subdomain_output_file = ResultFileName.objects.get(scan_item=target)
                 if subdomain_output_file == "Null" or subdomain_output_file is None:
                     pass
 
@@ -1174,9 +1175,7 @@ def download_target_result(request, pk):
                     return response
 
             if directory == "directory":
-                directory_output_file = ResultFileName.objects.filter(
-                    scan_item=Scan.objects.get(id=pk)
-                ).first()
+                directory_output_file = ResultFileName.objects.filter(scan_item=target)
 
                 output_file = f"/home/nihal/fwapf/testing/output/directory/{directory_output_file}"
                 filename = f"{directory_output_file}.txt"
@@ -1213,9 +1212,7 @@ def download_target_result(request, pk):
 
             if secret == "secret":
                 if pk is not None:
-                    secret_output_file = ResultFileName.objects.filter(
-                        scan_item=Scan.objects.get(id=pk)
-                    ).first()
+                    secret_output_file = ResultFileName.objects.filter(scan_item=target)
 
                 output_file = (
                     f"/home/nihal/fwapf/testing/output/secrets/{secret_output_file}"
