@@ -15,7 +15,7 @@ import random
 def register(request):
     password_suggestion = "".join(
         random.choices(
-            st.digits + st.ascii_lowercase + st.ascii_letters + st.punctuation, k=15
+            st.digits + st.ascii_lowercase + st.ascii_letters, k=15
         )
     )
     if request.method == "POST":
@@ -88,6 +88,7 @@ def dashboard(request):
         "jsfile": jsfile,
         "secrets": secrets,
         "endpoint": endpoint,
+        "username": username
     }
     return render(request, "users/dashboard.html", {"context": scanContext})
 

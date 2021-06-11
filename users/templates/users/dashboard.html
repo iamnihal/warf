@@ -16,8 +16,15 @@
 {% endfor %}
 {% endif %}
 
-<div class="row border-bottom">
+{% if user.is_authenticated %}
+<div class="text-center mb-4">
+<button type="button" class="btn btn-primary">
+    <span style="font-weight: bold;">Logged in as </span><span class="badge bg-secondary">{{ context.username }}</span>
+</button>
+</div>
+{% endif %}
 
+<div class="row border-bottom">
     <div class="col-xl-3 col-md-6">
         <div class="card text-white bg-primary mb-3" style="max-width: 25rem;">
             <div class="card-header">Subdomain</div>
