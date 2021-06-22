@@ -228,9 +228,7 @@ def scan_result(request, pk):
     ).first()
     scan_type = request.GET.get("scan", None)
     user = request.user
-    target_owner = User.objects.filter(
-        scan=Scan.objects.get(resultfilename=result_filename)
-    ).first()
+    target_owner = result_filename.scan_item.author
 
     if user == target_owner:
         context = None

@@ -16,6 +16,12 @@
 {% endfor %}
 {% endif %}
 
+<style>
+div.card {
+        background: #212529
+    }
+</style>
+
 {% if user.is_authenticated %}
 <div class="text-center mb-4">
 <button type="button" class="btn btn-primary">
@@ -26,7 +32,7 @@
 
 <div class="row border-bottom">
     <div class="col-xl-3 col-md-6">
-        <div class="card text-white bg-primary mb-3" style="max-width: 25rem;">
+        <div class="card text-white mb-3" style="max-width: 25rem;">
             <div class="card-header">Subdomain</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.subdomain|length }} Subdomain Scan</h5>
@@ -36,17 +42,17 @@
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="card text-white bg-warning mb-3" style="max-width: 25rem;">
-            <div class="card-header text-dark">Directory BruteForce</div>
+        <div class="card text-white mb-3" style="max-width: 25rem;">
+            <div class="card-header">Directory BruteForce</div>
             <div class="card-body">
-            <h5 class="card-title text-dark">{{ context.directory|length }} Directory BruteForce Scan</h5>
-            <a class="link-white card-footer pt-1 text-dark" href="{% url 'scan-view' 'Dirsearch' %}">View</a>
+            <h5 class="card-title">{{ context.directory|length }} Directory BruteForce Scan</h5>
+            <a class="link-white card-footer pt-1" href="{% url 'scan-view' 'Dirsearch' %}">View</a>
             </div>
         </div>
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="card text-white bg-success mb-3" style="max-width: 25rem;">
+        <div class="card text-white mb-3" style="max-width: 25rem;">
             <div class="card-header">Wayback URLs</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.wayback|length }} Wayback Scan</h5>
@@ -56,7 +62,7 @@
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="card text-white bg-danger mb-3" style="max-width: 25rem;">
+        <div class="card text-white mb-3" style="max-width: 25rem;">
             <div class="card-header">JS URLs Discovery</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.jsfile|length }} JS Discovery Scan</h5>
@@ -66,17 +72,17 @@
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="card text-white bg-info mb-3" style="max-width: 25rem;">
-            <div class="card-header text-dark">Secret/API Keys</div>
+        <div class="card text-white mb-3" style="max-width: 25rem;">
+            <div class="card-header">Secret/API Keys</div>
             <div class="card-body">
-            <h5 class="card-title text-dark">{{ context.secrets|length }} Secret Keys Scans</h5>
-            <a class="link-white card-footer pt-1 text-dark" href="{% url 'scan-view' 'Secret' %}">View</a>
+            <h5 class="card-title">{{ context.secrets|length }} Secret Keys Scans</h5>
+            <a class="link-white card-footer pt-1" href="{% url 'scan-view' 'Secret' %}">View</a>
             </div>
         </div>
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="card text-white bg-dark mb-3" style="max-width: 25rem;">
+        <div class="card text-white mb-3" style="max-width: 25rem;">
             <div class="card-header">Links From JS Files</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.endpoint|length }} LinkFinder Scan</h5>
@@ -86,7 +92,7 @@
     </div>
 
     <div class="col-xl-3 col-md-6">
-        <div class="card text-white bg-primary mb-3" style="max-width: 25rem;">
+        <div class="card text-white mb-3" style="max-width: 25rem;">
             <div class="card-header">Targets</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.scan_info|length }} Targets</h5>
@@ -96,11 +102,11 @@
     </div>
     
     <div class="col-xl-3 col-md-6">
-        <div class="card text-dark bg-warning mb-3" style="max-width: 25rem;">
+        <div class="card text-white mb-3" style="max-width: 25rem;">
             <div class="card-header">Scans</div>
             <div class="card-body">
             <h5 class="card-title">{{ context.scans|length }} Scans</h5>
-            <a class="link-dark card-footer pt-1" href="{% url 'dash-scan' %}">View</a>
+            <a class="link-white card-footer pt-1" href="{% url 'dash-scan' %}">View</a>
             </div>
         </div>
     </div>

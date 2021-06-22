@@ -16,7 +16,7 @@
 
 <div class="pt-3 pb-3">
     <h4>
-        <span class="badge bg-primary">{{ scan_target_name|title }}</span>
+        <span class="badge" style="background: #212529;">{{ scan_target_name|title }}</span>
         <a href="{% url 'target-bookmark' scan_item.id %}">
             {% if scan_is_bookmark == 1 %}
             <img src="https://img.icons8.com/cute-clipart/32/000000/bookmark-ribbon.png"/>
@@ -31,7 +31,7 @@
 <div class="row">
     <div class="col-xl-3 col-md-6">
         <div class="card border border-primary mb-3" style="max-width: 50rem;">
-            <div class="card-header text-white text-center bg-primary">
+            <div class="card-header text-white text-center" style="background: #212529;">
                 {{ scan_target_name|upper  }}
             </div>
             <form method="POST">
@@ -47,9 +47,9 @@
                 <div class="card-footer text-center">
                     <!-- <a href="/targets/{{ target.id }}" type="submit" class="btn btn-primary">Scan</a> -->
                     {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
-                        <button class="btn btn-primary" type="submit" href="targets/start-scan/{{ scan_item.id }}/">Scan</button>
+                        <button class="btn btn-primary" style="background: #212529;" type="submit" href="targets/start-scan/{{ scan_item.id }}/">Scan</button>
                     {% else %}
-                        <button class="btn btn-primary" type="submit" href="targets/start-scan/{{ scan_item.id }}/">Scan Again</button>
+                        <button class="btn btn-primary" style="background: #212529;" type="submit" href="targets/start-scan/{{ scan_item.id }}/">Scan Again</button>
                     {% endif %}
                     
                 </div>
@@ -57,7 +57,7 @@
             <div class="text-center mb-2">
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'scan-result' scan_item.id %}?scan={{ scan_type }}" target="_blank"
+                <a href="{% url 'scan-result' scan_item.id %}?scan={{ scan_type }}" style="background: #212529;" target="_blank"
                     class="btn btn-success">Result</a>
                 {% endif %}
             </div>
@@ -65,7 +65,7 @@
                 {% if scan_type|stringformat:'s' == "Subdomain" %}
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=subdomain"
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=subdomain" style="background: #212529;"
                     class="btn btn-outline-primary text-center" download>Download Report</a>
                 {% endif %}
                 {% endif %}
@@ -73,7 +73,7 @@
                 {% if scan_type|stringformat:'s' == "Dirsearch" %}
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=directory"
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=directory" style="background: #212529;"
                     class="btn btn-outline-primary text-center" download>Download Report</a>
                 {% endif %}
                 {% endif %}
@@ -81,7 +81,7 @@
                 {% if scan_type|stringformat:'s' == "Wayback URL" %}
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=wayback"
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=wayback" style="background: #212529;"
                     class="btn btn-outline-primary text-center" download>Download Report</a>
                 {% endif %}
                 {% endif %}
@@ -89,7 +89,7 @@
                 {% if scan_type|stringformat:'s' == "JS File Discovery" %}
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=jsurl" class="btn btn-outline-primary text-center"
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=jsurl" style="background: #212529;" class="btn btn-outline-primary text-center"
                     download>Download Report</a>
                 {%  endif %}
                 {% endif %}
@@ -97,7 +97,7 @@
                 {% if scan_type|stringformat:'s' == "Secret/API key" %}
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
-                <a href="{% url 'download-target-result' scan_item.id %}?scan=secret" class="btn btn-outline-primary text-center"
+                <a href="{% url 'download-target-result' scan_item.id %}?scan=secret" style="background: #212529;" class="btn btn-outline-primary text-center"
                     download>Download Report</a>
                 {%  endif %}
                 {% endif %}
@@ -106,13 +106,13 @@
                 {% if result_filename|stringformat:'s' == "Null" or result_filename|stringformat:'s' == "None" %}
                 {% else %}
                 <a href="{% url 'download-target-result' scan_item.id %}?scan=linkfinder"
-                    class="btn btn-outline-primary text-center" download>Download Report</a>
+                    class="btn btn-outline-primary text-center" style="background: #212529;" download>Download Report</a>
                 {% endif %}
                 {% endif %}
 
             </div>
             <div class="card-footer text-center">
-                <a class="btn btn-danger" href="{% url 'target-delete' scan_item.id %}">Delete</a>
+                <a class="btn btn-danger" style="background: #212529;" href="{% url 'target-delete' scan_item.id %}">Delete</a>
             </div>
             <div class="text-muted text-center">
                 {{ scan_date_posted|date:"F d, Y" }}
