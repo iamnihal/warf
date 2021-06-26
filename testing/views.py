@@ -47,6 +47,9 @@ def index(request):
         return HttpResponseRedirect("dashboard/")
 
 
+def about(request):
+    return render(request, "testing/about.html")
+
 @login_required
 def target_view(request, pk):
     if request.user.is_authenticated:

@@ -16,22 +16,22 @@
     {% endfor %}
     {% endif %}
 
-    <h1 class="display-4">Welcome, {{ user.username|title }}</h1>
-    <hr class="my-3">
-    <p class="text-dark">Username:- {{ user.username }}</p>
-    <p class="text-dark">Email:- {{ user.email }}</p>
+    <h1 class="display-6 my-4 ms-2 border-start border-5 border-primary p-2">Welcome, {{ user.username|title }}</h1>
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="form-row">
-            <div class="col" style="padding: 10px;">
-                {{ u_form|crispy }}
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-row">
+                <div class="col" style="padding:10px;">
+                    {{ u_form|crispy }}
+                </div>
             </div>
-        </div>
-        <div>
-            <button class="btn btn-outline-info ml-2" type="submit">Update</button>
-        </div>
-    </form>
+            <div>
+                <button class="btn btn-outline-info mx-2" type="submit">Update</button>
+            </div>
+        </form>
+    </div>
+    
 
     <form method="POST">
         {% csrf_token %}
@@ -41,7 +41,7 @@
             </div>
         </div>
         <div>
-            <button class="btn btn-outline-info ml-2" type="submit">Update</button>
+            <button class="btn btn-outline-info mx-2" type="submit">Update</button>
         </div>
     </form>
 </div>

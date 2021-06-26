@@ -13,16 +13,16 @@
         integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/gh/StartBootstrap/startbootstrap-sb-admin/dist/css/styles.min.css"
         rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous">
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
-<body class="sb-nav-fixed">
-  
+
+<body class="sb-nav-fixed">  
     <nav class="sb-topnav navbar navbar-expand-lg navbar-dark bg-dark" style="background-color: #212529 !important;">
         <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'index-page' %}" style="font-family: 'Dancing Script', cursive; font-weight:bold">WARF</a>
+            <a class="navbar-brand" href="{% url 'index-page' %}" style="font-family: 'Dancing Script', cursive; font-weight:bold">
+                <img src="{% static 'testing/nav-logo.svg' %}" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                WARF
+            </a>
           <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -31,7 +31,12 @@
             <ul class="navbar-nav ms-auto">
               <li class="nav-item">
                   {% if user.is_authenticated %}
-                <a class="nav-link active" style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS'; font-size: large;" href="{% url 'logout' %}">Logout</a>
+                  <div class="container-fluid">
+                    <a class="nav-link active" href="{% url 'logout' %}">
+                        Logout
+                      <img src="{% static 'testing/logout.svg' %}" alt="" width="30" height="24" class="d-inline-block">
+                    </a>
+                  </div>
                 </li>
                 {% else %}
                 <li class="nav-item">
@@ -67,34 +72,51 @@
                         <div class="sb-sidenav-menu-heading">Interface</div>
 
                         <a class="nav-link" href="{% url 'fullscan-page' %}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            <img src="{% static 'testing/fullscan.svg' %}" height="24px" width="24px" class="me-2">
                             Full Scan
                         </a>
 
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts"
                             aria-expanded="false" aria-controls="collapseLayouts">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            <img src="{% static 'testing/scan.svg' %}" height="24px" width="24px" class="me-2">
                             Scans
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
 
-
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
                             data-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{% url 'subdomain-page' %}">Subdomain</a>
-                                <a class="nav-link" href="{% url 'directory-page' %}">Directory</a>
-                                <a class="nav-link" href="{% url 'wayback-page' %}">Wayback URLs</a>
-                                <a class="nav-link" href="{% url 'jsurl-page' %}">JS File Discovery</a>
-                                <a class="nav-link" href="{% url 'secret-page' %}">Secrets from JS</a>
-                                <a class="nav-link" href="{% url 'endpoint-page' %}">Endpoints from JS</a>
+                                <a class="nav-link" href="{% url 'subdomain-page' %}">
+                                    <img src="{% static 'testing/subdomain.svg' %}" height="24px" width="24px" class="me-2">
+                                    Subdomain
+                                </a>
+                                <a class="nav-link" href="{% url 'directory-page' %}">
+                                    <img src="{% static 'testing/directory.svg' %}" height="24px" width="24px" class="me-2">
+                                    Directory
+                                </a>
+                                <a class="nav-link" href="{% url 'wayback-page' %}">
+                                    <img src="{% static 'testing/wayback.svg' %}" height="24px" width="24px" class="me-2">
+                                    Wayback URLs
+                                </a>
+                                <a class="nav-link" href="{% url 'jsurl-page' %}">
+                                    <img src="{% static 'testing/jsurls.svg' %}" height="24px" width="24px" class="me-2">
+                                    JS File Discovery
+                                </a>
+                                <a class="nav-link" href="{% url 'secret-page' %}">
+                                    <img src="{% static 'testing/secret.svg' %}" height="24px" width="24px" class="me-2">
+                                    Secrets from JS
+                                </a>
+                                <a class="nav-link" href="{% url 'endpoint-page' %}">
+                                    <img src="{% static 'testing/linkfinder.svg' %}" height="24px" width="24px" class="me-2">
+                                    Endpoints from JS
+                                </a>
                             </nav>
                         </div>
 
                         {% if user.is_authenticated %}
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTarget"
                             aria-expanded="false" aria-controls="collapseLayouts">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            <img src="{% static 'testing/target-option.svg' %}" height="24px" width="24px" class="me-2">
                             Target
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
@@ -104,9 +126,18 @@
                         <div class="collapse" id="collapseTarget" aria-labelledby="headingOne"
                             data-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{% url 'add-target' %}">Add Target</a>
-                                <a class="nav-link" href="{% url 'targets' %}">View Targets</a>
-                                <a class="nav-link" href="{% url 'bookmark-view' %}">Bookmark</a>
+                                <a class="nav-link" href="{% url 'add-target' %}">
+                                    <img src="{% static 'testing/add-target.svg' %}" height="24px" width="24px" class="me-2">
+                                    Add Target
+                                </a>
+                                <a class="nav-link" href="{% url 'targets' %}">
+                                    <img src="{% static 'testing/target.svg' %}" height="24px" width="24px" class="me-2">
+                                    View Targets
+                                </a>
+                                <a class="nav-link" href="{% url 'bookmark-view' %}">
+                                    <img src="{% static 'testing/bookmark.svg' %}" height="24px" width="24px" class="me-2">
+                                    Bookmark
+                                </a>
                             </nav>
                         </div>
                         {% endif %}
@@ -118,7 +149,7 @@
 
                         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUser"
                             aria-expanded="false" aria-controls="collapsePages">
-                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            <img src="{% static 'testing/user.svg' %}" height="24px" width="24px" class="me-2">
                             User
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
@@ -130,11 +161,13 @@
                                 <a class="nav-link collapsed" href="{% url 'profile' %}"
                                     data-target="#pagesCollapseAuth" aria-expanded="false"
                                     aria-controls="pagesCollapseAuth">
+                                    <img src="{% static 'testing/profile.svg' %}" height="24px" width="24px" class="me-2">
                                     Profile
                                     <div class="sb-sidenav-collapse-arrow"></div>
                                 </a>
                                 <a class="nav-link collapsed" href="{% url 'logout' %}" data-target="#pagesCollapseAuth"
                                     aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                    <img src="{% static 'testing/logout.svg' %}" height="24px" width="24px" class="me-2">
                                     Logout
                                     <div class="sb-sidenav-collapse-arrow"></div>
                                 </a>
@@ -156,8 +189,12 @@
                         </div>
 
                         <a class="nav-link" href="{% url 'wordlist-page' %}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            <img src="{% static 'testing/wordlist.svg' %}" height="24px" width="24px" class="me-2">
                             Wordlist
+                        </a>
+                        <a class="nav-link" href="{% url 'about-page' %}">
+                            <img src="{% static 'testing/about.svg' %}" height="24px" width="24px" class="me-2">
+                            About
                         </a>
                     </div>
                 </div>
@@ -227,6 +264,9 @@
     <script src="{% static 'testing/scripts.js' %}"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.css" rel="stylesheet" />
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.3.0/mdb.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </body>
 
 </html>

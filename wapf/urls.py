@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 from testing.views import (
     subdomain_finder,
     index,
+    about,
     directory_brute_force,
     waybackurls,
     js_urls,
@@ -46,6 +47,7 @@ urlpatterns = [
     # Scan URLs
     path("admin/", admin.site.urls),
     path("", index, name="index-page"),
+    path("about/", about, name="about-page"),
     path("scan/subdomain/", subdomain_finder, name="subdomain-page"),
     path("scan/directory/", directory_brute_force, name="directory-page"),
     path("scan/wayback/", waybackurls, name="wayback-page"),
