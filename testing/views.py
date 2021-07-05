@@ -151,7 +151,7 @@ def scan_view(request, scantype):
         },
     )
 
-
+@login_required
 def dash_scan(request):
     if request.method == "GET":
         user = request.user
@@ -231,7 +231,10 @@ def scan_result(request, pk):
     ).first()
     scan_type = request.GET.get("scan", None)
     user = request.user
-    target_owner = result_filename.scan_item.author
+    try:
+        target_owner = result_filename.scan_item.author
+    except:
+        return render(request, "users/404.html")
 
     if user == target_owner:
         context = None

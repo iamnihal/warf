@@ -15,7 +15,6 @@
         rel="stylesheet" />
 </head>
 
-
 <body class="sb-nav-fixed">  
     <nav class="sb-topnav navbar navbar-expand-lg navbar-dark bg-dark" style="background-color: #212529 !important;">
         <div class="container-fluid">
@@ -60,7 +59,7 @@
 
                         {% if user.is_authenticated %}
                         <a class="nav-link" href="{% url 'dashboard' %}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            <img src="{% static 'testing/dashboard.svg' %}" height="24px" width="24px" class="me-2">
                             Dashboard
                         </a>
                         {% else %}
@@ -85,7 +84,7 @@
 
                         <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne"
                             data-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
+                            <nav class="sb-sidenav-menu-nested nav col-md-12">
                                 <a class="nav-link" href="{% url 'subdomain-page' %}">
                                     <img src="{% static 'testing/subdomain.svg' %}" height="24px" width="24px" class="me-2">
                                     Subdomain
@@ -174,12 +173,14 @@
                                 {% else %}
                                 <a class="nav-link collapsed" href="{% url 'login' %}" data-target="#pagesCollapseAuth"
                                     aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                    <img src="{% static 'testing/login.svg' %}" height="24px" width="24px" class="me-2">
                                     Login
                                     <div class="sb-sidenav-collapse-arrow"></div>
                                 </a>
                                 <a class="nav-link collapsed" href="{% url 'register' %}"
                                     data-target="#pagesCollapseAuth" aria-expanded="false"
                                     aria-controls="pagesCollapseAuth">
+                                    <img src="{% static 'testing/registration.svg' %}" height="24px" width="24px" class="me-2">
                                     Register
                                     <div class="sb-sidenav-collapse-arrow"></div>
                                 </a>
@@ -239,22 +240,6 @@
                 return true;
             });
         });
-    </script>
-
-    <script>
-        function searchFunc() {
-            let input = document.getElementById('dropdownMenu1-1').value
-            input = input.toLowerCase();
-            let x = document.getElementsByClassName('mdb-dropdownLink-1');
-
-            for (i = 0; i < x.length; i++) {
-                if (!x[i].innerHTML.toLowerCase().includes(input)) {
-                    x[i].style.display = "none";
-                } else {
-                    x[i].style.display = "list-item";
-                }
-            }
-        }
     </script>
     </div>
     </div>
