@@ -6,6 +6,15 @@
 
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-danger text-center">
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+
 <h1 class="mt-4" style="font-family: cursive">Full Scan</h1>
 <form action="{% url 'fullscan-page' %}" id="subFormId" method="POST">
     {% csrf_token %}

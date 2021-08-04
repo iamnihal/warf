@@ -6,6 +6,14 @@
 
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-danger text-center">
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+
 <h3 class="mt-4" style="font-family: cursive; font-weight: bold;">JavaScript URLs Discovery</h3>
 <!-- <ol class="breadcrumb mb-4"> -->
 <form action="{% url 'jsurl-page' %}" id="subFormId" method="POST">

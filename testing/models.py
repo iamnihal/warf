@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.core.validators import RegexValidator
 from django.contrib.auth.models import User
 
 
@@ -15,7 +16,7 @@ class Scan(models.Model):
     )
     target_name = models.CharField(max_length=100)
     scan_type = models.CharField(max_length=50, choices=SCAN_TYPE)
-    domain_url = models.CharField(max_length=100)
+    domain_url = models.CharField(validators=[RegexValidator(regex=r'([a-z0-9]{2,}\.)+[a-z0-9]{2,5}', message="Invalid format")], max_length=50)
     is_bookmark = models.IntegerField(default=0)
     scan_date = models.DateTimeField(default=timezone.now)
     author = models.ForeignKey(User, on_delete=models.CASCADE)

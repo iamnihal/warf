@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.urls import reverse
@@ -26,6 +26,9 @@ from .forms import (
     JsSecrets,
     GithubSubdomainForm,
 )
+
+domain_regex = re.compile(r"([a-z0-9]{2,}\.)+[a-z0-9]{2,5}")
+url_regex = re.compile(r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)")
 
 
 timestr = time.strftime("%Y-%m-%d-%H-%M")
@@ -409,6 +412,7 @@ def subdomain_finder_task(subdomain, gitSubdomain, gitToken, pk=None):
                 file_name=subdomain_output_file, scan_item=scan_target
             )
         # Enable port scanning
+        print(f"Subdomain is {subdomain}")
         subdom = sublist3r.main(
             subdomain,
             40,
@@ -464,8 +468,12 @@ def subdomain_finder(request, domain_url=None, pk=None):
         gitSubdomain = str(request.POST.get("github-subdomain", None))
         gitToken = str(request.POST.get("github-token", None))
         global sub_context
-        sub_context = subdomain_finder_task.now(subdomain, gitSubdomain, gitToken, pk)
-        return render(request, "testing/subdomain.html", sub_context)
+        if re.match(domain_regex, subdomain) or re.match(domain_regex, gitSubdomain):
+            sub_context = subdomain_finder_task.now(subdomain, gitSubdomain, gitToken, pk)
+            return render(request, "testing/subdomain.html", sub_context)
+        else:
+            messages.warning(request, "Invalid Domain")
+            return render(request, "testing/subdomain-index.html")
     else:
         return render(request, "testing/subdomain-index.html")
 
@@ -559,9 +567,12 @@ def directory_brute_force(request, domain_url=None, pk=None):
         global dir_wordlist
         dir_wordlist = request.POST.get("wordlist")
         global dir_context
-        dir_context = directory_brute_force_task.now(directory, pk)
-
-        return render(request, "testing/directory.html", {"context": dir_context})
+        if re.match(url_regex, directory):
+            dir_context = directory_brute_force_task.now(directory, pk)
+            return render(request, "testing/directory.html", {"context": dir_context})
+        else:
+            messages.warning(request, "Invalid Directory")
+            return render(request, "testing/directory-index.html")
     else:
         return render(request, "testing/directory-index.html")
 
@@ -609,8 +620,12 @@ def waybackurls(request, domain_url=None, pk=None):
     if request.method == "POST":
         form = Waybackurls()
         domain = str(request.POST.get("wayback", domain_url))
-        context = waybackurls_task.now(domain, pk)
-        return render(request, "testing/wayback.html", context)
+        if re.match(domain_regex, domain):
+            context = waybackurls_task.now(domain, pk)
+            return render(request, "testing/wayback.html", context)
+        else:
+            messages.warning(request, "Invalid Domain")
+            return render(request, "testing/wayback-index.html")
     else:
         form = Waybackurls()
     return render(request, "testing/wayback-index.html")
@@ -660,13 +675,12 @@ def js_urls(request, domain_url=None, pk=None):
     if request.method == "POST":
         form = JsFiles()
         domain = str(request.POST.get("jsurl", domain_url))
-        urls = requests.get(
-            "http://web.archive.org/cdx/search/cdx?url=*.{}/*&output=json&fl=original&collapse=urlkey".format(
-                domain
-            )
-        ).json()
-        context = js_urls_task.now(domain, pk)
-        return render(request, "testing/jsurl.html", context)
+        if re.match(domain_regex, domain):
+            context = js_urls_task.now(domain, pk)
+            return render(request, "testing/jsurl.html", context)
+        else:
+            messages.warning(request, "Invalid Domain")
+            return render(request, "testing/jsurl-index.html")
     else:
         form = JsFiles()
     return render(request, "testing/jsurl-index.html")
@@ -728,8 +742,12 @@ def js_secrets(request, domain_url=None, pk=None):
     if request.method == "POST":
         form = JsSecrets()
         domain = str(request.POST.get("secret", domain_url))
-        context = js_secrets_task.now(domain, pk)
-        return render(request, "testing/secret.html", context)
+        if re.match(domain_regex, domain):    
+            context = js_secrets_task.now(domain, pk)
+            return render(request, "testing/secret.html", context)
+        else:
+            messages.warning(request, "Invalid Domain")
+            return render(request, "testing/secret-index.html")
     else:
         return render(request, "testing/secret-index.html")
 
@@ -796,8 +814,12 @@ def js_links(request, domain_url=None, pk=None):
     if request.method == "POST":
         form = JsLinks()
         domain = str(request.POST.get("endpoint", domain_url))
-        context = js_links_task.now(domain, pk)
-        return render(request, "testing/endpoint.html", context)
+        if re.match(domain_regex, domain):
+            context = js_links_task.now(domain, pk)
+            return render(request, "testing/endpoint.html", context)
+        else:
+            messages.warning(request, "Invalid Domain")
+            return render(request, "testing/endpoint-index.html")
     else:
         form = JsLinks()
     return render(request, "testing/endpoint-index.html", {"context": form})
@@ -1010,8 +1032,12 @@ def full_scan_task(domain, pk=None):
 def full_scan(request, domain_url=None, pk=None):
     if request.method == "POST":
         domain = str(request.POST.get("fullscan"))
-        context = full_scan_task.now(domain_url, pk)
-        return render(request, "testing/fullscan-overview.html", {"context": context})
+        if re.match(domain_regex, domain):
+            context = full_scan_task.now(domain_url, pk)
+            return render(request, "testing/fullscan-overview.html", {"context": context})
+        else:
+            messages.warning(request, "Invalid Domain")
+            return render(request, "testing/fullscan-index.html")
     else:
         return render(request, "testing/fullscan-index.html")
 
@@ -1245,7 +1271,7 @@ def download_target_result(request, pk):
         return render(request, "testing/index.html")
 
 
-def download_result(request):
+def download_result(request, pk=None):
     if request.method == "GET":
         subdomain = request.GET.get("scan", None)
         directory = request.GET.get("scan", None)
