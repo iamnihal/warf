@@ -61,7 +61,10 @@ def about(request):
 @login_required
 def target_view(request, pk):
     if request.user.is_authenticated:
-        target = Scan.objects.get(id=pk)
+        try:
+            target = Scan.objects.get(id=pk)
+        except Scan.DoesNotExist:
+            return render(request, "users/404.html")
         scan_author = User.objects.get(scan=target)
         request_user = User.objects.get(id=request.user.id)
         if scan_author == request_user:
@@ -235,9 +238,11 @@ def scan_search(request):
 
 @login_required
 def scan_result(request, pk):
-    result_filename = ResultFileName.objects.filter(
-        scan_item=Scan.objects.get(id=pk)
-    ).first()
+    try:
+        result_filename = ResultFileName.objects.filter(scan_item=Scan.objects.get(id=pk)).first()
+    except Scan.DoesNotExist:
+        return render(request, "users/404.html")
+        
     scan_type = request.GET.get("scan", None)
     user = request.user
     try:
