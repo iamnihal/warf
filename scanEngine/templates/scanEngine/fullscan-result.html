@@ -1,0 +1,93 @@
+{% extends 'scanEngine/base-tools.html' %}
+
+{% block title %}
+<title>Fullscan Results</title>
+{% endblock %}
+
+<!-- <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger float-right" download>Download Report</a> -->
+{% block content %}
+
+{% if subdomain_context %}
+<a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger float-right" download>Download Report</a>
+<th>Subdomains</th>
+</tr>
+</thead>
+<tbody>
+    {% for subdomain in subdomain_context %}
+    <tr>
+        <td><a href="https://{{ subdomain }}" target="_blank">{{ subdomain }}</a></td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+
+    {% if directory_context %}
+    <a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger float-right" download>Download Report</a>
+    <th>Directory</th>
+    <th>Response Size</th>
+    <th>Status Code</th>
+    </tr>
+    </thead>
+<tbody>
+    {% for dir_link, size, status in directory_context %}
+    <tr>
+        <td><a href="{{ dir_link }}" target="_blank">{{ dir_link }}</a></td>
+        <td>{{ size }}</td>
+        <td>{{ status }}</td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+
+    {% if wayback_context %}
+    <a href="{% url 'download-result' %}?scan=wayback" class="btn btn-danger float-right" download>Download Report</a>
+    <th>Wayback URLs</th>
+    </tr>
+    </thead>
+<tbody>
+    {% for url in wayback_context %}
+    <tr>
+        <td><a href="{{ url }}" target="_blank">{{ url }}</a></td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+
+    {% if jsurl_context %}
+    <a href="{% url 'download-result' %}?scan=jsurl" class="btn btn-danger float-right" download>Download Report</a>
+    <th>JavaScript URLs</th>
+    </tr>
+    </thead>
+<tbody>
+    {% for jsurl in jsurl_context %}
+    <tr>
+        <td><a href="{{ jsurl }}" target="_blank">{{ jsurl }}</a></td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+
+    {% if secret_context %}
+    <a href="{% url 'download-result' %}?scan=secret" class="btn btn-danger float-right" download>Download Report</a>
+    <th>Secret/API Keys</th>
+    </tr>
+    </thead>
+<tbody>
+    {% for key in secret_context %}
+    <tr>
+        <td>{{ key|truncatechars:100 }}</td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+
+    {% if linkfinder_context %}
+    <a href="{% url 'download-result' %}?scan=linkfinder" class="btn btn-danger float-right" download>Download
+        Report</a>
+    <th>Linkfinder Link</th>
+    </tr>
+    </thead>
+<tbody>
+    {% for link in linkfinder_context %}
+    <tr>
+        <td>{{ link }}</td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+
+    {% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'scanEngine/base-tools.html' %}
+
+{% block title %}
+<title>Subdomains</title>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center">
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger float-right" download>Download Report</a>
+<th>Subdomain</th>
+</tr>
+</thead>
+<tbody>
+    {% for sub in subdom %}
+    <tr>
+        <td><a href="https://{{ sub }}" target="_blank">{{ sub }}</a></td>
+    </tr>
+    {% endfor %}
+    {% endblock %}

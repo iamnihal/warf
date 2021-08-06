@@ -1,0 +1,34 @@
+{% extends 'scanEngine/base-tools.html' %}
+
+{% block title %}
+<title>Directory</title>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center">
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<a href="{% url 'download-result' %}?scan=directory" class="btn btn-danger float-right" download>Download Report</a>
+<th class="column1">Directory</th>
+<th class="column2">Response Size</th>
+<th class="column3">Status Code</th>
+</tr>
+</thead>
+<tbody>
+    {% for directory, size, code in context %}
+    <tr>
+        <td class="column1"><a>{{ directory }}</a></td>
+        <td class="column2">{{ size }}</td>
+        <td class="column3">{{ code }}</td>
+        <!-- <td class="column4">$999.00</td>
+<td class="column5">1</td>
+<td class="column6">$999.00</td> -->
+    </tr>
+    {% endfor %}
+    {% endblock %}

@@ -1,0 +1,29 @@
+{% extends "scanEngine/base-tools.html" %}
+
+{% block title %}
+<title>Wayback URLs</title>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} text-center">
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<a href="{% url 'download-result' %}?scan=wayback" class="btn btn-danger float-right" download>Download Report</a>
+<tr>
+    <th>Wayback URLs</th>
+</tr>
+</thead>
+<tbody>
+    {% for url in context %}
+    <tr>
+        <td><a href="{{ url }}" target="_blank">{{ url }}</a></td>
+    </tr>
+    {% endfor %}
+</tbody>
+{% endblock %}

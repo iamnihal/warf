@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'testing.apps.TestingConfig',
+    'scanEngine.apps.TestingConfig',
     'users.apps.UsersConfig',
     'django.contrib.admin',
     'django.contrib.auth',

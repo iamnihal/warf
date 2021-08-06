@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from testing.forms import AddTargetForm
-from testing.models import Scan, ResultFileName
-from testing.views import *
+from scanEngine.forms import AddTargetForm
+from scanEngine.models import Scan, ResultFileName
+from scanEngine.views import *
 import string as st
 import random
 

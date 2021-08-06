@@ -1,0 +1,98 @@
+{% extends "scanEngine/base.html" %}
+
+{% block title %}
+<title>Subdomain Discovery</title>
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-danger text-center">
+            {{ message|safe }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<h3 class="mt-4" style="font-family:cursive; font-weight: bold;">Subdomain Discovery</h3>
+<!-- <ol class="breadcrumb mb-4"> -->
+<form action="{% url 'subdomain-page' %}" id="subFormId" method="POST">
+    {% csrf_token %}
+    <div class="form-outline">
+        <input type="text" id="id-subdomain" class="form-control form-control-lg" name="subdomain" required />
+        <label class="form-label" for="formControlLg">Domain</label>
+    </div>
+    <br>
+    <button type="submit" id="btnSubmit" class="btn btn-danger" onclick="loadingPage()">Submit</button>
+</form>
+
+<div id="spinner"></div>
+</div>
+
+<div class="container-fluid">
+    <h3 class="mt-4" style="font-family: cursive; font-weight: bold;">Subdomain Discovery from Github</h3>
+    <form action="{% url 'subdomain-page' %}" id="gitsubFormId" method="POST">
+        {% csrf_token %}
+        <!-- Domain -->
+        <div class="form-outline">
+            <input type="text" id="formControlLg" class="form-control form-control-lg" name="github-subdomain"
+                required />
+            <label class="form-label" for="formControlLg">Domain</label>
+        </div>
+        <br>
+        <!-- Token -->
+        <div class="form-outline">
+            <input type="text" id="formControlLg" class="form-control form-control-lg" name="github-token" required />
+            <label class="form-label" for="formControlLg">Github Token</label>
+        </div>
+        <br>
+        <button type="submit" id="btnSubmit" class="btn btn-danger" onclick="loadingPage()">Submit</button>
+    </form>
+</div>
+
+<div class="alert alert-info text-center mt-4" id="id-message" role="alert" style="visibility: hidden">
+    Process Finished!!
+    <br>
+    <a href="{% url 'download-result' %}?scan=subdomain" class="btn btn-danger mt-3" download>Download Report</a>
+</div>
+
+
+<script>
+    var interval = null;
+    $(document).ready(function () {
+        interval = setInterval(getFile, 10000);
+    });
+
+    function getFile() {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'ajax-call' %}?scan=subdomain",
+            success: function (data) {
+                if (data == "FileNotFound") {
+                    console.log("File is not there");
+                }
+                if (data == "FileDoesNotExist") {
+                    console.log("FileDoesNotExist");
+                }
+                if ((data != "FileNotFound") && (data != "FileDoesNotExist")) {
+                    console.log(data);
+                    $("#id-message").attr("style", "visibility: visibility");
+                    clearInterval(interval);
+                }
+            },
+            error: function (data) {
+                console.log("Didn't get the file");
+            }
+        });
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#gitsubFormId").submit(function () {
+            $(".btn").attr("disabled", true);
+            return true;
+        });
+    });
+</script>
+{% endblock %}
