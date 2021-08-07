@@ -109,7 +109,7 @@ If you want to contribute to this project and make it better, your help is very 
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 <!-- CONTACT -->
 ## Contact
