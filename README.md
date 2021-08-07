@@ -35,23 +35,23 @@
 
 ### Screenshots
 
+#### FullScan
 ![fullscan](https://user-images.githubusercontent.com/37813784/128592964-ecb70439-d2a4-42bb-a952-e9b23ac95b50.JPG)
-<p align="center">(1. FullScan)</p>
 
+#### Subdomain Enumeration
 ![subdomain](https://user-images.githubusercontent.com/37813784/128593177-59cf5d7a-a68b-4d99-82fa-1275407e01f0.JPG)
-<p align="center">(2. Subdomains can also be find using Github. You need a Github Token to use this feature)</p>
 
+#### Add Target
 ![target](https://user-images.githubusercontent.com/37813784/128593013-b5097bb1-af36-45d1-93d9-77a8a1a1c23a.JPG)
-<p align="center">(3. Here you can add targets and can assign each of them with different scan types)</p>
 
+#### View Target
 ![target2](https://user-images.githubusercontent.com/37813784/128593023-06cf3709-4008-4b88-b450-d8afad810444.JPG)
-<p align="center">(4. Here you can see all your targets)</p>
 
+#### View Details
 ![targetview](https://user-images.githubusercontent.com/37813784/128593119-2c93d433-914a-4bb0-ab35-dfb10da5dff9.JPG)
-<p align="center">(5. Here you can see the details of your individual scan)</p>
 
+#### View Result
 ![result](https://user-images.githubusercontent.com/37813784/128593030-6c431f13-8d6f-4ecb-8f4d-17fef24b9039.JPG)
-<p align="center">(6. Result view)</p>
 
 ### Installation
 You can install WARF in two ways:-
