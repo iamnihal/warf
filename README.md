@@ -8,7 +8,7 @@
 
 ![Dashboard](https://user-images.githubusercontent.com/37813784/128590378-c8e84910-7bf9-4356-9b0b-6aa8931bb276.JPG)
 
-## :bookmark_tabs: Table of Contents
+## Table of Contents
 
 * [About WARF](#about-warf)
     * [What is WARF](#about-warf)
@@ -19,12 +19,12 @@
 * [License](#license)
 * [Acknowledgements & Credits](#acknowledgements-and-credits)
 
-## :question: About WARF
+## About WARF
 <p>WARF is a Recon framework for web application. It comprises different tools to perform information gathering on the target such as subdomain enumeration, directory bruteforce, gathering all sorts of endpoints like wayback URLs, JS URLs, endpoints from JS files, API/Secret keys etc.</p>
 <p>WARF is highly customizable and allows you to perform full scan or individual scan on the target. It accumulate the results and show it in a powerful DataTable throug   h which you can narrow down your searches. WARF also give you the option to add and save target individually, and perform different scans on them. </p>
 <p>With a Dashboard, you will quickly gets the metrics of your activity. WARF confined all your targets together and gives you a clean and efficient way to search them down with their name.</p>
 
-### :boom: Main Features
+### Main Features
 - Subdomain Enumeration
 - Directory BruteForce
 - Gather Wayback URLs
@@ -33,10 +33,9 @@
 - Extract API/Secret Keys from JS files
 - Supports Background Scan
 
-### :camera: Screenshots
+### Screenshots
 
 ![fullscan](https://user-images.githubusercontent.com/37813784/128592964-ecb70439-d2a4-42bb-a952-e9b23ac95b50.JPG)
-<<<<<<< HEAD
 <p align="center">(1. FullScan)</p>
 
 ![subdomain](https://user-images.githubusercontent.com/37813784/128593177-59cf5d7a-a68b-4d99-82fa-1275407e01f0.JPG)
@@ -54,7 +53,7 @@
 ![result](https://user-images.githubusercontent.com/37813784/128593030-6c431f13-8d6f-4ecb-8f4d-17fef24b9039.JPG)
 <p align="center">(6. Result view)</p>
 
-### :computer: Installation
+### Installation
 You can install WARF in two ways:-
  - #### By creating a python virtual environment and git cloning the repository.
 
@@ -103,17 +102,17 @@ $ docker run --name warf -d -p 8000:8000 warf
 and now your app is ready to launch at http://127.0.0.1:8000
  
 <!-- CONTRIBUTING -->
-## :wave: Contributing
+## Contributing
 
 If you want to contribute to this project and make it better, your help is very welcome. As this is my first ever project in Django, there could exist a lot of caveats and other coding related issues. Your contribution to this project helps me to learn and inspire to build more awesome projects in future. Contributing is also a great way to learn more about social coding on Github, new technologies and and their ecosystems. Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
 <!-- LICENSE -->
-## :page_facing_up: License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
 <!-- CONTACT -->
-## :email: Contact
+## Contact
 
 Nihal - [@iamnihal_](https://twitter.com/iamnihal_) - infosec.nihal@gmail.com
 
