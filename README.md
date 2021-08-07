@@ -36,6 +36,7 @@
 ### :camera: Screenshots
 
 ![fullscan](https://user-images.githubusercontent.com/37813784/128592964-ecb70439-d2a4-42bb-a952-e9b23ac95b50.JPG)
+<<<<<<< HEAD
 <p align="center">(1. FullScan)</p>
 
 ![subdomain](https://user-images.githubusercontent.com/37813784/128593177-59cf5d7a-a68b-4d99-82fa-1275407e01f0.JPG)
