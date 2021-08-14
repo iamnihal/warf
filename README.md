@@ -20,9 +20,9 @@
 * [Acknowledgements & Credits](#acknowledgements-and-credits)
 
 ## About WARF
-<p>WARF is a Recon framework for web application. It comprises different tools to perform information gathering on the target such as subdomain enumeration, directory bruteforce, gathering all sorts of endpoints like wayback URLs, JS URLs, endpoints from JS files, API/Secret keys etc.</p>
-<p>WARF is highly customizable and allows you to perform full scan or individual scan on the target. It accumulate the results and show it in a powerful DataTable throug   h which you can narrow down your searches. WARF also give you the option to add and save target individually, and perform different scans on them. </p>
-<p>With a Dashboard, you will quickly gets the metrics of your activity. WARF confined all your targets together and gives you a clean and efficient way to search them down with their name.</p>
+<p>WARF is a Recon framework for the web application. It comprises different tools to perform information gathering on the target such as subdomain enumeration, directory Bruteforce, gathering all sorts of endpoints like Wayback URLs, JS URLs, endpoints from JS files, API/Secret keys, etc.</p>
+<p>WARF is highly customizable and allows you to perform a full scan or individual scan on the target. It accumulates the results and shows them in a powerful DataTable through which you can narrow down your searches. WARF also give you the option to add and save target individually and perform different scans on them. </p>
+<p>With a Dashboard, you will quickly get the metrics of your activity. WARF confined all your targets together and provide you with a clean and efficient way to search them down with their names.</p>
 
 ### Main Features
 - Subdomain Enumeration
