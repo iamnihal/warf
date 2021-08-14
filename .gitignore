@@ -1,7 +1,12 @@
 venv/
 db.sqlite3
 testing/dirsearch/logs/*.log
-testing/output/.*
+testing/output/subdomain/*
+testing/output/directory/*
+testing/output/wayback/*
+testing/output/jsurl/*
+testing/output/secrets/*
+testing/output/linkfinder/*
 .vscode/
 
 # Django stuff:
