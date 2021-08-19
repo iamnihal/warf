@@ -100,6 +100,11 @@ $ docker build -t warf .
 $ docker run --name warf -d -p 8000:8000 warf
 ```
 and now your app is ready to launch at http://127.0.0.1:8000
+
+> :warning: Warning:-  **Change SECRET_KEY in settings.py for the security purpose. To generate your own SECRET_KEY, use this:-**
+```
+python -c "import secrets; print(secrets.token_urlsafe())"
+```
  
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -110,15 +115,6 @@ If you want to contribute to this project and make it better, your help is very 
 ## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
-
-<!-- CONTACT -->
-## Contact
-
-Nihal - [@iamnihal_](https://twitter.com/iamnihal_) - infosec.nihal@gmail.com
-
-Project Link: [https://github.com/iamnihal/warf](https://github.com/iamnihal/warf)
-
-
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements and Credits
