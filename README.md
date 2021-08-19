@@ -20,9 +20,9 @@
 * [Acknowledgements & Credits](#acknowledgements-and-credits)
 
 ## About WARF
-<p>WARF is a Recon framework for web application. It comprises different tools to perform information gathering on the target such as subdomain enumeration, directory bruteforce, gathering all sorts of endpoints like wayback URLs, JS URLs, endpoints from JS files, API/Secret keys etc.</p>
-<p>WARF is highly customizable and allows you to perform full scan or individual scan on the target. It accumulate the results and show it in a powerful DataTable throug   h which you can narrow down your searches. WARF also give you the option to add and save target individually, and perform different scans on them. </p>
-<p>With a Dashboard, you will quickly gets the metrics of your activity. WARF confined all your targets together and gives you a clean and efficient way to search them down with their name.</p>
+<p>WARF is a Recon framework for the web application. It comprises different tools to perform information gathering on the target such as subdomain enumeration, directory Bruteforce, gathering all sorts of endpoints like Wayback URLs, JS URLs, endpoints from JS files, API/Secret keys, etc.</p>
+<p>WARF is highly customizable and allows you to perform a full scan or individual scan on the target. It accumulates the results and shows them in a powerful DataTable through which you can narrow down your searches. WARF also give you the option to add and save target individually and perform different scans on them. </p>
+<p>With a Dashboard, you will quickly get the metrics of your activity. WARF confined all your targets together and provide you with a clean and efficient way to search them down with their names.</p>
 
 ### Main Features
 - Subdomain Enumeration
@@ -52,6 +52,11 @@
 
 #### View Result
 ![result](https://user-images.githubusercontent.com/37813784/128593030-6c431f13-8d6f-4ecb-8f4d-17fef24b9039.JPG)
+
+> :warning: Warning:-  **Change SECRET_KEY in settings.py for the security purpose. To generate your own SECRET_KEY, use this:-**
+```
+python -c "import secrets; print(secrets.token_urlsafe())"
+```
 
 ### Installation
 You can install WARF in two ways:-
