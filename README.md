@@ -53,10 +53,6 @@
 #### View Result
 ![result](https://user-images.githubusercontent.com/37813784/128593030-6c431f13-8d6f-4ecb-8f4d-17fef24b9039.JPG)
 
-> :warning: Warning:-  **Change SECRET_KEY in settings.py for the security purpose. To generate your own SECRET_KEY, use this:-**
-```
-python -c "import secrets; print(secrets.token_urlsafe())"
-```
 
 ### Installation
 You can install WARF in two ways:-
