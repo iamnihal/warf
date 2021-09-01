@@ -1,6 +1,6 @@
 <h1 align="center">WARF: Web Application Reconnaissance Framework</h1>
 
-[![version](https://img.shields.io/badge/version-0.1-red)](https://www.github.com/iamnihal/warf)
+[![version](https://img.shields.io/badge/version-1.0-red)](https://www.github.com/iamnihal/warf)
 [![python](https://img.shields.io/badge/python-3.8.1-blue.svg?logo=python&labelColor=yellow)](https://www.python.org/downloads/)
 [![django](https://img.shields.io/badge/django-3.1.7-blue.svg?logo=django&labelColor=grey)](https://www.python.org/downloads/)
 [![platform](https://img.shields.io/badge/platform-osx%2Flinux%2Fwindows-green.svg)](https://github.com/iamnihal/warf/)
