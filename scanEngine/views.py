@@ -1277,12 +1277,13 @@ def download_result(request, pk=None):
                 return response
 
         if secret == "secret":
+            global secret_output_file
             if pk is not None:
                 secret_output_file = ResultFileName.objects.filter(
                     scan_item=Scan.objects.get(id=pk)
                 ).first()
 
-            output_file = output_dir + f"secret/{secret_output_file}"
+            output_file = output_dir + f"secrets/{secret_output_file}"
             filename = f"{secret_output_file}"
             with open(output_file, "r") as fh:
                 response = HttpResponse(fh.read(), content_type="text/html")
