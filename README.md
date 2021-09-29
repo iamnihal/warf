@@ -8,7 +8,11 @@
 
 ![Dashboard](https://user-images.githubusercontent.com/37813784/128590378-c8e84910-7bf9-4356-9b0b-6aa8931bb276.JPG)
 
-## Demo: https://warfapp.herokuapp.com
+## [Try WARF](https://warfapp.herokuapp.com)
+```
+Username: demo
+Password: demopass
+```
 
 ## Table of Contents
 
