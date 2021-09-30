@@ -14,6 +14,8 @@ Username: demo
 Password: demopass
 ```
 
+> :warning: Since Heroku apps run in a lightweight container called dynos, so any changes to the filesystem while the dyno is running only last until that dyno is shut down or restarted. This operation causes the saved scan results to get deleted from the server and hence you won't be able to see the saved results.
+
 ## Table of Contents
 
 * [About WARF](#about-warf)
