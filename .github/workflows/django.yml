@@ -27,5 +27,3 @@ jobs:
         pip install -r requirements.txt
     - name: Run migration
       run: python manage.py migrate
-    - name: Run server
-      run: python manage.py runserver
