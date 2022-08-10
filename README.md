@@ -134,3 +134,4 @@ All the tools in WARF have been created by these awesome people:
 4) [SecretFinder](https://github.com/m4ll0k/SecretFinder):- m4ll0k 
 5) [Linkfinder](https://github.com/GerbenJavado/LinkFinder):- GerbenJavado 
 
+Testing Talisman
