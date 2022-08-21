@@ -135,3 +135,4 @@ All the tools in WARF have been created by these awesome people:
 5) [Linkfinder](https://github.com/GerbenJavado/LinkFinder):- GerbenJavado 
 
 Testing Talisman
+AWSKey=12DFDGSDFGSDFGSD343453453DFD
