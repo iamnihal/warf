@@ -133,9 +133,3 @@ All the tools in WARF have been created by these awesome people:
 3) [Dirsearch](https://github.com/maurosoria/dirsearch):- maurosoria 
 4) [SecretFinder](https://github.com/m4ll0k/SecretFinder):- m4ll0k 
 5) [Linkfinder](https://github.com/GerbenJavado/LinkFinder):- GerbenJavado 
-
-Testing Talisman
-AWSKey=12DFDGSDFGSDFGSD343453453DFD
-AKIAIMNOJVGFDXXXE4OA
-AKIAIMNOJVGFDXXXE4OA
-AKIAIMNOJVGFDXXXE4OB
