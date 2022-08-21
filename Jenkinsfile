@@ -4,9 +4,7 @@ pipeline {
         stage('Gitleaks Running') {
             steps {
                 sh 'gitleaks detect -v --log-opts="--all -1" --report-path="Gitleaks_Output.json"'
-                sh """
-                description=$(jq .[].Description)
-                """
+                sh 'description=$(jq .[].Description)'
             }
         }
         
