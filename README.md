@@ -137,3 +137,4 @@ All the tools in WARF have been created by these awesome people:
 Testing Talisman
 AWSKey=12DFDGSDFGSDFGSD343453453DFD
 AKIAIMNOJVGFDXXXE4OA
+AKIAIMNOJVGFDXXXE4OA
