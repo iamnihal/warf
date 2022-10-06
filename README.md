@@ -1,4 +1,4 @@
-<h1 align="center">WARF: Web Application Reconnaissance Frameworks - Test 1</h1>
+<h1 align="center">WARF: Web Application Reconnaissance Frameworks - Test 2</h1>
 
 [![version](https://img.shields.io/badge/version-1.0-red)](https://www.github.com/iamnihal/warf)
 [![python](https://img.shields.io/badge/python-3.8.1-blue.svg?logo=python&labelColor=yellow)](https://www.python.org/downloads/)
