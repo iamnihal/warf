@@ -1,0 +1,17 @@
+name: gitleaks-scan
+
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  build:
+    name: Gitleaks-Scan
+    runs-on: ubuntu-latest
+    env:
+      JENKINS_JOB: https://ea98-122-171-16-219.ngrok.io/job/gitleaks-pipeline-demo/
+    steps:
+    - name: Trigger Job
+      run: |
+        curl $JENKINS_JOB
+    - name: Get Build Status
